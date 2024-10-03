@@ -2,7 +2,7 @@ import { Data } from "./data.js"
 import { HTMLBuilder } from "./builder.js"
 
 
-class SimpleTable extends HTMLElement {
+export class SimpleTable extends HTMLElement {
     static get observedAttributes() {
         return ["src", "locale", "na-rep"]
     }
