@@ -62,6 +62,23 @@ export class SimpleTable extends HTMLElement {
         this.render()
     }
 
+    updateValues(newValues) {
+        if (!this._data) {
+            console.error("No data to update")
+            return
+        }
+        if (!Array.isArray(newValues) || newValues.length !== this._data.values.length) {
+            console.error("Invalid new values format")
+            return
+        }
+        this._data.values = newValues
+        this.render()
+    }
+
+    getValues() {
+        return this._data ? this._data.values : null
+    }
+
     render() {
         if (!this._data) {
             this.shadowRoot.innerHTML = this.getStyleSheet()
