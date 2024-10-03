@@ -83,8 +83,8 @@ export class SimpleTable extends HTMLElement {
                     &:has(th[rowspan]) { border-top: 1px solid var(--border-color, black); }
                     &:first-of-type:has(th) { border-top: 3px solid var(--border-color, black); }
                 }
-                tbody tr:hover :where(td, th:not([rowspan])) { background-color: beige; }
-                th { text-align: left; }
+                tbody tr:hover :where(td, th:not([rowspan])) { background-color: #faf9f9; }
+                tbody th { text-align: left; }
                 td { text-align: right; }
                 th, td { padding: .25em .5em; }
             </style>
