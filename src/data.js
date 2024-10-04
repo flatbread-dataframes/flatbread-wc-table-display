@@ -5,6 +5,7 @@ export class Data {
         this.values = data.data
         this.indexNames = data?.indexNames
         this.dtypes = data?.dtypes
+        this.formatOptions = data?.formatOptions
     }
 }
 

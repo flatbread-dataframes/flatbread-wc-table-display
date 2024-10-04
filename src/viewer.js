@@ -31,11 +31,11 @@ export class SimpleTable extends HTMLElement {
                 this.loadDataFromSrc(newValue)
                 break
             case "locale":
-                this.options.locale = newValue || SimpleTable.defaults.locale
+                this.options.locale = newValue ?? SimpleTable.defaults.locale
                 this.render()
                 break
             case "na-rep":
-                this.options.naRep = newValue || SimpleTable.defaults.naRep
+                this.options.naRep = newValue ?? SimpleTable.defaults.naRep
                 this.render()
                 break
         }
@@ -60,6 +60,15 @@ export class SimpleTable extends HTMLElement {
             return
         }
         this._data = new Data(rawData)
+        this.render()
+    }
+
+    setFormatOptions(formatOptions) {
+        if (!this._data) {
+            console.error("No data to update format options")
+            return
+        }
+        this._data.formatOptions = formatOptions
         this.render()
     }
 

@@ -46,7 +46,10 @@ class DataFrameToTableSpec:
         self._obj = pandas_obj
         self._dtypes = DEFAULT_DTYPES.copy()
 
-    def __call__(self, path: Path|str|None) -> dict|str|None:
+    def __call__(
+        self, path: Path|str|None,
+        format_options: list[dict[str,str]|None]|None,
+    ) -> dict|str|None:
         """
         Convert the DataFrame to a table specification and optionally save it to a file.
 
@@ -55,6 +58,8 @@ class DataFrameToTableSpec:
         path : Path or str, optional
             The file path where the table specification should be saved as JSON.
             If None, the specification is returned as a dictionary.
+        format_options: list of dicts or None, optional
+            Formatting options for the columns.
 
         Returns
         -------
@@ -62,7 +67,7 @@ class DataFrameToTableSpec:
             If path is None, returns the table specification as a dictionary.
             If path is provided, saves the specification to the file and returns None.
         """
-        spec = self._get_spec()
+        spec = self._get_spec(format_options)
         if path is None:
             return spec
         json_contents = self._serialize_spec_to_json(spec)
@@ -94,7 +99,10 @@ class DataFrameToTableSpec:
         data = urllib.parse.quote(json_contents, encoding='utf-8')
         return f"data:application/json,{data}"
 
-    def _get_spec(self) -> dict:
+    def _get_spec(
+        self,
+        format_options: list[dict[str,str]|None]|None = None,
+    ) -> dict:
         """
         Generate the table specification from the DataFrame.
 
@@ -106,6 +114,8 @@ class DataFrameToTableSpec:
         spec = self._obj.to_dict(orient='split')
         spec['indexNames'] = self._obj.index.names
         spec['dtypes'] = self._obj.dtypes.pipe(self.get_dtypes_as_list)
+        if format_options is not None:
+            spec['formatOptions'] = format_options
         return spec
 
     def _serialize_spec_to_json(self, spec) -> str:

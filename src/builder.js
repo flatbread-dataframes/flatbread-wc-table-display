@@ -67,27 +67,25 @@ export class HTMLBuilder {
         if (value === null || value === "") return this.options.naRep
         if (!this.data.dtypes) return value
 
-        const formatters = {
-            str: v => v,
-            category: v => v,
-            bool: v => v,
-            int: v => this.formatNumber(v),
-            float: v => this.formatNumber(v),
-            datetime: v => this.formatDate(v)
+        const dtype = this.data.dtypes[idx]
+        const formatOptions = this.data.formatOptions?.[idx] ?? this.options
+
+        switch (dtype) {
+            case 'int':
+            case 'float':
+                return this.formatNumber(value, formatOptions)
+            case 'datetime':
+                return this.formatDate(value, formatOptions)
+            default:
+                return value.toString()
         }
-
-        const formatter = formatters[this.data.dtypes[idx]] || (v => v)
-        return formatter(value)
     }
 
-    formatNumber(value) {
-        return new Intl.NumberFormat(this.options.locale).format(value)
+    formatNumber(value, options) {
+        return value.toLocaleString(this.options.locale, options)
     }
 
-    formatDate(value) {
-        const options = value.includes("T")
-            ? {timeStyle: "short", dateStyle: "short"}
-            : {dateStyle: "short"}
-        return new Intl.DateTimeFormat(this.options.locale, options).format(new Date(value))
+    formatDate(value, options) {
+        return new Date(value).toLocaleString(this.options.locale, options)
     }
 }
