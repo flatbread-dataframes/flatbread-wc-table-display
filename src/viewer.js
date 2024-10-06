@@ -16,7 +16,7 @@ export class SimpleTable extends HTMLElement {
 
     constructor() {
         super()
-        this.attachShadow({ mode: 'open' })
+        this.attachShadow({ mode: "open" })
         this.options = { ...SimpleTable.defaults }
     }
 
@@ -47,7 +47,7 @@ export class SimpleTable extends HTMLElement {
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
             const rawData = await response.json()
             this.setData(rawData)
-            this.dispatchEvent(new CustomEvent('data-loaded', { detail: rawData }))
+            this.dispatchEvent(new CustomEvent("data-loaded", { detail: rawData }))
         } catch (error) {
             console.error("Failed to fetch data:", error)
             this.showErrorMessage("Failed to load data")
@@ -104,14 +104,14 @@ export class SimpleTable extends HTMLElement {
     }
 
     addEventListeners() {
-        this.shadowRoot.querySelectorAll('th, td').forEach(cell => {
-            cell.addEventListener('click', (event) => {
-                const isHeader = event.target.tagName === 'TH'
+        this.shadowRoot.querySelectorAll("th, td").forEach(cell => {
+            cell.addEventListener("click", (event) => {
+                const isHeader = event.target.tagName === "TH"
                 const value = event.target.textContent
-                const row = event.target.closest('tr').rowIndex
+                const row = event.target.closest("tr").rowIndex
                 const col = event.target.cellIndex
 
-                this.dispatchEvent(new CustomEvent('cell-click', {
+                this.dispatchEvent(new CustomEvent("cell-click", {
                     detail: {
                         value,
                         isHeader,
