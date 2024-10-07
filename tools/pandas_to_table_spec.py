@@ -48,7 +48,7 @@ class DataFrameToTableSpec:
 
     def __call__(
         self, path: Path|str|None,
-        format_options: list[dict[str,str]|None]|None,
+        format_options: list[dict[str,str]|None]|None = None,
     ) -> dict|str|None:
         """
         Convert the DataFrame to a table specification and optionally save it to a file.
