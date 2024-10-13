@@ -1,57 +1,89 @@
-export class Data {
-    constructor(data) {
-        this.columns = new Axis(data.columns)
-        this.index = new Axis(data.index)
-        this.values = data.data
-        this.indexNames = data?.indexNames
-        this.dtypes = data?.dtypes
-        this.formatOptions = data?.formatOptions
-    }
-}
+import { Axis } from "./axis/axis.js"
+import { Columns } from "./axis/columns.js"
 
-
-class Axis {
-    constructor(values) {
-        this.values = values
-        this.spans = this.getSpans()
+export class Data extends EventTarget {
+    constructor(data={}) {
+        super()
+        this._isUpdating = false
+        this.setData(data)
     }
 
-    // Returns length of values on axis as int
-    get length() { return this.values.length }
-    // Returns number of levels on index as int
-    get nlevels() { return this.values[0].length }
-    // Returns levels on index as array of ints
-    get ilevels() { return [...Array(this.nlevels).keys()] }
-    // Returns positions on axis as array of ints
-    get ilocs() { return [...Array(this.length).keys()] }
-    // Returns whether axis has multiple levels
-    get isMultiIndex() { return Array.isArray(this.values[0]) }
-
-    // Returns axis spans as array of span objects
-    getSpans() {
-        if ( !this.isMultiIndex ) return null
-        const levels = []
-        this.ilevels.forEach(
-            level => {
-                if (level === this.nlevels - 1) { return } // skip final level
-                const keys = this.values.map(i => i.slice(0, level + 1))
-                const spans = Axis.getContiguousValueCounts(keys)
-                levels.push(spans)
+    _setter(prop, value) {
+        if (this[prop] !== value) {
+            this[prop] = value
+            if (!this._isUpdating) {
+                this.dispatchEvent(new Event("data-changed"))
             }
-        )
-        return levels
+        }
     }
 
-    // Reduces the values in an array to the number of contiguous occurrences
-    static getContiguousValueCounts(arr) {
-        const compareArrays = (arr1, arr2) => arr1.every((item, idx) => item === arr2[idx])
-        let prev = []
-        return arr.reduce((acc, cur, idx) => {
-            if ( prev.length === 0 || !compareArrays(prev, cur) ) {
-                acc.push({ iloc: idx, value: cur, count: 1 })
-            } else { acc[acc.length - 1].count += 1 }
-            prev = cur
-            return acc
-        }, [])
+    setData(data) {
+        this._isUpdating = true
+        this._rawData = data
+
+        const { columns = [], index = [], values = [] } = data
+        const { columnNames, indexNames, dtypes, formatOptions } = data
+
+        // mandatory
+        this._columns = columns instanceof Columns
+            ? columns
+            : new Columns(columns, dtypes, formatOptions)
+        this._index = index instanceof Axis
+            ? index
+            : new Axis(index)
+        this._values = values
+
+        // optional
+        this._columnNames = columnNames
+        this._indexNames = indexNames
+        this._dtypes = dtypes
+        this._formatOptions = formatOptions
+
+        this._isUpdating = false
+        this.dispatchEvent(new Event("data-changed"))
     }
+
+    update(changes) {
+        this._isUpdating = true
+        for (const [key, value] of Object.entries(changes)) {
+            if (key in this && typeof this[key] !== "function") {
+                this[key] = value
+            }
+        }
+        this._isUpdating = false
+        this.dispatchEvent(new Event("data-changed"))
+    }
+
+    // MARK: columns
+    get columns() { return this._columns }
+    set columns(value) {
+        const columns = new Columns(value, this.dtypes, this.formatOptions)
+        this._setter("_columns", columns)
+    }
+
+    get dtypes() { return this.columns.dtypes }
+    set dtypes(value) {
+        const columns = new Columns(this.columns.values, value, this.formatOptions)
+        this._setter("_columns", columns)
+    }
+
+    get formatOptions() { return this.columns.formatOptions }
+    set formatOptions(value) {
+        const columns = new Columns(this.columns.values, this.dtypes, value)
+        this._setter("_columns", columns)
+    }
+
+    get columnNames() { return this._columnNames }
+    set columnNames(value) { this._setter("_columnNames", value) }
+
+    // MARK: index
+    get index() { return this._index }
+    set index(value) { this._setter("_index", new Axis(value)) }
+
+    get indexNames() { return this._indexNames }
+    set indexNames(value) { this._setter("_indexNames", value) }
+
+    // MARK: values
+    get values() { return this._values }
+    set values(value) { this._setter("_values", value) }
 }

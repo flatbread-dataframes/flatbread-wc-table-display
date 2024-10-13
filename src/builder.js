@@ -4,6 +4,58 @@ export class HTMLBuilder {
         this.options = options
     }
 
+    getStyleSheet() {
+        const baseStyles = `
+            :host {
+                display: block;
+                cursor: var(--cursor, auto);
+            }
+            table {
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+            tbody th { text-align: left; }
+            td { text-align: right; }
+            th, td { padding: .25em .5em; }
+            .columnLabel { text-align: right; }
+        `
+
+        const styleBlocks = {
+            groupBorders: `
+                [group-edge] {
+                    border-left: 1px solid var(--border-color, currentColor);
+                }
+            `,
+            rowBorders: `
+                tbody tr:not(:first-of-type):has(th[rowspan]) :where(th, td) {
+                    border-top: 1px solid var(--border-color, currentColor);
+                }
+            `,
+            hoverEffect: `
+                tbody tr:hover :where(td, th:not([rowspan])) {
+                    background-color: var(--hover-color, #f4f3ee);
+                }
+            `,
+            theadBorder: `
+                tbody tr:first-of-type :where(th, td) {
+                    border-top: var(--axes-width, 2px) solid var(--border-color, currentColor);
+                }
+            `,
+            indexBorder: `
+                [index-edge] {
+                    border-left: var(--axes-width, 2px) solid var(--border-color, currentColor);
+                }
+            `
+        }
+
+        const composedStyles = Object.entries(styleBlocks)
+            .filter(([key]) => this.options.styling[key])
+            .map(([, style]) => style)
+            .join("\n")
+
+        return `<style>${baseStyles}\n${composedStyles}</style>`
+    }
+
     buildTable() {
         return `
             <table>
@@ -13,62 +65,108 @@ export class HTMLBuilder {
         `
     }
 
+    // MARK: Thead
     buildThead() {
         if (!this.data.columns.isMultiIndex) return this.buildColumnsRow()
 
-        const theadLevelRows = this.data.columns.ilevels
+        const columnGroupsRows = this.data.columns.ilevels
             .slice(0, -1)
-            .map(level => this.buildTheadLevelRow(level))
+            .map(level => this.buildColumnGroupsRow(level))
             .join("")
-        return `${theadLevelRows}${this.buildColumnsRow()}`
+        return `${columnGroupsRows}${this.buildColumnsRow()}`
     }
 
+    buildColumnsRow() {
+        const indexLabels = this.data.indexNames
+            ? this.data.indexNames.map(name => `<th class="indexLabel">${name}</th>`)
+            : this.data.index.ilevels.map(() => "<th></th>")
+        const columnHeaders = this.data.columns.map((value, idx) => this.buildColumnLabel(value, idx))
+        return `<tr>${indexLabels.join("")}${columnHeaders.join("")}</tr>`
+    }
+
+    buildColumnLabel(value, iloc) {
+        const attrs = this.data.columns.attrs[iloc]
+        const selectedValue = Array.isArray(value) ? value.at(-1) : value
+        const groups = attrs.groups.join(" ")
+        const isIndexEdge = iloc === 0
+        const isGroupEdge = this.data.columns.edges.slice(1).includes(iloc)
+        return `<th
+            data-col="${iloc}"
+            data-groups="${groups}"
+            ${isIndexEdge ? ' index-edge' : ''}
+            ${isGroupEdge ? ' group-edge' : ''}
+        >${selectedValue}</td>`
+    }
+
+    buildColumnGroupsRow(level) {
+        const columnLabel = this.data.columnNames ? this.data.columnNames[level]: ""
+        const columnLabelElement = `<th colspan="${this.data.index.nlevels}" class="columnLabel">${columnLabel}</th>`
+        const headers = this.data.columns.spans[level]
+            .map((span, iloc) => this.buildColumnGroupLabel(span, iloc, level))
+            .join("")
+        return `<tr>${columnLabelElement}${headers}</tr>`
+    }
+
+    buildColumnGroupLabel(span, iloc, level) {
+        const isIndexEdge = iloc === 0
+        const isGroupEdge = iloc > 0
+        return `<th
+            colspan="${span.count}"
+            data-level="${level}"
+            data-group="${iloc}"
+            ${isIndexEdge ? ' index-edge' : ''}
+            ${isGroupEdge ? ' group-edge' : ''}
+        >${span.value[level]}</th>`
+    }
+
+    // MARK: Tbody
     buildTbody() {
         const indexRows = this.buildIndexRows()
         this.data.values.forEach((row, idx) => {
-            const rowElements = row.map((value, colIdx) => `<td>${this.formatValue(value, colIdx)}</td>`)
+            const rowElements = row.map((value, iloc) => this.buildCell(value, iloc))
             indexRows[idx] = indexRows[idx].concat(rowElements)
         })
         return indexRows.map(row => `<tr>${row.join("")}</tr>`).join("")
     }
 
-    buildColumnsRow() {
-        const indexLabels = this.data.indexNames
-            ? this.data.indexNames.map(this.buildAxisHeader)
-            : this.data.index.ilevels.map(() => "<th></th>")
-        const columnHeaders = this.data.columns.values.map(this.buildAxisHeader)
-        return `<tr>${indexLabels.join("")}${columnHeaders.join("")}</tr>`
-    }
-
-    buildTheadLevelRow(level) {
-        const idxFill = this.data.index.ilevels.map(() => "<th></th>").join("")
-        const headers = this.data.columns.spans[level].map((span, idx) =>
-            `<th colspan="${span.count}" data-level="${level}" data-group="${idx}">${span.value[level]}</th>`
-        ).join("")
-        return `<tr>${idxFill}${headers}</tr>`
-    }
-
     buildIndexRows() {
-        const indexRows = this.data.index.values.map(value => [this.buildAxisHeader(value)])
-        this.data.index.ilevels.slice(0, -1).forEach(level => {
-            this.data.index.spans[level].forEach((span, idx) => {
-                indexRows[span.iloc].unshift(`<th rowspan="${span.count}" data-level="${level}" data-group="${idx}">${span.value[level]}</th>`)
-            })
+        const indexRows = this.data.index.map(value => [this.buildIndex(value)])
+        // Reverse levels because outer levels need to be added last
+        const levelsReversed = this.data.index.ilevels.slice(0, -1).reverse()
+        levelsReversed.forEach(level => {
+            for (const span of this.data.index.spans[level]) {
+                const th = `<th rowspan="${span.count}" data-level="${level}" data-group="${span.group}">${span.value[level]}</th>`
+                indexRows[span.iloc].unshift(th)
+            }
         })
         return indexRows
     }
 
-    buildAxisHeader(headerValue) {
-        const value = Array.isArray(headerValue) ? headerValue.at(-1) : headerValue
+    buildIndex(value) {
+        value = Array.isArray(value) ? value.at(-1) : value
         return `<th>${value}</th>`
     }
 
-    formatValue(value, idx) {
-        if (value === null || value === "") return this.options.naRep
-        if (!this.data.dtypes) return value
+    buildCell(value, iloc) {
+        const attrs = this.data.columns.attrs[iloc]
+        const formatOptions = attrs.formatOptions ?? this.options
+        const formattedValue = this.formatValue(value, attrs.dtype, formatOptions)
+        const groups = attrs.groups.join(" ")
+        const isIndexEdge = iloc === 0
+        const isGroupEdge = this.data.columns.edges.slice(1).includes(iloc)
+        return `<td
+            data-col="${iloc}"
+            data-groups="${groups}"
+            data-dtype="${attrs.dtype}"
+            ${isIndexEdge ? ' index-edge' : ''}
+            ${isGroupEdge ? ' group-edge' : ''}
+        >${formattedValue}</td>`
+    }
 
-        const dtype = this.data.dtypes[idx]
-        const formatOptions = this.data.formatOptions?.[idx] ?? this.options
+    // MARK: formatting
+    formatValue(value, dtype, formatOptions) {
+        if (value === null || value === "") return this.options.naRep
+        if (!dtype) return value
 
         switch (dtype) {
             case 'int':

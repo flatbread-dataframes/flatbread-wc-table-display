@@ -1,27 +1,59 @@
 import { Data } from "./data.js"
 import { HTMLBuilder } from "./builder.js"
 
-
-export class SimpleTable extends HTMLElement {
+export class DataViewer extends HTMLElement {
     static get observedAttributes() {
-        return ["src", "locale", "na-rep"]
+        return [
+            "src", "locale", "na-rep",
+            "hide-group-borders", "hide-row-borders",
+            "hide-thead-border", "hide-index-border",
+        ]
     }
 
     static get defaults() {
         return {
             locale: "default",
-            naRep: "-"
+            naRep: "-",
+            buffer: 30,
+            styling: {
+                groupBorders: true,
+                rowBorders: true,
+                hoverEffect: true,
+                theadBorder: true,
+                indexBorder: true,
+            }
         }
     }
 
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.options = { ...SimpleTable.defaults }
+        this.options = { ...DataViewer.defaults }
+        this.handleDataChange = this.handleDataChange.bind(this)
+        this.handleTableClick = this.handleTableClick.bind(this)
+
+        this._data = new Data()
+        this._htmlBuilder = new HTMLBuilder(this.data, this.options)
     }
 
+    // MARK: setup
     connectedCallback() {
+        this.data.addEventListener("data-changed", this.handleDataChange)
         this.render()
+        this.addEventListeners()
+    }
+
+    disconnectedCallback() {
+        this.data.removeEventListener("data-changed", this.handleDataChange)
+        this.removeEventListeners()
+    }
+
+    addEventListeners() {
+        this.shadowRoot.addEventListener("click", this.handleTableClick)
+    }
+
+    removeEventListeners() {
+        this.shadowRoot.removeEventListener("click", this.handleTableClick)
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -31,11 +63,27 @@ export class SimpleTable extends HTMLElement {
                 this.loadDataFromSrc(newValue)
                 break
             case "locale":
-                this.options.locale = newValue ?? SimpleTable.defaults.locale
+                this.options.locale = newValue ?? DataViewer.defaults.locale
                 this.render()
                 break
             case "na-rep":
-                this.options.naRep = newValue ?? SimpleTable.defaults.naRep
+                this.options.naRep = newValue ?? DataViewer.defaults.naRep
+                this.render()
+                break
+            case "hide-group-borders":
+                this.options.styling.groupBorders = newValue === null
+                this.render()
+                break
+            case "hide-row-borders":
+                this.options.styling.rowBorders = newValue === null
+                this.render()
+                break
+            case "hide-index-border":
+                this.options.styling.indexBorder = newValue === null
+                this.render()
+                break
+            case "hide-thead-border":
+                this.options.styling.theadBorder = newValue === null
                 this.render()
                 break
         }
@@ -46,99 +94,73 @@ export class SimpleTable extends HTMLElement {
             const response = await fetch(src)
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
             const rawData = await response.json()
-            this.setData(rawData)
-            this.dispatchEvent(new CustomEvent("data-loaded", { detail: rawData }))
+            this.data = rawData
         } catch (error) {
             console.error("Failed to fetch data:", error)
             this.showErrorMessage("Failed to load data")
         }
     }
 
-    setData(rawData) {
-        if (!rawData) {
-            this.showErrorMessage("No data provided")
-            return
-        }
-        this._data = new Data(rawData)
-        this.render()
+    // MARK: getter/setter
+    get data() {
+        return this._data
     }
 
-    setFormatOptions(formatOptions) {
-        if (!this._data) {
-            console.error("No data to update format options")
-            return
-        }
-        this._data.formatOptions = formatOptions
-        this.render()
+    set data(value) {
+        this._data.setData(value)
     }
 
-    updateValues(newValues) {
-        if (!this._data) {
-            console.error("No data to update")
-            return
-        }
-        if (!Array.isArray(newValues) || newValues.length !== this._data.values.length) {
-            console.error("Invalid new values format")
-            return
-        }
-        this._data.values = newValues
-        this.render()
-    }
-
-    getValues() {
-        return this._data ? this._data.values : null
-    }
-
+    // MARK: render
     render() {
-        if (!this._data) {
-            this.shadowRoot.innerHTML = this.getStyleSheet()
-            return
-        }
-
-        const htmlBuilder = new HTMLBuilder(this._data, this.options)
+        if (!this.data) return
+        const htmlBuilder = new HTMLBuilder(this.data, this.options)
         this.shadowRoot.innerHTML = `
-            ${this.getStyleSheet()}
+            ${htmlBuilder.getStyleSheet()}
             ${htmlBuilder.buildTable()}
         `
-        this.addEventListeners()
     }
 
-    addEventListeners() {
-        this.shadowRoot.querySelectorAll("th, td").forEach(cell => {
-            cell.addEventListener("click", (event) => {
-                const isHeader = event.target.tagName === "TH"
-                const value = event.target.textContent
-                const row = event.target.closest("tr").rowIndex
-                const col = event.target.cellIndex
-
-                this.dispatchEvent(new CustomEvent("cell-click", {
-                    detail: {
-                        value,
-                        isHeader,
-                        row,
-                        col
-                    },
-                    bubbles: true,
-                    composed: true
-                }))
-            })
-        })
+    // MARK: handlers
+    handleDataChange() {
+        this.render()
+        this.dispatchEvent(new CustomEvent("data-changed", { detail: this.data }))
     }
 
-    getStyleSheet() {
-        return `
-            <style>
-                table { border-collapse: collapse; }
-                tbody tr {
-                    &:has(th[rowspan]) { border-top: 1px solid var(--border-color, black); }
-                    &:first-of-type:has(th) { border-top: 3px solid var(--border-color, black); }
-                }
-                tbody tr:hover :where(td, th:not([rowspan])) { background-color: #faf9f9; }
-                tbody th { text-align: left; }
-                td { text-align: right; }
-                th, td { padding: .25em .5em; }
-            </style>
-        `
+    handleTableClick(event) {
+        const cell = event.target.closest("th, td")
+        if (!cell) return
+
+        const tr = cell.closest("tr")
+        const isInHead = tr.closest("thead") !== null
+        const isInBody = tr.closest("tbody") !== null
+
+        let source, row, col
+
+        if (isInHead) {
+            source = "column"
+            row = Array.from(tr.parentNode.children).indexOf(tr)
+            col = Array.from(tr.children).indexOf(cell)
+        } else if (isInBody) {
+            if (cell.tagName === "TH") {
+                source = "index"
+                row = Array.from(tr.parentNode.children).indexOf(tr)
+                col = Array.from(tr.children).filter(c => c.tagName === "TH").indexOf(cell)
+            } else {
+                source = "values"
+                row = Array.from(tr.parentNode.children).indexOf(tr)
+                col = Array.from(tr.children).filter(c => c.tagName === "TD").indexOf(cell)
+            }
+        } else {
+            return // Not in thead or tbody, ignore
+        }
+
+        const value = cell.textContent
+
+        this.dispatchEvent(new CustomEvent("cell-click", {
+            detail: { value, source, row, col },
+            bubbles: true,
+            composed: true
+        }))
     }
 
     showErrorMessage(message) {
@@ -147,15 +169,7 @@ export class SimpleTable extends HTMLElement {
             <p style="color: red;">${message}</p>
         `
     }
-
-    // Getter and setter for direct data loading
-    get data() {
-        return this._data
-    }
-
-    set data(value) {
-        this.setData(value)
-    }
 }
 
-window.customElements.define('simple-table', SimpleTable)
+
+window.customElements.define('data-viewer', DataViewer)

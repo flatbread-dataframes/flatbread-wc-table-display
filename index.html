@@ -2,66 +2,261 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Table</title>
+    <title>wc-data-viewer</title>
     <link rel="stylesheet" href="https://lcvriend.github.io/wc-multi-selector/static/prism.css">
+    <script type="module" src="https://uu-asc.github.io/csa-werkvoorraad/src/darkmode-toggle.js"></script>
     <style>
         body {
             max-width: 600px;
             margin-inline: auto;
+            margin-bottom: 4rem;
             font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            &.dark-theme {
+                background-color: hsl(210, 74%, 17%);
+                color: hsl(30, 0%, 98%);
+                --hover-color: hsl(210, 54%, 28%);
+            }
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas:
+                "info   controls"
+                "output output"
+                "html   html"
+            ;
+            #info     { grid-area: info; }
+            #controls { grid-area: controls; }
+            #output   { grid-area: output; }
+            #html     { grid-area: html; }
+        }
+        data-viewer {
+            --cursor: pointer;
+            margin-block: 1.25em;
+        }
+        pre {
+            white-space: pre-wrap;
         }
     </style>
 </head>
 <body>
-    <h1>Simple Table</h1>
+<header>
+    <h1>Data-Viewer</h1>
+    <darkmode-toggle></darkmode-toggle>
+</header>
+<main>
+    <section id="info">
+        <h2>Web component</h2>
+        <p><code>&lt;data-viewer&gt;</code> is a web component for viewing table data:</p>
+        <ul>
+            <li>Vanilla JS (no dependencies)</li>
+            <li>Reads json from url</li>
+            <li>Supports multi-index data structures</li>
+        </ul>
+        <p>On this page you will find several examples of what you can do with this web component.</p>
+    </section>
+    <section id="controls">
+        <fieldset>
+            <legend>Data</legend>
+            <label for="src">Source
+                <select name="src" id="src" autocomplete="off">
+                    <option value="data/bedragen_2025.json" selected>default</option>
+                    <option value="data/multiindex_df.json">multiindex df</option>
+                    <option value="data/simple_df.json">simple df</option>
+                </select>
+            </label>
+            <div>
+                <label for="calc-op">
+                    <select name="calc-op" id="calc-op">
+                        <option value="multiply">multiply</option>
+                        <option value="divide">divide</option>
+                        <option value="add">add</option>
+                        <option value="subtract">subtract</option>
+                    </select>
+                </label>
+                <label for="n">n
+                    <input type="number" name="n" id="n" autocomplete="off">
+                </label>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Format</legend>
+            <input type="checkbox" id="as-currency" name="as-currency" autocomplete="off" checked>
+            <label for="as-currency">as currency</label>
+            <input type="checkbox" id="sep-thousands" name="sep-thousands" autocomplete="off" checked>
+            <label for="sep-thousands">seperator</label>
+        </fieldset>
+        <fieldset>
+            <legend>Locale</legend>
+            <input type="radio" id="locale-nl" name="locale" value="nl-NL" autocomplete="off" checked>
+            <label for="locale-nl">Nederlands</label>
+            <input type="radio" id="locale-en" name="locale" value="en-US" autocomplete="off" >
+            <label for="locale-en">English</label>
+        </fieldset>
+        <fieldset>
+            <legend>Borders</legend>
+            <input type="checkbox" id="hide-group-borders" name="hide-group-borders" autocomplete="off">
+            <label for="hide-group-borders">hide group borders</label>
+            <input type="checkbox" id="hide-row-borders" name="hide-row-borders" autocomplete="off">
+            <label for="hide-row-borders">hide row borders</label>
+            <input type="checkbox" id="hide-index-border" name="hide-index-border" autocomplete="off">
+            <label for="hide-index-border">hide index border</label>
+            <input type="checkbox" id="hide-thead-border" name="hide-thead-border" autocomplete="off">
+            <label for="hide-thead-border">hide thead border</label>
+        </fieldset>
+    </section>
+    <section id="output">
+        <h2>Output</h2>
+        <data-viewer
+            src="data/bedragen_2025.json"
+            locale="nl-NL">
+        </data-viewer>
+        <h3>Event</h3>
+        <div id="event-display"><pre><code></code></pre></div>
+    </section>
+    <section id="html">
+        <h2>HTML</h2>
+        <pre><code class="language-html">&lt;!-- html --&gt;
+&lt;data-viewer src="data/example.json" locale="nl-NL"&gt;&lt;/data-viewer&gt;</code></pre>
+    <h3>Specifications</h3>
+    <ul>
+        <li>Attributes</li>
+        <ul>
+            <li>src</li>
+            <li>locale</li>
+            <li>na-rep (default: "-")</li>
+            <li>borders:</li>
+            <ul>
+                <li>hide-group-borders</li>
+                <li>hide-row-borders</li>
+                <li>hide-thead-border</li>
+                <li>hide-index-border</li>
+            </ul>
+        </ul>
+        <li>Custom properties</li>
+        <ul>
+            <li>--hover-color</li>
+            <li>--cursor (default: auto)</li>
+            <li>--border-color (default: currentColor)</li>
+            <li>--axes-width (default: 2px)</li>
+        </ul>
+        <li>Events</li>
+        <ul>
+            <li>data-changed</li>
+            <li>cell-click</li>
+        </ul>
+    </ul>
+    <a href="https://github.com/lcvriend/wc-simple-table">https://github.com/lcvriend/wc-simple-table</a>
+    </section>
+</main>
+<script src="src/viewer.js" type="module"></script>
+<script>
+    const dataViewer = document.querySelector("data-viewer")
+    const eventDisplay = document.getElementById("event-display")
 
-    <p>A custom web component designed to display multi-dimensional data in a simple table format. It handles both single and multi-index data structures, automatically generating appropriate row and column spans. Data can be loaded from a JSON data source via a URL or direct JavaScript object input.</p>
+    function truncateJSONString(JSONString, maxLength = 1500) {
+        if (JSONString.length <= maxLength) return JSONString
+        return JSONString.slice(0,maxLength) + "[...]"
+    }
 
-    <h2>output</h2>
-    <simple-table src="data/bedragen_2025.json"></simple-table>
+    function getLocale() {
+        return document.querySelector('input[type="radio"]:checked')?.value
+    }
 
-    <h2>html</h2>
-    <pre><code class="language-html">&lt!-- html --&gt;
-&lt;simple-table src="data/bedragen_2025.json"&gt;&lt;/simple-table&gt;</code></pre>
+    function getCalculation(n) {
+        const op = document.getElementById("calc-op").value
+        n = parseInt(n)
+        console.log(op)
+        switch (op) {
+            case "multiply":
+                return value => value ? value * n : null
+            case "divide":
+                return value => value ? value / n : null
+            case "add":
+                return value => value ? value + n : null
+            case "subtract":
+                return value => value ? value - n : null
+        }
+    }
 
-    <h2>json</h2>
-    <pre><code class="language-json">{
-    "dtypes": ["int", "int"],
-    "indexNames": ["categorie", "variatie"],
-    "columns": [
-        ["examentype", "bachelor"],
-        ["examentype", "master"]
-    ],
-    "index": [
-        ["Wettelijk", "Deeltijd"],
-        ["Wettelijk", "Voltijd"],
-        ["BKKI", "Philosophy, Politics and Economics (PPE)"],
-        ["BKKI", "University College Utrecht"],
-        ["Non-EU", "Alpha\/Gamma"],
-        ["Non-EU", "B\u00e8ta\/Bio-medisch"],
-        ["Non-EU", "Diergeneeskunde\/Geneeskunde\/Farmacie"],
-        ["Non-EU", "Philosophy, Politics and Economics (PPE)"],
-        ["Non-EU", "University College Utrecht"],
-        ["Graad behaald", "Alpha\/Gamma"],
-        ["Graad behaald", "B\u00e8ta\/Bio-medisch"],
-        ["Graad behaald", "Diergeneeskunde\/Geneeskunde\/Farmacie"],
-        ["Graad behaald", "Philosophy, Politics and Economics (PPE)"],
-        ["Graad behaald", "University College Utrecht"]
-    ],
-    "data": [
-        [2311, 2311],[2601, 2601],
-        [5202, null],[5398, null],
-        [12952, 20605],[16484, 24432],
-        [27435, 31438],[15425, null],
-        [16484, null],[11651, 14477],
-        [14525, 16911],[23785, 27317],
-        [14204, null],[14525, null]
-    ]
-}</code></pre>
+    function updateTable(n) {
+        const op = getCalculation(n)
+        const newValues = dataViewer.data.values.map(row => row.map(op))
+        console.log(newValues)
+        dataViewer.data.values = newValues
+    }
 
-    <script src="src/viewer.js" type="module"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js"></script>
+    function getFormatOptions() {
+        const checkboxAsCurrency = document.querySelector(`input[name="as-currency"]`)
+        const checkboxSepThousands = document.querySelector('input[name="sep-thousands"]')
+        const formatOptions = {
+            "style": checkboxAsCurrency.checked ? "currency" : "decimal",
+            "currency": "EUR",
+            "useGrouping": checkboxSepThousands.checked,
+            "minimumFractionDigits": 2,
+            "maximumFractionDigits": 2,
+            "trailingZeroDisplay": !checkboxAsCurrency.checked ? "stripIfInteger" : "auto",
+        }
+        return formatOptions
+    }
+
+    function handleFormattingChange() {
+        // const formatOptions = getFormatOptions()
+        const formatOptions = Array(dataViewer.data.values.length).fill(getFormatOptions())
+        console.log(formatOptions)
+        dataViewer.data.formatOptions = formatOptions
+    }
+
+    function handleBorderChange(event) {
+        const attr = event.target.id
+        dataViewer.toggleAttribute(attr)
+    }
+
+
+    document.addEventListener("color-scheme-change", event => {
+        event.detail.scheme === "dark"
+        ? document.body.classList.add("dark-theme")
+        : document.body.classList.remove("dark-theme")
+    })
+
+    document.getElementById("src").addEventListener("change", event => {
+        dataViewer.setAttribute("src" , event.target.value)
+    })
+
+    dataViewer.addEventListener("cell-click", event => {
+        eventDisplay.querySelector("code").innerText = JSON.stringify(event.detail)
+    })
+
+    dataViewer.addEventListener("data-changed", event => {
+        const JSONString = JSON.stringify(event.detail._rawData)
+        const truncatedContent = truncateJSONString(JSONString)
+        eventDisplay.querySelector("code").innerText = truncatedContent
+    })
+
+    document.querySelectorAll('input[name="locale"]').forEach(radio => {
+        radio.addEventListener("change", () => {
+            const locale = getLocale()
+            dataViewer.setAttribute("locale", locale)
+        })
+    })
+
+    document.getElementById("as-currency").addEventListener("change", handleFormattingChange)
+    document.getElementById("sep-thousands").addEventListener("change", handleFormattingChange)
+    document.getElementById("controls").addEventListener("change", event => {
+        if (!event.target.id.startsWith("hide")) return
+        handleBorderChange(event)
+    })
+
+    document.getElementById("n").addEventListener("change", event => {
+        updateTable(event.target.value)
+    })
+</script>
 </body>
 </html>
