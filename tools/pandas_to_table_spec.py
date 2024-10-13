@@ -112,7 +112,9 @@ class DataFrameToTableSpec:
             The table specification as a dictionary.
         """
         spec = self._obj.to_dict(orient='split')
+        spec['values'] = spec.pop('data')
         spec['indexNames'] = self._obj.index.names
+        spec['columnNames'] = self._obj.columns.names
         spec['dtypes'] = self._obj.dtypes.pipe(self.get_dtypes_as_list)
         if format_options is not None:
             spec['formatOptions'] = format_options
