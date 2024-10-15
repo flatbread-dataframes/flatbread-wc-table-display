@@ -189,7 +189,6 @@
     function updateTable(n) {
         const op = getCalculation(n)
         const newValues = dataViewer.data.values.map(row => row.map(op))
-        console.log(newValues)
         dataViewer.data.values = newValues
     }
 
@@ -208,9 +207,7 @@
     }
 
     function handleFormattingChange() {
-        // const formatOptions = getFormatOptions()
         const formatOptions = Array(dataViewer.data.values.length).fill(getFormatOptions())
-        console.log(formatOptions)
         dataViewer.data.formatOptions = formatOptions
     }
 
