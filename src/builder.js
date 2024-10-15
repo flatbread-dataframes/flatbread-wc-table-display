@@ -78,8 +78,8 @@ export class HTMLBuilder {
 
     buildColumnsRow() {
         const indexLabels = this.data.indexNames
-            ? this.data.indexNames.map(name => `<th class="indexLabel">${name}</th>`)
-            : this.data.index.ilevels.map(() => "<th></th>")
+            ? this.data.indexNames.map(name => `<th class="indexLabel">${name ?? ""}</th>`)
+            : this.data.index.ilevels.map(() => `<th class="indexLabel"></th>`)
         const columnHeaders = this.data.columns.map((value, idx) => this.buildColumnLabel(value, idx))
         return `<tr>${indexLabels.join("")}${columnHeaders.join("")}</tr>`
     }
@@ -99,7 +99,7 @@ export class HTMLBuilder {
     }
 
     buildColumnGroupsRow(level) {
-        const columnLabel = this.data.columnNames ? this.data.columnNames[level]: ""
+        const columnLabel = this.data.columnNames?.[level] ?? ""
         const columnLabelElement = `<th colspan="${this.data.index.nlevels}" class="columnLabel">${columnLabel}</th>`
         const headers = this.data.columns.spans[level]
             .map((span, iloc) => this.buildColumnGroupLabel(span, iloc, level))
