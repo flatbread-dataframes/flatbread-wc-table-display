@@ -165,7 +165,7 @@ export class HTMLBuilder {
 
     // MARK: formatting
     formatValue(value, dtype, formatOptions) {
-        if (value === null || value === "") return this.options.naRep
+        if (value === null || value === NaN || value === "") return this.options.naRep
         if (!dtype) return value
 
         switch (dtype) {
