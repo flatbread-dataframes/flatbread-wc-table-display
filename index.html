@@ -9,34 +9,43 @@
     <script type="module" src="https://uu-asc.github.io/csa-werkvoorraad/src/darkmode-toggle.js"></script>
     <style>
         body {
-            max-width: 600px;
             margin-inline: auto;
             margin-bottom: 4rem;
+            background-color: hsl(30, 0%, 98%);
             font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+
+            display: grid;
+            grid-template-columns:
+                3rem [breakout-start]
+                auto [content-start]
+                720px
+                [content-end] auto
+                [breakout-end] 3rem;
+
             &.dark-theme {
-                background-color: hsl(210, 74%, 17%);
-                color: hsl(30, 0%, 98%);
+                --background-color: hsl(210, 74%, 17%);
                 --hover-color: hsl(210, 54%, 28%);
+                background-color: var(--background-color);
+                color: hsl(30, 0%, 98%);
             }
+        }
+        body > * {
+            grid-column: content;
+        }
+        body > .breakout {
+            grid-column: breakout;
+            display: grid;
+            justify-content: center;
         }
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        main {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-areas:
-                "info   controls"
-                "output output"
-                "html   html"
-            ;
-            #info     { grid-area: info; }
-            #controls { grid-area: controls; }
-            #output   { grid-area: output; }
-            #html     { grid-area: html; }
-        }
+        #info {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
         data-viewer {
             --cursor: pointer;
             margin-block: 1.25em;
@@ -51,8 +60,8 @@
     <h1>Data-Viewer</h1>
     <darkmode-toggle></darkmode-toggle>
 </header>
-<main>
-    <section id="info">
+<section id="info">
+    <section>
         <h2>Web component</h2>
         <p><code>&lt;data-viewer&gt;</code> is a web component for viewing table data:</p>
         <ul>
@@ -109,54 +118,57 @@
             <input type="checkbox" id="hide-index-border" name="hide-index-border" autocomplete="off">
             <label for="hide-index-border">hide index border</label>
             <input type="checkbox" id="hide-thead-border" name="hide-thead-border" autocomplete="off">
-            <label for="hide-thead-border">hide thead border</label><input type="checkbox" id="show-hover" name="show-hover" autocomplete="off">
+            <label for="hide-thead-border">hide thead border</label>
+            <input type="checkbox" id="show-hover" name="show-hover" autocomplete="off">
             <label for="show-hover">show hover</label>
         </fieldset>
     </section>
-    <section id="output">
-        <h2>Output</h2>
-        <data-viewer
-            src="data/bedragen_2025.json"
-            locale="nl-NL">
-        </data-viewer>
-        <h3>Event</h3>
-        <div id="event-display"><pre><code></code></pre></div>
-    </section>
-    <section id="html">
-        <h2>HTML</h2>
-        <pre><code class="language-html">&lt;!-- html --&gt;
+</section>
+<h2>Output</h2>
+<div class="breakout">
+    <data-viewer
+        src="data/bedragen_2025.json"
+        locale="nl-NL"
+        margin-labels="Total;Totaal;Subtotal"
+    >
+    </data-viewer>
+</div>
+<h3>Event</h3>
+<div id="event-display"><pre><code></code></pre></div>
+<h2>HTML</h2>
+<pre><code class="language-html">&lt;!-- html --&gt;
 &lt;data-viewer src="data/example.json" locale="nl-NL"&gt;&lt;/data-viewer&gt;</code></pre>
-    <h3>Specifications</h3>
+<h3>Specifications</h3>
+<ul>
+    <li>Attributes</li>
     <ul>
-        <li>Attributes</li>
+        <li>src</li>
+        <li>locale</li>
+        <li>na-rep (default: "-")</li>
+        <li>show-hover</li>
+        <li>margin-labels (separate multiple labels with ";")</li>
+        <li>borders:</li>
         <ul>
-            <li>src</li>
-            <li>locale</li>
-            <li>na-rep (default: "-")</li>
-            <li>borders:</li>
-            <ul>
-                <li>hide-group-borders</li>
-                <li>hide-row-borders</li>
-                <li>hide-thead-border</li>
-                <li>hide-index-border</li>
-            </ul>
-        </ul>
-        <li>Custom properties</li>
-        <ul>
-            <li>--hover-color</li>
-            <li>--cursor (default: auto)</li>
-            <li>--border-color (default: currentColor)</li>
-            <li>--axes-width (default: 2px)</li>
-        </ul>
-        <li>Events</li>
-        <ul>
-            <li>data-changed</li>
-            <li>cell-click</li>
+            <li>hide-group-borders</li>
+            <li>hide-row-borders</li>
+            <li>hide-thead-border</li>
+            <li>hide-index-border</li>
         </ul>
     </ul>
-    <a href="https://github.com/lcvriend/wc-simple-table">https://github.com/lcvriend/wc-simple-table</a>
-    </section>
-</main>
+    <li>Custom properties</li>
+    <ul>
+        <li>--hover-color</li>
+        <li>--cursor (default: auto)</li>
+        <li>--border-color (default: currentColor)</li>
+        <li>--axes-width (default: 2px)</li>
+    </ul>
+    <li>Events</li>
+    <ul>
+        <li>data-changed</li>
+        <li>cell-click</li>
+    </ul>
+</ul>
+<a href="https://github.com/lcvriend/wc-simple-table">https://github.com/lcvriend/wc-simple-table</a>
 <script src="src/viewer.js" type="module"></script>
 <script>
     const dataViewer = document.querySelector("data-viewer")

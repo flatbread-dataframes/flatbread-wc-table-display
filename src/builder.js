@@ -45,6 +45,14 @@ export class HTMLBuilder {
                 [index-edge] {
                     border-left: var(--axes-width, 2px) solid var(--border-color, currentColor);
                 }
+            `,
+            marginBorders: `
+                [margin-edge-idx] {
+                    border-top: 1px solid var(--border-color, currentColor);
+                }
+                [margin-edge-col] {
+                    border-left: 1px solid var(--border-color, currentColor);
+                }
             `
         }
 
@@ -85,6 +93,7 @@ export class HTMLBuilder {
     }
 
     buildColumnLabel(value, iloc) {
+        const isMarginEdgeColumn = this.testMarginEdge(value)
         const attrs = this.data.columns.attrs[iloc]
         const selectedValue = Array.isArray(value) ? value.at(-1) : value
         const groups = attrs.groups.join(" ")
@@ -95,6 +104,7 @@ export class HTMLBuilder {
             data-groups="${groups}"
             ${isIndexEdge ? ' index-edge' : ''}
             ${isGroupEdge ? ' group-edge' : ''}
+            ${isMarginEdgeColumn ? ' margin-edge-col' : ''}
         >${selectedValue}</td>`
     }
 
@@ -110,21 +120,23 @@ export class HTMLBuilder {
     buildColumnGroupLabel(span, iloc, level) {
         const isIndexEdge = iloc === 0
         const isGroupEdge = iloc > 0
+        const isMarginEdgeColumn = this.testMarginEdge(span.value)
         return `<th
             colspan="${span.count}"
             data-level="${level}"
             data-group="${iloc}"
             ${isIndexEdge ? ' index-edge' : ''}
             ${isGroupEdge ? ' group-edge' : ''}
+            ${isMarginEdgeColumn ? ' margin-edge-col' : ''}
         >${span.value[level]}</th>`
     }
 
     // MARK: Tbody
     buildTbody() {
         const indexRows = this.buildIndexRows()
-        this.data.values.forEach((row, idx) => {
-            const rowElements = row.map((value, iloc) => this.buildCell(value, iloc))
-            indexRows[idx] = indexRows[idx].concat(rowElements)
+        this.data.values.forEach((row, irow) => {
+            const rowElements = row.map((value, icol) => this.buildCell(value, irow, icol))
+            indexRows[irow] = indexRows[irow].concat(rowElements)
         })
         return indexRows.map(row => `<tr>${row.join("")}</tr>`).join("")
     }
@@ -135,7 +147,14 @@ export class HTMLBuilder {
         const levelsReversed = this.data.index.ilevels.slice(0, -1).reverse()
         levelsReversed.forEach(level => {
             for (const span of this.data.index.spans[level]) {
-                const th = `<th rowspan="${span.count}" data-level="${level}" data-group="${span.group}">${span.value[level]}</th>`
+                const isMarginEdgeIndex = this.testMarginEdge(span.value)
+                const th = `
+                    <th
+                        rowspan="${span.count}"
+                        data-level="${level}"
+                        data-group="${span.group}"
+                        ${isMarginEdgeIndex ? ' margin-edge-idx' : ''}
+                    >${span.value[level]}</th>`
                 indexRows[span.iloc].unshift(th)
             }
         })
@@ -143,24 +162,38 @@ export class HTMLBuilder {
     }
 
     buildIndex(value) {
+        const isMarginEdgeIndex = this.testMarginEdge(value)
         value = Array.isArray(value) ? value.at(-1) : value
-        return `<th>${value}</th>`
+        return `<th
+            ${isMarginEdgeIndex ? ' margin-edge-idx' : ''}
+            >${value}</th>`
     }
 
-    buildCell(value, iloc) {
-        const attrs = this.data.columns.attrs[iloc]
+    buildCell(value, irow, icol) {
+        const attrs = this.data.columns.attrs[icol]
         const formatOptions = attrs.formatOptions ?? this.options
         const formattedValue = this.formatValue(value, attrs.dtype, formatOptions)
         const groups = attrs.groups.join(" ")
-        const isIndexEdge = iloc === 0
-        const isGroupEdge = this.data.columns.edges.slice(1).includes(iloc)
+        const isIndexEdge = icol === 0
+        const isGroupEdge = this.data.columns.edges.slice(1).includes(icol)
+        const isMarginEdgeIndex = this.testMarginEdge(this.data.index.values[irow])
+        const isMarginEdgeColumn = this.testMarginEdge(this.data.columns.values[icol])
         return `<td
-            data-col="${iloc}"
+            data-col="${icol}"
             data-groups="${groups}"
             data-dtype="${attrs.dtype}"
             ${isIndexEdge ? ' index-edge' : ''}
             ${isGroupEdge ? ' group-edge' : ''}
+            ${isMarginEdgeIndex ? ' margin-edge-idx' : ''}
+            ${isMarginEdgeColumn ? ' margin-edge-col' : ''}
         >${formattedValue}</td>`
+    }
+
+    testMarginEdge(value) {
+        const isMarginEdge = Array.isArray(value)
+        ? value.some(value => this.options.marginLabels.includes(value))
+        : this.options.marginLabels.includes(value)
+        return isMarginEdge
     }
 
     // MARK: formatting

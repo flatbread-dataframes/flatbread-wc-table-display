@@ -7,7 +7,7 @@ export class DataViewer extends HTMLElement {
             "src", "locale", "na-rep",
             "hide-group-borders", "hide-row-borders",
             "hide-thead-border", "hide-index-border",
-            "show-hover"
+            "show-hover", "margin-labels"
         ]
     }
 
@@ -16,12 +16,14 @@ export class DataViewer extends HTMLElement {
             locale: "default",
             naRep: "-",
             buffer: 30,
+            marginLabels: [],
             styling: {
-                groupBorders: true,
-                rowBorders: true,
                 hoverEffect: false,
                 theadBorder: true,
                 indexBorder: true,
+                groupBorders: true,
+                rowBorders: true,
+                marginBorders: true,
             }
         }
     }
@@ -89,6 +91,11 @@ export class DataViewer extends HTMLElement {
                 break
             case "show-hover":
                 this.options.styling.hoverEffect = newValue !== null
+                this.render()
+                break
+            case "margin-labels":
+                const labels = newValue.split(";")
+                this.options.marginLabels = labels
                 this.render()
                 break
         }
