@@ -101,7 +101,7 @@
             <label for="locale-en">English</label>
         </fieldset>
         <fieldset>
-            <legend>Borders</legend>
+            <legend>Styling</legend>
             <input type="checkbox" id="hide-group-borders" name="hide-group-borders" autocomplete="off">
             <label for="hide-group-borders">hide group borders</label>
             <input type="checkbox" id="hide-row-borders" name="hide-row-borders" autocomplete="off">
@@ -109,7 +109,8 @@
             <input type="checkbox" id="hide-index-border" name="hide-index-border" autocomplete="off">
             <label for="hide-index-border">hide index border</label>
             <input type="checkbox" id="hide-thead-border" name="hide-thead-border" autocomplete="off">
-            <label for="hide-thead-border">hide thead border</label>
+            <label for="hide-thead-border">hide thead border</label><input type="checkbox" id="show-hover" name="show-hover" autocomplete="off">
+            <label for="show-hover">show hover</label>
         </fieldset>
     </section>
     <section id="output">
@@ -211,11 +212,10 @@
         dataViewer.data.formatOptions = formatOptions
     }
 
-    function handleBorderChange(event) {
+    function handleStylingChange(event) {
         const attr = event.target.id
         dataViewer.toggleAttribute(attr)
     }
-
 
     document.addEventListener("color-scheme-change", event => {
         event.detail.scheme === "dark"
@@ -247,8 +247,8 @@
     document.getElementById("as-currency").addEventListener("change", handleFormattingChange)
     document.getElementById("sep-thousands").addEventListener("change", handleFormattingChange)
     document.getElementById("controls").addEventListener("change", event => {
-        if (!event.target.id.startsWith("hide")) return
-        handleBorderChange(event)
+        if (!event.target.matches(`[type="checkbox"]`)) return
+        handleStylingChange(event)
     })
 
     document.getElementById("n").addEventListener("change", event => {

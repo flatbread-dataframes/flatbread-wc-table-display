@@ -7,6 +7,7 @@ export class DataViewer extends HTMLElement {
             "src", "locale", "na-rep",
             "hide-group-borders", "hide-row-borders",
             "hide-thead-border", "hide-index-border",
+            "show-hover"
         ]
     }
 
@@ -18,7 +19,7 @@ export class DataViewer extends HTMLElement {
             styling: {
                 groupBorders: true,
                 rowBorders: true,
-                hoverEffect: true,
+                hoverEffect: false,
                 theadBorder: true,
                 indexBorder: true,
             }
@@ -84,6 +85,10 @@ export class DataViewer extends HTMLElement {
                 break
             case "hide-thead-border":
                 this.options.styling.theadBorder = newValue === null
+                this.render()
+                break
+            case "show-hover":
+                this.options.styling.hoverEffect = newValue !== null
                 this.render()
                 break
         }
