@@ -1,14 +1,14 @@
 import { Data } from "./data.js"
-import { HTMLBuilder } from "./builder.js"
+import { TableBuilderFactory } from "./builders/factory.js"
 
 export class DataViewer extends HTMLElement {
     static get observedAttributes() {
         return [
-            "src", "locale", "na-rep",
+            "src", "type", "locale", "na-rep",
             "hide-group-borders", "hide-row-borders",
             "hide-thead-border", "hide-index-border",
             "show-hover", "margin-labels",
-            "collapse-columns"
+            "collapse-columns",
         ]
     }
 
@@ -18,6 +18,7 @@ export class DataViewer extends HTMLElement {
             naRep: "-",
             buffer: 30,
             marginLabels: [],
+            type: "default",
             styling: {
                 collapseColumns: false,
                 hoverEffect: false,
@@ -38,7 +39,6 @@ export class DataViewer extends HTMLElement {
         this.handleTableClick = this.handleTableClick.bind(this)
 
         this._data = new Data()
-        this._htmlBuilder = new HTMLBuilder(this.data, this.options)
     }
 
     // MARK: setup
@@ -66,6 +66,10 @@ export class DataViewer extends HTMLElement {
         switch (name) {
             case "src":
                 this.loadDataFromSrc(newValue)
+                break
+            case "type":
+                this.options.type = newValue ?? DataViewer.defaults.type
+                this.render()
                 break
             case "locale":
                 this.options.locale = newValue ?? DataViewer.defaults.locale
@@ -131,10 +135,10 @@ export class DataViewer extends HTMLElement {
     // MARK: render
     render() {
         if (!this.data) return
-        const htmlBuilder = new HTMLBuilder(this.data, this.options)
+        const builder = TableBuilderFactory.create(this.options.type, this.data, this.options)
         this.shadowRoot.innerHTML = `
-            ${htmlBuilder.getStyleSheet()}
-            ${htmlBuilder.buildTable()}
+            ${builder.getStyleSheet()}
+            ${builder.buildTable()}
         `
     }
 
@@ -188,6 +192,5 @@ export class DataViewer extends HTMLElement {
         `
     }
 }
-
 
 window.customElements.define('data-viewer', DataViewer)

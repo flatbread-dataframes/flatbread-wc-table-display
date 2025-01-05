@@ -76,6 +76,14 @@
     </section>
     <section id="controls">
         <fieldset>
+            <legend>Type</legend>
+            <label for="type">Type
+                <select name="type" id="type">
+                    <option value="default" selected>default</option>
+                </select>
+            </label>
+        </fieldset>
+        <fieldset>
             <legend>Data</legend>
             <label for="src">Source
                 <select name="src" id="src" autocomplete="off">
@@ -114,18 +122,30 @@
         </fieldset>
         <fieldset>
             <legend>Styling</legend>
-            <input type="checkbox" id="hide-group-borders" name="hide-group-borders" autocomplete="off">
-            <label for="hide-group-borders">hide group borders</label>
-            <input type="checkbox" id="hide-row-borders" name="hide-row-borders" autocomplete="off">
-            <label for="hide-row-borders">hide row borders</label>
-            <input type="checkbox" id="hide-index-border" name="hide-index-border" autocomplete="off">
-            <label for="hide-index-border">hide index border</label>
-            <input type="checkbox" id="hide-thead-border" name="hide-thead-border" autocomplete="off">
-            <label for="hide-thead-border">hide thead border</label>
-            <input type="checkbox" id="show-hover" name="show-hover" autocomplete="off">
-            <label for="show-hover">show hover</label>
-            <input type="checkbox" id="collapse-columns" name="collapse-columns" autocomplete="off">
-            <label for="collapse-columns">collapse columns</label>
+            <div>
+                <input type="checkbox" id="hide-group-borders" name="hide-group-borders" autocomplete="off">
+                <label for="hide-group-borders">hide group borders</label>
+            </div>
+            <div>
+                <input type="checkbox" id="hide-row-borders" name="hide-row-borders" autocomplete="off">
+                <label for="hide-row-borders">hide row borders</label>
+            </div>
+            <div>
+                <input type="checkbox" id="hide-index-border" name="hide-index-border" autocomplete="off">
+                <label for="hide-index-border">hide index border</label>
+            </div>
+            <div>
+                <input type="checkbox" id="hide-thead-border" name="hide-thead-border" autocomplete="off">
+                <label for="hide-thead-border">hide thead border</label>
+            </div>
+            <div>
+                <input type="checkbox" id="show-hover" name="show-hover" autocomplete="off">
+                <label for="show-hover">show hover</label>
+            </div>
+            <div>
+                <input type="checkbox" id="collapse-columns" name="collapse-columns" autocomplete="off">
+                <label for="collapse-columns">collapse columns</label>
+            </div>
         </fieldset>
     </section>
 </section>
