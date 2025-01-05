@@ -9,9 +9,12 @@
     <script type="module" src="https://uu-asc.github.io/csa-werkvoorraad/src/darkmode-toggle.js"></script>
     <style>
         body {
+            --background-color: hsl(30, 0%, 97%);
+            --hover-color: hsl(30, 0%, 92%);
+            background-color: var(--background-color);
+            color: hsl(30, 0%, 8%);
             margin-inline: auto;
             margin-bottom: 4rem;
-            background-color: hsl(30, 0%, 98%);
             font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 
             display: grid;
@@ -121,6 +124,8 @@
             <label for="hide-thead-border">hide thead border</label>
             <input type="checkbox" id="show-hover" name="show-hover" autocomplete="off">
             <label for="show-hover">show hover</label>
+            <input type="checkbox" id="collapse-columns" name="collapse-columns" autocomplete="off">
+            <label for="collapse-columns">collapse columns</label>
         </fieldset>
     </section>
 </section>

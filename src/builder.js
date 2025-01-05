@@ -75,13 +75,33 @@ export class HTMLBuilder {
 
     // MARK: Thead
     buildThead() {
-        if (!this.data.columns.isMultiIndex) return this.buildColumnsRow()
+        const singleLevel = !this.data.columns.isMultiIndex
+        const { collapseColumns } = this.options.styling
 
-        const columnGroupsRows = this.data.columns.ilevels
-            .slice(0, -1)
+        // Get all levels except last one for group rows
+        const groupLevels = this.data.columns.ilevels.slice(0, -1)
+        // For collapsed view we include the last level for column values
+        const collapsedLevels = this.data.columns.ilevels
+
+        if (singleLevel) {
+            const columnGroups = this.buildColumnGroupsRow(0)
+            return collapseColumns
+                ? this.buildColumnsRow()
+                : `${columnGroups}${this.buildIndexNamesRow()}`
+        }
+
+        // Build group rows based on whether we're collapsing
+        const levels = collapseColumns ? groupLevels : collapsedLevels
+        const columnGroupsRows = levels
             .map(level => this.buildColumnGroupsRow(level))
             .join("")
-        return `${columnGroupsRows}${this.buildColumnsRow()}`
+
+        // Add final row based on collapse setting
+        const finalRow = collapseColumns
+            ? this.buildColumnsRow()
+            : this.buildIndexNamesRow()
+
+        return `${columnGroupsRows}${finalRow}`
     }
 
     buildColumnsRow() {
@@ -89,6 +109,15 @@ export class HTMLBuilder {
             ? this.data.indexNames.map(name => `<th class="indexLabel">${name ?? ""}</th>`)
             : this.data.index.ilevels.map(() => `<th class="indexLabel"></th>`)
         const columnHeaders = this.data.columns.map((value, idx) => this.buildColumnLabel(value, idx))
+        return `<tr>${indexLabels.join("")}${columnHeaders.join("")}</tr>`
+    }
+
+    buildIndexNamesRow() {
+        const indexLabels = this.data.indexNames
+            ? this.data.indexNames.map(name => `<th class="indexLabel">${name ?? ""}</th>`)
+            : this.data.index.ilevels.map(() => `<th class="indexLabel"></th>`)
+        const emptyHeaders = Array.from({ length: this.data.columns.length }, () => "")
+        const columnHeaders = emptyHeaders.map((value, idx) => this.buildColumnLabel(value, idx))
         return `<tr>${indexLabels.join("")}${columnHeaders.join("")}</tr>`
     }
 
@@ -191,8 +220,8 @@ export class HTMLBuilder {
 
     testMarginEdge(value) {
         const isMarginEdge = Array.isArray(value)
-        ? value.some(value => this.options.marginLabels.includes(value))
-        : this.options.marginLabels.includes(value)
+            ? value.some(value => this.options.marginLabels.includes(value))
+            : this.options.marginLabels.includes(value)
         return isMarginEdge
     }
 

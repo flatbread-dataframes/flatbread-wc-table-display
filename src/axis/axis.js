@@ -5,6 +5,11 @@ export class Axis {
         this.edges = this.getEdges()
     }
 
+    get values() { return this._values }
+    set values(arr) {
+        this._values = arr.map(item => Array.isArray(item) ? item : [item])
+    }
+
     // Returns length of values on axis as int
     get length() { return this.values.length }
     // Returns number of levels on index as int
@@ -52,7 +57,6 @@ export class Axis {
 
     // Returns an array of integer locations of the group edges
     getEdges() {
-        if ( !this.isMultiIndex ) return []
         const edges = []
         for (const level of this.spans) {
             for (const span of level) {
@@ -64,11 +68,9 @@ export class Axis {
 
     // Returns an array of span objects
     getSpans() {
-        if ( !this.isMultiIndex ) return null
         const levels = []
         this.ilevels.forEach(
             level => {
-                if (level === this.nlevels - 1) { return } // skip final level
                 const keys = this.values.map(i => i.slice(0, level + 1))
                 const spans = Axis.getContiguousValueCounts(keys)
                 levels.push(spans)
