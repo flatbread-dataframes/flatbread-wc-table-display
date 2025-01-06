@@ -5,7 +5,7 @@ export class DataViewer extends HTMLElement {
     static get observedAttributes() {
         return [
             "src", "type", "locale", "na-rep",
-            "hide-group-borders", "hide-row-borders",
+            "hide-column-borders", "hide-row-borders",
             "hide-thead-border", "hide-index-border",
             "show-hover", "margin-labels",
             "collapse-columns", "section-levels",
@@ -25,7 +25,7 @@ export class DataViewer extends HTMLElement {
                 hoverEffect: false,
                 theadBorder: true,
                 indexBorder: true,
-                groupBorders: true,
+                columnBorders: true,
                 rowBorders: true,
                 marginBorders: true,
             }
@@ -80,8 +80,8 @@ export class DataViewer extends HTMLElement {
                 this.options.naRep = newValue ?? DataViewer.defaults.naRep
                 this.render()
                 break
-            case "hide-group-borders":
-                this.options.styling.groupBorders = newValue === null
+            case "hide-column-borders":
+                this.options.styling.columnBorders = newValue === null
                 this.render()
                 break
             case "hide-row-borders":

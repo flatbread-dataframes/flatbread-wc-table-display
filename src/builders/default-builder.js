@@ -15,7 +15,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             ${this.getSectionHeaderSizingRules()}
             ${this.getSectionIndentRules()}
             `,
-            groupBorders: `
+            columnBorders: `
                 [group-edge] {
                     border-left: 1px solid var(--border-color, currentColor);
                 }
