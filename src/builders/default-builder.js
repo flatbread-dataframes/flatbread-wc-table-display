@@ -16,7 +16,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             ${this.getSectionIndentRules()}
             `,
             columnBorders: `
-                [group-edge] {
+                [column-edge] {
                     border-left: 1px solid var(--border-color, currentColor);
                 }
             `,
@@ -257,7 +257,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "data-col": iloc,
             "data-groups": attrs.groups.join(" "),
             "index-edge": iloc === 0,
-            "group-edge": this.data.columns.edges.slice(1).includes(iloc),
+            "column-edge": this.data.columns.edges.slice(1).includes(iloc),
             "margin-edge-col": this.testMarginEdge(value)
         }
 
@@ -306,7 +306,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "data-level": level,
             "data-group": iloc,
             "index-edge": iloc === 0,
-            "group-edge": iloc > 0,
+            "column-edge": iloc > 0,
             "margin-edge-col": this.testMarginEdge(span.value)
         }
 

@@ -79,7 +79,7 @@ export class BaseTableBuilder {
 
         const edgeAttributes = {
             "index-edge": icol === 0,
-            "group-edge": this.data.columns.edges.slice(1).includes(icol),
+            "column-edge": this.data.columns.edges.slice(1).includes(icol),
             "margin-edge-idx": this.testMarginEdge(this.data.index.values[irow]),
             "margin-edge-col": this.testMarginEdge(this.data.columns.values[icol])
         }
