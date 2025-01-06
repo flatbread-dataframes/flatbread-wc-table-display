@@ -6,7 +6,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
         const styleBlocks = {
             sectionLevels: `
                 [section-header] {
-                    padding-top: 1.25em;
+                    padding-top: var(--section-spacing-top, 1.25em);
                     padding-left: calc(var(--section-indent, 1rem) * var(--indent-level, 0));
                 }
                 tbody:has([section-header]) + tbody [section-header] {
