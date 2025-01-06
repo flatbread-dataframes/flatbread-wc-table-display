@@ -15,7 +15,7 @@
             color: hsl(30, 0%, 8%);
             margin-inline: auto;
             margin-bottom: 4rem;
-            font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 
             display: grid;
             grid-template-columns:
@@ -45,10 +45,6 @@
             justify-content: space-between;
             align-items: center;
         }
-        /* #info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-        } */
         #controls {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -62,13 +58,25 @@
             grid-column: 3;
             grid-row: 1 / span 2;
         }
-
         data-viewer {
             --cursor: pointer;
             margin-block: 1.25em;
         }
         pre {
             white-space: pre-wrap;
+        }
+        table {
+            border-collapse: collapse;
+            font-family: monospace;
+        }
+        table thead th {
+            text-align: left;
+        }
+        table tbody tr {
+            border-top: 1px solid currentColor;
+        }
+        table :where(th, td) {
+            padding: .125em .25em;
         }
     </style>
 </head>
@@ -79,13 +87,16 @@
 </header>
 <section id="info">
     <h2>Web component</h2>
-    <p><code>&lt;data-viewer&gt;</code> is a web component for viewing table data:</p>
+    <p><code>&lt;data-viewer&gt;</code> is a web component for displaying structured table data with these key features:</p>
     <ul>
-        <li>Vanilla JS (no dependencies)</li>
-        <li>Reads json from url</li>
-        <li>Supports multi-index data structures</li>
+        <li>Vanilla JavaScript with no external dependencies</li>
+        <li>Loads JSON data from URLs</li>
+        <li>Supports single and multi-level column/row structures</li>
+        <li>Data type-based formatting using toLocaleString for numbers and dates</li>
+        <li>Allows displaying outer index levels as section headers</li>
+        <li>Customizable styling through attributes and CSS properties</li>
     </ul>
-    <p>On this page you will find several examples of what you can do with this web component.</p>
+    <p>Below you'll find examples demonstrating the component's features and usage.</p>
 </section>
 <section id="controls">
     <fieldset>
@@ -204,38 +215,230 @@
 <h2>HTML</h2>
 <pre><code class="language-html">&lt;!-- html --&gt;
 &lt;data-viewer src="data/example.json" locale="nl-NL"&gt;&lt;/data-viewer&gt;</code></pre>
-<h3>Specifications</h3>
-<ul>
-    <li>Attributes</li>
-    <ul>
-        <li>src</li>
-        <li>section levels (default: 0)</li>
-        <li>collapse columns</li>
-        <li>locale</li>
-        <li>na-rep (default: "-")</li>
-        <li>show-hover</li>
-        <li>margin-labels (separate multiple labels with ";")</li>
-        <li>borders:</li>
-        <ul>
-            <li>hide-column-borders</li>
-            <li>hide-row-borders</li>
-            <li>hide-thead-border</li>
-            <li>hide-index-border</li>
-        </ul>
-    </ul>
-    <li>Custom properties</li>
-    <ul>
-        <li>--hover-color</li>
-        <li>--cursor (default: auto)</li>
-        <li>--border-color (default: currentColor)</li>
-        <li>--axes-width (default: 2px)</li>
-    </ul>
-    <li>Events</li>
-    <ul>
-        <li>data-changed</li>
-        <li>cell-click</li>
-    </ul>
-</ul>
+<h2>Specifications</h2>
+<h3>Attributes</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Attribute</th>
+            <th>Default</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>src</td>
+            <td>-</td>
+            <td>URL to load JSON data from</td>
+        </tr>
+        <tr>
+            <td>type</td>
+            <td>"default"</td>
+            <td>Table builder type to use for rendering</td>
+        </tr>
+        <tr>
+            <td>locale</td>
+            <td>"default"</td>
+            <td>Locale string for number and date formatting</td>
+        </tr>
+        <tr>
+            <td>na-rep</td>
+            <td>"-"</td>
+            <td>String to display for null/undefined values</td>
+        </tr>
+        <tr>
+            <td>margin-labels</td>
+            <td>[]</td>
+            <td>Semicolon-separated list of labels to treat as margin rows/columns</td>
+        </tr>
+        <tr>
+            <td>section-levels</td>
+            <td>0</td>
+            <td>Number of index levels to convert into section headers</td>
+        </tr>
+        <tr>
+            <td>collapse-columns</td>
+            <td>false</td>
+            <td>Whether to collapse the column headers into the index header row</td>
+        </tr>
+        <tr>
+            <td>show-hover</td>
+            <td>false</td>
+            <td>Enables row hover highlighting effect</td>
+        </tr>
+        <tr>
+            <td>hide-column-borders</td>
+            <td>false</td>
+            <td>Removes vertical borders between data columns</td>
+        </tr>
+        <tr>
+            <td>hide-row-borders</td>
+            <td>false</td>
+            <td>Removes horizontal borders between data rows</td>
+        </tr>
+        <tr>
+            <td>hide-thead-border</td>
+            <td>false</td>
+            <td>Removes border below the header section</td>
+        </tr>
+        <tr>
+            <td>hide-index-border</td>
+            <td>false</td>
+            <td>Removes border between index and data columns</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>CSS Custom Properties</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Property</th>
+            <th>Default</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>--hover-color</td>
+            <td>#f4f3ee</td>
+            <td>Background color for row hover effect</td>
+        </tr>
+        <tr>
+            <td>--cursor</td>
+            <td>auto</td>
+            <td>Cursor style when hovering over cells</td>
+        </tr>
+        <tr>
+            <td>--border-color</td>
+            <td>currentColor</td>
+            <td>Color for all table borders</td>
+        </tr>
+        <tr>
+            <td>--axes-width</td>
+            <td>2px</td>
+            <td>Width of primary borders (header and index)</td>
+        </tr>
+        <tr>
+            <td>--section-spacing-top</td>
+            <td>1.25em</td>
+            <td>Vertical spacing above section headers</td>
+        </tr>
+        <tr>
+            <td>--section-indent</td>
+            <td>1rem</td>
+            <td>Indentation size per section level</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Events</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Event</th>
+            <th>Detail</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>data-changed</td>
+            <td>Data object</td>
+            <td>Fired when the component's data is updated</td>
+        </tr>
+        <tr>
+            <td>cell-click</td>
+            <td>{value, source, row, col}</td>
+            <td>Fired when a cell is clicked, providing cell information</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>Data</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Field</th>
+            <th>Required</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>values</td>
+            <td>Yes</td>
+            <td>2D Array</td>
+            <td>Table data content arranged in rows and columns</td>
+        </tr>
+        <tr>
+            <td rowspan="2">columns</td>
+            <td rowspan="2">Yes</td>
+            <td>Array</td>
+            <td>Column labels (single-level): ["A", "B"]</td>
+        </tr>
+        <tr>
+            <td>Array[]</td>
+            <td>Column labels (multi-level): [["A1", "B1"], ["A2", "B2"]]</td>
+        </tr>
+        <tr>
+            <td rowspan="2">index</td>
+            <td rowspan="2">Yes</td>
+            <td>Array</td>
+            <td>Row labels (single-level): ["Row1", "Row2"]</td>
+        </tr>
+        <tr>
+            <td>Array[]</td>
+            <td>Row labels (multi-level): [["Group1", "Item1"], ["Group1", "Item2"]]</td>
+        </tr>
+        <tr>
+            <td>columnNames</td>
+            <td>No</td>
+            <td>Array</td>
+            <td>Names for each column level in hierarchical order</td>
+        </tr>
+        <tr>
+            <td>indexNames</td>
+            <td>No</td>
+            <td>Array</td>
+            <td>Names for each index level in hierarchical order</td>
+        </tr>
+        <tr>
+            <td>dtypes</td>
+            <td>No</td>
+            <td>Array</td>
+            <td>Data type per column ("str", "int", "float", "bool", "datetime", "category")</td>
+        </tr>
+        <tr>
+            <td>formatOptions</td>
+            <td>No</td>
+            <td>Object[]</td>
+            <td>Locale formatting options per column (currency, notation, grouping, etc)</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4>Example Single-Level Structure</h4>
+<pre><code>{
+    "values": [[1, 2], [3, 4]],
+    "columns": ["A", "B"],
+    "index": ["Row1", "Row2"],
+    "columnNames": ["Products"],
+    "indexNames": ["Items"],
+    "dtypes": ["int", "int"]
+}</code></pre>
+
+<h4>Example Multi-Level Structure</h4>
+<pre><code>{
+    "values": [[1, 2], [3, 4]],
+    "columns": [["2023", "Q1"], ["2023", "Q2"]],
+    "index": [["Region1", "City1"], ["Region1", "City2"]],
+    "columnNames": ["Year", "Quarter"],
+    "indexNames": ["Region", "City"],
+    "dtypes": ["int", "int"]
+}</code></pre>
+
 <a href="https://github.com/lcvriend/wc-simple-table">https://github.com/lcvriend/wc-simple-table</a>
 <script src="src/viewer.js" type="module"></script>
 <script>
