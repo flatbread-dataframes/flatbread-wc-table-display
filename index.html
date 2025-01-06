@@ -128,6 +128,16 @@
     <fieldset>
         <legend>Format</legend>
         <div>
+            <label for="notation">Notation
+                <select name="notation" id="notation" autocomplete="off">
+                    <option value="standard" selected>Standard</option>
+                    <option value="compact">Compact</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="scientific">Scientific</option>
+                </select>
+            </label>
+        </div>
+        <div>
             <input type="checkbox" id="as-currency" name="as-currency" autocomplete="off" checked>
             <label for="as-currency">as currency</label>
         </div>
@@ -199,13 +209,15 @@
     <li>Attributes</li>
     <ul>
         <li>src</li>
+        <li>section levels (default: 0)</li>
+        <li>collapse columns</li>
         <li>locale</li>
         <li>na-rep (default: "-")</li>
         <li>show-hover</li>
         <li>margin-labels (separate multiple labels with ";")</li>
         <li>borders:</li>
         <ul>
-            <li>hide-group-borders</li>
+            <li>hide-column-borders</li>
             <li>hide-row-borders</li>
             <li>hide-thead-border</li>
             <li>hide-index-border</li>
@@ -264,8 +276,10 @@
     function getFormatOptions() {
         const checkboxAsCurrency = document.querySelector(`input[name="as-currency"]`)
         const checkboxSepThousands = document.querySelector('input[name="sep-thousands"]')
+        const notation = document.getElementById("notation")
         const formatOptions = {
             "style": checkboxAsCurrency.checked ? "currency" : "decimal",
+            "notation": notation.value,
             "currency": "EUR",
             "useGrouping": checkboxSepThousands.checked,
             "minimumFractionDigits": 2,
@@ -313,6 +327,7 @@
     })
 
     document.getElementById("as-currency").addEventListener("change", handleFormattingChange)
+    document.getElementById("notation").addEventListener("change", handleFormattingChange)
     document.getElementById("sep-thousands").addEventListener("change", handleFormattingChange)
     document.getElementById("controls").addEventListener("change", event => {
         if (!event.target.matches(`[type="checkbox"]`)) return
