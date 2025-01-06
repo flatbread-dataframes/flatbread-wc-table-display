@@ -92,4 +92,42 @@ export class Data extends EventTarget {
     // MARK: values
     get values() { return this._values }
     set values(value) { this._setter("_values", value) }
+
+    // MARK: slice
+    /**
+     * Creates a new Data instance with a subset of rows and optionally fewer index levels
+     * @param {number} startRow - Starting row index (inclusive)
+     * @param {number} endRow - Ending row index (exclusive)
+     * @param {number} dropLevels - Number of outer index levels to remove
+     * @returns {Data} A new Data instance with the sliced view
+     */
+    createSlicedView(startRow, endRow, dropLevels = 0) {
+        // Slice the values array for the row range
+        const slicedValues = this.values.slice(startRow, endRow)
+
+        // Handle index slicing
+        const indexValues = this.index.values
+            .slice(startRow, endRow)
+            .map(value =>
+                Array.isArray(value)
+                    ? value.slice(dropLevels)
+                    : value
+            )
+
+        // Create new data object with sliced content
+        return new Data({
+            // Keep original column structure
+            columns: this.columns,
+            columnNames: this.columnNames,
+            dtypes: this.dtypes,
+            formatOptions: this.formatOptions,
+
+            // Slice the index
+            index: indexValues,
+            indexNames: this.indexNames?.slice(dropLevels),
+
+            // Slice the values
+            values: slicedValues
+        })
+    }
 }

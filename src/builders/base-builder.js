@@ -1,9 +1,25 @@
 export class BaseTableBuilder {
     constructor(data, options) {
         this.data = data
-        this.options = options
+        this.options = this.validateOptions(options)
     }
 
+    validateOptions(options) {
+        return {
+            ...options,
+            styling: {
+                ...options.styling,
+                sectionLevels: this.getValidSectionLevels(options.styling.sectionLevels)
+            }
+        }
+    }
+
+    getValidSectionLevels(requestedLevels) {
+        if (!requestedLevels || !this.data.index?.nlevels) return 0
+        return Math.min(requestedLevels, this.data.index.nlevels - 1)
+    }
+
+    // MARK: build
     getBaseStyles() {
         return `
             :host {
@@ -25,7 +41,7 @@ export class BaseTableBuilder {
         return `
             <table>
                 <thead>${this.buildThead()}</thead>
-                <tbody>${this.buildTbody()}</tbody>
+                <tbody>${this.buildBody()}</tbody>
             </table>
         `
     }
@@ -34,7 +50,7 @@ export class BaseTableBuilder {
         throw new Error("buildThead must be implemented by child class")
     }
 
-    buildTbody() {
+    buildBody() {
         throw new Error("buildTbody must be implemented by child class")
     }
 
@@ -73,21 +89,26 @@ export class BaseTableBuilder {
 
     buildAttributeString(attributes) {
         return Object.entries(attributes)
-            .map(([key, value]) => {
-                // If it's a boolean attribute (edge attributes)
-                if (typeof value === "boolean") {
-                    return value ? key : ""
-                }
-                // For regular key-value attributes
-                return value ? `${key}="${value}"` : ""
-            })
+            .map(([key, value]) => this.formatAttribute(key, value))
             .filter(Boolean)
             .join(" ")
     }
 
+    formatAttribute(key, value) {
+        if (value === null || value === undefined) {
+            return ""
+        }
+
+        if (typeof value === "boolean") {
+            return value ? key : ""
+        }
+
+        return `${key}="${value}"`
+    }
+
     // MARK: formatting
     formatValue(value, dtype, formatOptions) {
-        if (value === null || Number.isNaN(value) || value === "") {
+        if (value === null || Number.isNaN(value)) {
             return this.options.naRep
         }
         if (!dtype) return value

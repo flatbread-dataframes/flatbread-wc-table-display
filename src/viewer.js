@@ -8,7 +8,7 @@ export class DataViewer extends HTMLElement {
             "hide-group-borders", "hide-row-borders",
             "hide-thead-border", "hide-index-border",
             "show-hover", "margin-labels",
-            "collapse-columns",
+            "collapse-columns", "section-levels",
         ]
     }
 
@@ -20,6 +20,7 @@ export class DataViewer extends HTMLElement {
             marginLabels: [],
             type: "default",
             styling: {
+                sectionLevels: 0,
                 collapseColumns: false,
                 hoverEffect: false,
                 theadBorder: true,
@@ -106,6 +107,11 @@ export class DataViewer extends HTMLElement {
                 break
             case "collapse-columns":
                 this.options.styling.collapseColumns = newValue !== null
+                this.render()
+                break
+            case "section-levels":
+                const level = Math.max(0, parseInt(newValue) ?? DataViewer.defaults.styling.sectionLevels)
+                this.options.styling.sectionLevels = level
                 this.render()
                 break
         }

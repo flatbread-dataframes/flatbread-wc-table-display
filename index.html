@@ -45,10 +45,24 @@
             justify-content: space-between;
             align-items: center;
         }
-        #info {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-            }
+        /* #info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        } */
+        #controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-rows: min-content;
+            grid-auto-flow: dense;
+        }
+        fieldset {
+            min-width: 0;
+        }
+        #styling {
+            grid-column: 3;
+            grid-row: 1 / span 2;
+        }
+
         data-viewer {
             --cursor: pointer;
             margin-block: 1.25em;
@@ -64,19 +78,19 @@
     <darkmode-toggle></darkmode-toggle>
 </header>
 <section id="info">
-    <section>
-        <h2>Web component</h2>
-        <p><code>&lt;data-viewer&gt;</code> is a web component for viewing table data:</p>
-        <ul>
-            <li>Vanilla JS (no dependencies)</li>
-            <li>Reads json from url</li>
-            <li>Supports multi-index data structures</li>
-        </ul>
-        <p>On this page you will find several examples of what you can do with this web component.</p>
-    </section>
-    <section id="controls">
-        <fieldset>
-            <legend>Data</legend>
+    <h2>Web component</h2>
+    <p><code>&lt;data-viewer&gt;</code> is a web component for viewing table data:</p>
+    <ul>
+        <li>Vanilla JS (no dependencies)</li>
+        <li>Reads json from url</li>
+        <li>Supports multi-index data structures</li>
+    </ul>
+    <p>On this page you will find several examples of what you can do with this web component.</p>
+</section>
+<section id="controls">
+    <fieldset>
+        <legend>Data</legend>
+        <div>
             <label for="src">Source
                 <select name="src" id="src" autocomplete="off">
                     <option value="data/bedragen_2025.json" selected>default</option>
@@ -84,67 +98,87 @@
                     <option value="data/simple_df.json">simple df</option>
                 </select>
             </label>
+        </div>
+        <div>
             <label for="type">Type
                 <select name="type" id="type">
                     <option value="default" selected>default</option>
                 </select>
             </label>
-            <div>
-                <label for="calc-op">
-                    <select name="calc-op" id="calc-op">
-                        <option value="multiply">multiply</option>
-                        <option value="divide">divide</option>
-                        <option value="add">add</option>
-                        <option value="subtract">subtract</option>
-                    </select>
-                </label>
-                <label for="n">n
-                    <input type="number" name="n" id="n" autocomplete="off">
-                </label>
-            </div>
-        </fieldset>
-        <fieldset>
-            <legend>Format</legend>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Calculate</legend>
+        <div>
+            <label for="calc-op">
+                <select name="calc-op" id="calc-op">
+                    <option value="multiply">multiply</option>
+                    <option value="divide">divide</option>
+                    <option value="add">add</option>
+                    <option value="subtract">subtract</option>
+                </select>
+            </label>
+        </div>
+        <div>
+            <label for="n">n
+                <input type="number" size="5" name="n" id="n" autocomplete="off">
+            </label>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Format</legend>
+        <div>
             <input type="checkbox" id="as-currency" name="as-currency" autocomplete="off" checked>
             <label for="as-currency">as currency</label>
+        </div>
+        <div>
             <input type="checkbox" id="sep-thousands" name="sep-thousands" autocomplete="off" checked>
             <label for="sep-thousands">seperator</label>
-        </fieldset>
-        <fieldset>
-            <legend>Locale</legend>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Locale</legend>
+        <div>
             <input type="radio" id="locale-nl" name="locale" value="nl-NL" autocomplete="off" checked>
             <label for="locale-nl">Nederlands</label>
+        </div>
+        <div>
             <input type="radio" id="locale-en" name="locale" value="en-US" autocomplete="off" >
             <label for="locale-en">English</label>
-        </fieldset>
-        <fieldset>
-            <legend>Styling</legend>
-            <div>
-                <input type="checkbox" id="hide-group-borders" name="hide-group-borders" autocomplete="off">
-                <label for="hide-group-borders">hide group borders</label>
-            </div>
-            <div>
-                <input type="checkbox" id="hide-row-borders" name="hide-row-borders" autocomplete="off">
-                <label for="hide-row-borders">hide row borders</label>
-            </div>
-            <div>
-                <input type="checkbox" id="hide-index-border" name="hide-index-border" autocomplete="off">
-                <label for="hide-index-border">hide index border</label>
-            </div>
-            <div>
-                <input type="checkbox" id="hide-thead-border" name="hide-thead-border" autocomplete="off">
-                <label for="hide-thead-border">hide thead border</label>
-            </div>
-            <div>
-                <input type="checkbox" id="show-hover" name="show-hover" autocomplete="off">
-                <label for="show-hover">show hover</label>
-            </div>
-            <div>
-                <input type="checkbox" id="collapse-columns" name="collapse-columns" autocomplete="off">
-                <label for="collapse-columns">collapse columns</label>
-            </div>
-        </fieldset>
-    </section>
+        </div>
+    </fieldset>
+    <fieldset id="styling">
+        <legend>Styling</legend>
+        <div>
+            <label for="section-levels">section levels
+                <input type="number" value="0" min="0" size="1" name="section-levels" id="section-levels" autocomplete="off">
+            </label>
+        </div>
+        <div>
+            <input type="checkbox" id="hide-group-borders" name="hide-group-borders" autocomplete="off">
+            <label for="hide-group-borders">hide group borders</label>
+        </div>
+        <div>
+            <input type="checkbox" id="hide-row-borders" name="hide-row-borders" autocomplete="off">
+            <label for="hide-row-borders">hide row borders</label>
+        </div>
+        <div>
+            <input type="checkbox" id="hide-index-border" name="hide-index-border" autocomplete="off">
+            <label for="hide-index-border">hide index border</label>
+        </div>
+        <div>
+            <input type="checkbox" id="hide-thead-border" name="hide-thead-border" autocomplete="off">
+            <label for="hide-thead-border">hide thead border</label>
+        </div>
+        <div>
+            <input type="checkbox" id="show-hover" name="show-hover" autocomplete="off">
+            <label for="show-hover">show hover</label>
+        </div>
+        <div>
+            <input type="checkbox" id="collapse-columns" name="collapse-columns" autocomplete="off">
+            <label for="collapse-columns">collapse columns</label>
+        </div>
+    </fieldset>
 </section>
 <h2>Output</h2>
 <div class="breakout">
@@ -287,6 +321,10 @@
 
     document.getElementById("n").addEventListener("change", event => {
         updateTable(event.target.value)
+    })
+
+    document.getElementById("section-levels").addEventListener("change", event => {
+        dataViewer.setAttribute("section-levels", event.target.value)
     })
 </script>
 </body>

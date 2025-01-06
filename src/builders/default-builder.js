@@ -4,37 +4,51 @@ export class DefaultTableBuilder extends BaseTableBuilder {
     // MARK: Stylesheet
     getStyleSheet() {
         const styleBlocks = {
+            sectionLevels: `
+                [section-header] {
+                    padding-top: 1.25em;
+                    padding-left: calc(var(--section-indent, 1rem) * var(--indent-level, 0));
+                }
+                tbody:has([section-header]) + tbody [section-header] {
+                    padding-top: 0
+                }
+            ${this.getSectionHeaderSizingRules()}
+            ${this.getSectionIndentRules()}
+            `,
             groupBorders: `
                 [group-edge] {
-                    border-left: 1px solid var(--border-color, currentColor)
+                    border-left: 1px solid var(--border-color, currentColor);
                 }
             `,
             rowBorders: `
                 tbody tr:not(:first-of-type):has(th[rowspan]) :where(th, td) {
-                    border-top: 1px solid var(--border-color, currentColor)
+                    border-top: 1px solid var(--border-color, currentColor);
+                }
+                tbody[section-group]:not(:has(+ tbody[section-group])) :where(th, td) {
+                    border-bottom: 1px solid var(--border-color, currentColor)
                 }
             `,
             hoverEffect: `
                 tbody tr:hover :where(td, th:not([rowspan])) {
-                    background-color: var(--hover-color, #f4f3ee)
+                    background-color: var(--hover-color, #f4f3ee);
                 }
             `,
             theadBorder: `
-                tbody tr:first-of-type :where(th, td) {
-                    border-top: var(--axes-width, 2px) solid var(--border-color, currentColor)
+                thead tr:last-of-type :where(th, td) {
+                    border-bottom: var(--axes-width, 2px) solid var(--border-color, currentColor);
                 }
             `,
             indexBorder: `
                 [index-edge] {
-                    border-left: var(--axes-width, 2px) solid var(--border-color, currentColor)
+                    border-left: var(--axes-width, 2px) solid var(--border-color, currentColor);
                 }
             `,
             marginBorders: `
                 [margin-edge-idx] {
-                    border-top: 1px solid var(--border-color, currentColor)
+                    border-top: 1px solid var(--border-color, currentColor);
                 }
                 [margin-edge-col] {
-                    border-left: 1px solid var(--border-color, currentColor)
+                    border-left: 1px solid var(--border-color, currentColor);
                 }
             `
         }
@@ -45,6 +59,76 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             .join("\n")
 
         return `<style>${this.getBaseStyles()}\n${composedStyles}</style>`
+    }
+
+    /**
+     * Generates CSS rules for section header font sizing based on hierarchy level
+     * Creates a visual hierarchy for section headers with appropriate scaling
+     *
+     * Uses CSS variables with fallback values:
+     * --section-base-size: base font size for lowest level (defaults to 1.125em)
+     * --section-increment: size increase per level (defaults to 0.125em)
+     *
+     * For multi-level sections, creates a size progression where:
+     * - The top level (0) is largest
+     * - Each lower level decreases by the increment
+     * - The bottom level uses the base size
+     *
+     * @example
+     * // With styling.sectionLevels = 2, generates:
+     * // [section-header][data-level="0"] { font-size: calc(var(--section-base-size, 1.125em) + var(--section-increment, 0.125em)) }
+     * // [section-header][data-level="1"] { font-size: var(--section-base-size, 1.125em) }
+     *
+     * @returns {string} CSS rules for section header sizing or empty string if no sections
+     */
+    getSectionHeaderSizingRules() {
+        const levels = this.options.styling.sectionLevels
+        if (!levels) return ""
+
+        return Array(levels)
+            .fill(null)
+            .map((_, level) => {
+                const increments = levels - level - 1  // Higher level = fewer increments
+                return `[section-header][data-level="${level}"] {
+                    font-size: calc(var(--section-base-size, 1.125em) + (var(--section-increment, 0.125em) * ${increments}))
+                }`
+            })
+            .join("\n")
+    }
+
+    /**
+     * Generates CSS rules for section header indentation based on hierarchy level
+     * Creates a visual hierarchy through consistent indentation steps
+     *
+     * Uses CSS variables with fallback values:
+     * --section-indent: base indentation unit (defaults to 1em)
+     *
+     * @returns {string} CSS rules for section indentation
+     */
+    getSectionIndentRules() {
+        const levels = this.options.styling.sectionLevels
+        if (!levels) return ""
+
+        // Rules for section headers using existing attributes
+        const sectionRules = Array(levels)
+            .fill(null)
+            .map((_, level) => `
+                [section-header][data-level="${level}"] {
+                    padding-left: calc(${level} * var(--section-indent, 1rem));
+                }
+            `)
+            .join("\n")
+
+        // Rule for first index cell in each row
+        const maxLevel = levels - 1
+        const indexRule = `
+            tbody:not([section-group]) tr:has(th[data-level="0"]) th,
+            tbody:not([section-group]) tr:not(:has(th[data-level])) th {
+                padding-left: calc(${maxLevel} * var(--section-indent, 1rem));
+            }
+        `
+
+        return `${sectionRules}\n${indexRule}`
     }
 
     // MARK: Thead
@@ -143,14 +227,18 @@ export class DefaultTableBuilder extends BaseTableBuilder {
     /**
      * Creates the index label cells for header rows
      * @returns {string} Concatenated HTML string of index label cells
-     * @private
      */
     buildIndexLabels() {
-        const labels = this.data.indexNames
+        // Get base index names (or create array of nulls if none exist)
+        const allLabels = this.data.indexNames
             ? this.data.indexNames
-            : Array(this.data.index.ilevels.length).fill(null)
+            : Array(this.data.index.nlevels).fill(null)
 
-        return labels
+        // Remove the number of levels that are being shown as sections
+        const sectionLevels = this.options.styling.sectionLevels || 0
+        const remainingLabels = allLabels.slice(sectionLevels)
+
+        return remainingLabels
             .map(name => `<th class="indexLabel">${name ?? ""}</th>`)
             .join("")
     }
@@ -190,7 +278,10 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      */
     buildColumnGroupsRow(level) {
         const columnLabel = this.data.columnNames?.[level] ?? ""
-        const columnSpan = this.data.index.nlevels
+
+        // Adjust colspan to account for section levels
+        const sectionLevels = this.options.styling.sectionLevels
+        const columnSpan = this.data.index.nlevels - sectionLevels
 
         const columnLabelElement = `<th colspan="${columnSpan}" class="columnLabel">${columnLabel}</th>`
         const groupHeaders = this.data.columns.spans[level]
@@ -222,21 +313,78 @@ export class DefaultTableBuilder extends BaseTableBuilder {
         return `<th ${this.buildAttributeString(attributes)}>${span.value[level]}</th>`
     }
 
+    /**
+     * Builds the complete table body structure, handling sections if needed
+     */
+    buildBody() {
+        const sectionLevels = this.options.styling.sectionLevels
+
+        // If no sections requested or not a multiindex, build single tbody
+        if (!sectionLevels || !this.data.index.isMultiIndex) {
+            return this.buildTbody(this.data)
+        }
+
+        // Get section groups and build content
+        const groups = this.createDataGroupsFromSpans(sectionLevels)
+        return groups.map(group => {
+            const sections = [this.buildSectionHeader(group)]
+
+            if (group.dataSlice) {
+                const { start, end, dropLevels } = group.dataSlice
+                const sectionData = this.data.createSlicedView(start, end, dropLevels)
+                sections.push(this.buildTbody(sectionData))
+            }
+
+            return sections.join("")
+        }).join("")
+    }
+
     // MARK: Tbody
     /**
-     * Builds the table body by combining index cells with data cells
-     * Each row consists of index labels followed by data values
+     * Builds a tbody element containing data rows
+     * @param {Data} data - Data object to build tbody from
      * @returns {string} HTML string for the table body
      */
-    buildTbody() {
-        const indexRows = this.buildIndexRows()
+    buildTbody(data) {
+        const indexRows = this.buildIndexRows(data)
 
-        this.data.values.forEach((row, irow) => {
+        data.values.forEach((row, irow) => {
             const dataCells = this.buildDataCells(row, irow)
             indexRows[irow] = indexRows[irow].concat(dataCells)
         })
 
-        return this.wrapRowsInTr(indexRows)
+        return `<tbody>${this.wrapRowsInTr(indexRows)}</tbody>`
+    }
+
+    /**
+     * Builds header row for a section
+     * @param {Object} group - Group object from createDataGroupsFromSpans
+     */
+    buildSectionHeader(group) {
+        // Calculate remaining index levels (total - sections)
+        const remainingLevels = this.data.index.nlevels - this.options.styling.sectionLevels
+
+        // Create section header that spans remaining index levels
+        const attributes = {
+            colspan: remainingLevels,
+            "data-level": group.level,
+            "section-header": true
+        }
+
+        const label = group.label ?? this.options.naRep
+        const headerCell = `<th ${this.buildAttributeString(attributes)}>${label}</th>`
+
+        // Create cells for data columns with proper attributes
+        const dataCells = Array(this.data.columns.length)
+            .fill(null)
+            .map((_, icol) => this.buildCell("", 0, icol))
+            .join("")
+
+        return `
+            <tbody section-group>
+                <tr>${headerCell}${dataCells}</tr>
+            </tbody>
+        `
     }
 
     /**
@@ -244,7 +392,6 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      * @param {Array} row - Array of values for the row
      * @param {number} irow - Row index
      * @returns {string[]} Array of HTML strings for data cells
-     * @private
      */
     buildDataCells(row, irow) {
         return row.map((value, icol) =>
@@ -256,7 +403,6 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      * Wraps an array of row contents in tr tags
      * @param {string[][]} rows - Array of arrays containing cell HTML
      * @returns {string} Combined HTML string of all rows
-     * @private
      */
     wrapRowsInTr(rows) {
         return rows
@@ -265,27 +411,27 @@ export class DefaultTableBuilder extends BaseTableBuilder {
     }
 
     /**
-     * Builds the index columns of the table (leftmost columns)
-     * Creates a hierarchical structure with proper row spanning
-     * @returns {string[]} Array of HTML strings for each row's index cells
+     * Builds index columns for table rows
+     * @param {Data} data - Data object to build index from
      */
-    buildIndexRows() {
-        const indexRows = this.data.index.map(value => [this.buildIndex(value)])
-        const levelsReversed = this.data.index.ilevels.slice(0, -1).reverse()
+    buildIndexRows(data) {
+        const indexRows = data.index.map(value => [this.buildIndex(value)])
+        const levelsReversed = data.index.ilevels.slice(0, -1).reverse()
 
-        levelsReversed.forEach(level => this.addIndexSpans(level, indexRows))
+        levelsReversed.forEach(level =>
+            this.addIndexSpans(level, indexRows, data))
 
         return indexRows
     }
 
     /**
-     * Adds spanning index cells for a specific hierarchy level
-     * @param {number} level - The hierarchy level to process
-     * @param {string[][]} indexRows - Array of row arrays to modify
-     * @private
+     * Adds spanning cells for an index level
+     * @param {number} level - Index level to process
+     * @param {Array} indexRows - Array of row arrays to modify
+     * @param {Data} data - Data object containing the spans
      */
-    addIndexSpans(level, indexRows) {
-        for (const span of this.data.index.spans[level]) {
+    addIndexSpans(level, indexRows, data) {
+        for (const span of data.index.spans[level]) {
             const attributes = {
                 rowspan: span.count,
                 "data-level": level,
@@ -311,5 +457,61 @@ export class DefaultTableBuilder extends BaseTableBuilder {
         }
 
         return `<th ${this.buildAttributeString(attributes)}>${selectedValue}</th>`
+    }
+
+    /**
+     * Creates groups from index spans by converting outer levels into headers
+     * @param {number} groupingLevels - Number of index levels to convert to headers
+     * @returns {Array} Flattened array of groups with their data slice information
+     */
+    createDataGroupsFromSpans(groupingLevels = 0) {
+        // Handle base case
+        if (!groupingLevels || groupingLevels < 1) {
+            return [{
+                dataSlice: { start: 0, end: this.data.values.length, dropLevels: 0 }
+            }]
+        }
+
+        const groups = []
+
+        // Track last seen path
+        let lastPath = Array(groupingLevels).fill(null)
+
+        // Process deepest level spans
+        const deepestSpans = this.data.index.spans[groupingLevels - 1]
+
+        deepestSpans.forEach(span => {
+            // Check if we need new headers at any level
+            for (let level = 0; level < groupingLevels - 1; level++) {
+                if (this.isNewPath(span.value, lastPath, level)) {
+                    groups.push({
+                        label: span.value[level],
+                        level,
+                        dataSlice: null
+                    })
+                    lastPath = [...span.value]
+                }
+            }
+
+            // Add the data group
+            groups.push({
+                label: span.value[groupingLevels - 1],
+                level: groupingLevels - 1,
+                dataSlice: {
+                    start: span.iloc,
+                    end: span.iloc + span.count,
+                    dropLevels: groupingLevels
+                }
+            })
+        })
+
+        return groups
+    }
+
+    isNewPath(currentPath, lastPath, level) {
+        for (let i = 0; i <= level; i++) {
+            if (currentPath[i] !== lastPath[i]) return true
+        }
+        return false
     }
 }
