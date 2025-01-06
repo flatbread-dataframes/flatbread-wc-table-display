@@ -81,32 +81,32 @@ export class DataViewer extends HTMLElement {
                 this.render()
                 break
             case "hide-column-borders":
-                this.options.styling.columnBorders = newValue === null
+                this.options.styling.columnBorders = !this.getBooleanAttribute(newValue)
                 this.render()
                 break
             case "hide-row-borders":
-                this.options.styling.rowBorders = newValue === null
+                this.options.styling.rowBorders = !this.getBooleanAttribute(newValue)
                 this.render()
                 break
             case "hide-index-border":
-                this.options.styling.indexBorder = newValue === null
+                this.options.styling.indexBorder = !this.getBooleanAttribute(newValue)
                 this.render()
                 break
             case "hide-thead-border":
-                this.options.styling.theadBorder = newValue === null
+                this.options.styling.theadBorder = !this.getBooleanAttribute(newValue)
                 this.render()
                 break
             case "show-hover":
-                this.options.styling.hoverEffect = newValue !== null
+                this.options.styling.hoverEffect = this.getBooleanAttribute(newValue)
+                this.render()
+                break
+            case "collapse-columns":
+                this.options.styling.collapseColumns = this.getBooleanAttribute(newValue)
                 this.render()
                 break
             case "margin-labels":
                 const labels = newValue.split(";")
                 this.options.marginLabels = labels
-                this.render()
-                break
-            case "collapse-columns":
-                this.options.styling.collapseColumns = newValue !== null
                 this.render()
                 break
             case "section-levels":
@@ -115,6 +115,15 @@ export class DataViewer extends HTMLElement {
                 this.render()
                 break
         }
+    }
+
+    getBooleanAttribute(value) {
+        // Return false if attribute is not present
+        if (value === null) return false
+        // Return true if attribute is present without value
+        if (value === "") return true
+        // Return boolean based on string value
+        return value.toLowerCase() === "true"
     }
 
     async loadDataFromSrc(src) {
