@@ -28,11 +28,11 @@ A lightweight vanilla JavaScript web component for displaying structured table d
 
 ## Example Output
 
-Simple table:
+### Simple table
 ![alt text](examples/simple-table-with-margins.png)
 
-Multi-level headers:
+### Multi-level headers
 ![alt text](examples/multi-level-table.png)
 
-Section headers:
+### Section headers
 ![alt text](examples/table-with-section-headers.png)
