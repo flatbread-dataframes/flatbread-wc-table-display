@@ -4,87 +4,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>wc-data-viewer</title>
+    <title>wc-simple-table</title>
+    <link rel="stylesheet" href="static/stylesheet.css">
     <link rel="stylesheet" href="https://lcvriend.github.io/wc-multi-selector/static/prism.css">
     <script type="module" src="https://uu-asc.github.io/csa-werkvoorraad/src/darkmode-toggle.js"></script>
-    <style>
-        body {
-            --background-color: hsl(30, 0%, 97%);
-            --hover-color: hsl(30, 0%, 92%);
-            background-color: var(--background-color);
-            color: hsl(30, 0%, 8%);
-            margin-inline: auto;
-            margin-bottom: 4rem;
-            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-
-            display: grid;
-            grid-template-columns:
-                3rem [breakout-start]
-                auto [content-start]
-                720px
-                [content-end] auto
-                [breakout-end] 3rem;
-
-            &.dark-theme {
-                --background-color: hsl(210, 74%, 17%);
-                --hover-color: hsl(210, 54%, 28%);
-                background-color: var(--background-color);
-                color: hsl(30, 0%, 98%);
-            }
-        }
-        body > * {
-            grid-column: content;
-        }
-        body > .breakout {
-            grid-column: breakout;
-            display: grid;
-            justify-content: center;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        #controls {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-auto-rows: min-content;
-            grid-auto-flow: dense;
-        }
-        fieldset {
-            min-width: 0;
-        }
-        #styling {
-            grid-column: 3;
-            grid-row: 1 / span 2;
-        }
-        data-viewer {
-            --cursor: pointer;
-            margin-block: 1.25em;
-        }
-        pre {
-            white-space: pre-wrap;
-        }
-        table {
-            border-collapse: collapse;
-            font-family: monospace;
-        }
-        table thead th {
-            text-align: left;
-        }
-        table tbody tr {
-            border-top: 1px solid currentColor;
-        }
-        table :where(th, td) {
-            padding: .125em .25em;
-        }
-    </style>
 </head>
 <body>
+<section>
 <header>
-    <h1>Data-Viewer</h1>
+    <h1><a href="https://github.com/lcvriend/wc-simple-table">wc-simple-table</a></h1>
     <darkmode-toggle></darkmode-toggle>
 </header>
+</section>
 <section id="info">
     <h2>Web component</h2>
     <p><code>&lt;data-viewer&gt;</code> is a web component for displaying structured table data with these key features:</p>
@@ -99,108 +30,112 @@
     <p>Below you'll find examples demonstrating the component's features and usage.</p>
 </section>
 <section id="controls">
-    <fieldset>
-        <legend>Data</legend>
-        <div>
-            <label for="src">Source
-                <select name="src" id="src" autocomplete="off">
-                    <option value="data/bedragen_2025.json" selected>default</option>
-                    <option value="data/multiindex_df.json">multiindex df</option>
-                    <option value="data/simple_df.json">simple df</option>
-                </select>
-            </label>
-        </div>
-        <div>
-            <label for="type">Type
-                <select name="type" id="type">
-                    <option value="default" selected>default</option>
-                </select>
-            </label>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>Calculate</legend>
-        <div>
-            <label for="calc-op">
-                <select name="calc-op" id="calc-op">
-                    <option value="multiply">multiply</option>
-                    <option value="divide">divide</option>
-                    <option value="add">add</option>
-                    <option value="subtract">subtract</option>
-                </select>
-            </label>
-        </div>
-        <div>
-            <label for="n">n
-                <input type="number" size="5" name="n" id="n" autocomplete="off">
-            </label>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>Format</legend>
-        <div>
-            <label for="notation">Notation
-                <select name="notation" id="notation" autocomplete="off">
-                    <option value="standard" selected>Standard</option>
-                    <option value="compact">Compact</option>
-                    <option value="engineering">Engineering</option>
-                    <option value="scientific">Scientific</option>
-                </select>
-            </label>
-        </div>
-        <div>
-            <input type="checkbox" id="as-currency" name="as-currency" autocomplete="off" checked>
-            <label for="as-currency">as currency</label>
-        </div>
-        <div>
-            <input type="checkbox" id="sep-thousands" name="sep-thousands" autocomplete="off" checked>
-            <label for="sep-thousands">seperator</label>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>Locale</legend>
-        <div>
-            <input type="radio" id="locale-nl" name="locale" value="nl-NL" autocomplete="off" checked>
-            <label for="locale-nl">Nederlands</label>
-        </div>
-        <div>
-            <input type="radio" id="locale-en" name="locale" value="en-US" autocomplete="off" >
-            <label for="locale-en">English</label>
-        </div>
-    </fieldset>
-    <fieldset id="styling">
-        <legend>Styling</legend>
-        <div>
-            <label for="section-levels">section levels
-                <input type="number" value="0" min="0" size="1" name="section-levels" id="section-levels" autocomplete="off">
-            </label>
-        </div>
-        <div>
-            <input type="checkbox" id="hide-column-borders" name="hide-column-borders" autocomplete="off">
-            <label for="hide-column-borders">hide column borders</label>
-        </div>
-        <div>
-            <input type="checkbox" id="hide-row-borders" name="hide-row-borders" autocomplete="off">
-            <label for="hide-row-borders">hide row borders</label>
-        </div>
-        <div>
-            <input type="checkbox" id="hide-index-border" name="hide-index-border" autocomplete="off">
-            <label for="hide-index-border">hide index border</label>
-        </div>
-        <div>
-            <input type="checkbox" id="hide-thead-border" name="hide-thead-border" autocomplete="off">
-            <label for="hide-thead-border">hide thead border</label>
-        </div>
-        <div>
-            <input type="checkbox" id="show-hover" name="show-hover" autocomplete="off">
-            <label for="show-hover">show hover</label>
-        </div>
-        <div>
-            <input type="checkbox" id="collapse-columns" name="collapse-columns" autocomplete="off">
-            <label for="collapse-columns">collapse columns</label>
-        </div>
-    </fieldset>
+    <h2>Controls</h2>
+    <form>
+        <fieldset>
+            <legend>Data</legend>
+            <div>
+                <label for="src">Source
+                    <select name="src" id="src" autocomplete="off">
+                        <option value="data/bedragen_2025.json" selected>default</option>
+                        <option value="data/multiindex_df.json">multiindex df</option>
+                        <option value="data/simple_df.json">simple df</option>
+                    </select>
+                </label>
+            </div>
+            <div>
+                <label for="type">Type
+                    <select name="type" id="type">
+                        <option value="default" selected>default</option>
+                    </select>
+                </label>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Calculate</legend>
+            <div>
+                <label for="calc-op">Operation
+                    <select name="calc-op" id="calc-op">
+                        <option value="multiply">multiply</option>
+                        <option value="divide">divide</option>
+                        <option value="add">add</option>
+                        <option value="subtract">subtract</option>
+                    </select>
+                </label>
+            </div>
+            <div>
+                <label for="n">n
+                    <input type="number" size="5" name="n" id="n" autocomplete="off">
+                </label>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Format</legend>
+            <div>
+                <label for="notation">Notation
+                    <select name="notation" id="notation" autocomplete="off">
+                        <option value="standard" selected>Standard</option>
+                        <option value="compact">Compact</option>
+                        <option value="engineering">Engineering</option>
+                        <option value="scientific">Scientific</option>
+                    </select>
+                </label>
+            </div>
+            <div>
+                <input type="checkbox" id="as-currency" name="as-currency" autocomplete="off" checked>
+                <label for="as-currency">as currency</label>
+            </div>
+            <div>
+                <input type="checkbox" id="sep-thousands" name="sep-thousands" autocomplete="off" checked>
+                <label for="sep-thousands">seperator</label>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Locale</legend>
+            <div>
+                <input type="radio" id="locale-nl" name="locale" value="nl-NL" autocomplete="off" checked>
+                <label for="locale-nl">Nederlands</label>
+            </div>
+            <div>
+                <input type="radio" id="locale-en" name="locale" value="en-US" autocomplete="off" >
+                <label for="locale-en">English</label>
+            </div>
+        </fieldset>
+        <fieldset id="styling">
+            <legend>Styling</legend>
+            <div>
+                <label for="section-levels">section levels
+                    <input type="number" value="0" min="0" size="1" name="section-levels" id="section-levels" autocomplete="off">
+                </label>
+            </div>
+            <div>
+                <input type="checkbox" id="hide-column-borders" name="hide-column-borders" autocomplete="off">
+                <label for="hide-column-borders">hide column borders</label>
+            </div>
+            <div>
+                <input type="checkbox" id="hide-row-borders" name="hide-row-borders" autocomplete="off">
+                <label for="hide-row-borders">hide row borders</label>
+            </div>
+            <div>
+                <input type="checkbox" id="hide-index-border" name="hide-index-border" autocomplete="off">
+                <label for="hide-index-border">hide index border</label>
+            </div>
+            <div>
+                <input type="checkbox" id="hide-thead-border" name="hide-thead-border" autocomplete="off">
+                <label for="hide-thead-border">hide thead border</label>
+            </div>
+            <div>
+                <input type="checkbox" id="show-hover" name="show-hover" autocomplete="off">
+                <label for="show-hover">show hover</label>
+            </div>
+            <div>
+                <input type="checkbox" id="collapse-columns" name="collapse-columns" autocomplete="off">
+                <label for="collapse-columns">collapse columns</label>
+            </div>
+        </fieldset>
+    </form>
 </section>
+<section id="output">
 <h2>Output</h2>
 <div class="breakout">
     <data-viewer
@@ -212,9 +147,13 @@
 </div>
 <h3>Event</h3>
 <div id="event-display"><pre><code></code></pre></div>
+</section>
+<section id="html">
 <h2>HTML</h2>
 <pre><code class="language-html">&lt;!-- html --&gt;
 &lt;data-viewer src="data/example.json" locale="nl-NL"&gt;&lt;/data-viewer&gt;</code></pre>
+</section>
+<section id="specifications">
 <h2>Specifications</h2>
 <h3>Attributes</h3>
 <table>
@@ -288,7 +227,6 @@
         </tr>
     </tbody>
 </table>
-
 <h3>CSS Custom Properties</h3>
 <table>
     <thead>
@@ -331,7 +269,6 @@
         </tr>
     </tbody>
 </table>
-
 <h3>Events</h3>
 <table>
     <thead>
@@ -354,7 +291,6 @@
         </tr>
     </tbody>
 </table>
-
 <h3>Data</h3>
 <table>
     <thead>
@@ -418,7 +354,6 @@
         </tr>
     </tbody>
 </table>
-
 <h4>Example Single-Level Structure</h4>
 <pre><code>{
     "values": [[1, 2], [3, 4]],
@@ -428,7 +363,6 @@
     "indexNames": ["Items"],
     "dtypes": ["int", "int"]
 }</code></pre>
-
 <h4>Example Multi-Level Structure</h4>
 <pre><code>{
     "values": [[1, 2], [3, 4]],
@@ -438,8 +372,7 @@
     "indexNames": ["Region", "City"],
     "dtypes": ["int", "int"]
 }</code></pre>
-
-<a href="https://github.com/lcvriend/wc-simple-table">https://github.com/lcvriend/wc-simple-table</a>
+</section>
 <script src="src/viewer.js" type="module"></script>
 <script>
     const dataViewer = document.querySelector("data-viewer")
