@@ -133,9 +133,8 @@ export class DefaultTableBuilder extends BaseTableBuilder {
 
     // MARK: Thead
     /**
-     * Builds the table header with support for single and multi-level column structures
-     * The header structure changes based on whether columns are collapsed
-     * @returns {string} HTML string for the complete table header
+     * Builds the complete table header structure based on column configuration
+     * @returns {string} HTML string for table header
      */
     buildThead() {
         return this.data.columns.isMultiIndex
@@ -146,13 +145,11 @@ export class DefaultTableBuilder extends BaseTableBuilder {
     /**
      * Builds header for tables with a single level of columns
      * @returns {string} HTML string for single-level header
-     * @private
      */
     buildSingleLevelHeader() {
-        const { collapseColumns } = this.options.styling
         const columnGroups = this.buildColumnGroupsRow(0)
 
-        return collapseColumns
+        return this.shouldCollapseColumns()
             ? this.buildColumnsRow()
             : `${columnGroups}${this.buildIndexNamesRow()}`
     }
@@ -160,33 +157,26 @@ export class DefaultTableBuilder extends BaseTableBuilder {
     /**
      * Builds header for tables with multiple levels of columns
      * @returns {string} HTML string for multi-level header
-     * @private
      */
     buildMultiLevelHeader() {
-        const { collapseColumns } = this.options.styling
         const levels = this.getLevelsForHeader()
-
         const groupRows = levels
             .map(level => this.buildColumnGroupsRow(level))
             .join("")
 
-        const finalRow = collapseColumns
-            ? this.buildColumnsRow()
-            : this.buildIndexNamesRow()
-
-        return `${groupRows}${finalRow}`
+        return this.shouldCollapseColumns()
+        ? `${groupRows}${this.buildColumnsRow()}`
+        : `${groupRows}${this.buildIndexNamesRow()}`
     }
 
     /**
      * Determines which levels to include in the header based on collapse setting
      * @returns {number[]} Array of level indices to include
-     * @private
      */
     getLevelsForHeader() {
-        const { collapseColumns } = this.options.styling
         const allLevels = this.data.columns.ilevels
 
-        return collapseColumns
+        return this.shouldCollapseColumns()
             ? allLevels.slice(0, -1)  // Exclude last level when collapsed
             : allLevels               // Include all levels when not collapsed
     }
@@ -213,7 +203,6 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      * Shared helper to build header rows with consistent structure
      * @param {Function} valueMapper - Function to transform column values
      * @returns {string} HTML string for the row
-     * @private
      */
     buildHeaderRow(valueMapper) {
         const indexLabels = this.buildIndexLabels()
@@ -314,6 +303,31 @@ export class DefaultTableBuilder extends BaseTableBuilder {
     }
 
     /**
+     * Determines whether columns should be collapsed based on explicit settings
+     * or automatic conditions.
+     *
+     * Columns are collapsed if:
+     * - An explicit collapse setting was provided via attribute, or
+     * - No column names are defined (or is an empty array), or
+     * - For multi-index columns, the name of the last level is null
+     *
+     * @returns {boolean} True if columns should be collapsed, false otherwise
+     */
+    shouldCollapseColumns() {
+        const { collapseColumns } = this.options.styling
+        if (collapseColumns !== null) return collapseColumns
+
+        if (!this.data.columnNames?.length) return true
+
+        if (this.data.columns.isMultiIndex) {
+            if (this.data.columnNames.at(-1) == null) return true
+        }
+
+        return false
+    }
+
+    // MARK: Body
+    /**
      * Builds the complete table body structure, handling sections if needed
      */
     buildBody() {
@@ -339,7 +353,6 @@ export class DefaultTableBuilder extends BaseTableBuilder {
         }).join("")
     }
 
-    // MARK: Tbody
     /**
      * Builds a tbody element containing data rows
      * @param {Data} data - Data object to build tbody from

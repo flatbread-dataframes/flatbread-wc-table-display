@@ -21,7 +21,7 @@ export class DataViewer extends HTMLElement {
             type: "default",
             styling: {
                 sectionLevels: 0,
-                collapseColumns: false,
+                collapseColumns: null,
                 hoverEffect: false,
                 theadBorder: true,
                 indexBorder: true,
