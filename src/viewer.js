@@ -58,12 +58,12 @@ export class DataViewer extends HTMLElement {
     }
 
     addEventListeners() {
-        this.shadowRoot.addEventListener("click", this.handleTableClick)
+        this.table.shadowRoot.addEventListener("click", this.handleTableClick)
         this.shadowRoot.addEventListener("setting-change", this.handleSettingChange)
     }
 
     removeEventListeners() {
-        this.shadowRoot.removeEventListener("click", this.handleTableClick)
+        this.table.shadowRoot.removeEventListener("click", this.handleTableClick)
         this.shadowRoot.removeEventListener("setting-change", this.handleSettingChange)
     }
 
