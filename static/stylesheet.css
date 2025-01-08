@@ -64,14 +64,10 @@ header {
 }
 form {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     grid-auto-rows: min-content;
     grid-auto-flow: dense;
 
-    #styling {
-        grid-column: 3;
-        grid-row: 1 / span 2;
-    }
     fieldset {
         min-width: 0;
     }
@@ -82,12 +78,7 @@ form {
 }
 @media (max-width: 39rem) {
     form {
-        grid-template-columns: minmax(min(20rem, 100%), max-content);
-
-        #styling {
-            grid-column: 1;
-            grid-row: auto;
-        }
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 data-viewer {

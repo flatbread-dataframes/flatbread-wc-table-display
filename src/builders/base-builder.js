@@ -22,10 +22,6 @@ export class BaseTableBuilder {
     // MARK: build
     getBaseStyles() {
         return `
-            :host {
-                display: block;
-                cursor: var(--cursor, auto)
-            }
             table {
                 border-collapse: separate;
                 border-spacing: 0

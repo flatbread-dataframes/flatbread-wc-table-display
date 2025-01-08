@@ -1,5 +1,6 @@
 import { Data } from "./data.js"
-import { TableBuilderFactory } from "./builders/factory.js"
+import { SettingsContainer } from "./popup/settings-container.js"
+import { DataTable } from "./table.js"
 
 export class DataViewer extends HTMLElement {
     static get observedAttributes() {
@@ -36,16 +37,18 @@ export class DataViewer extends HTMLElement {
         super()
         this.attachShadow({ mode: "open" })
         this.options = { ...DataViewer.defaults }
+
         this.handleDataChange = this.handleDataChange.bind(this)
         this.handleTableClick = this.handleTableClick.bind(this)
+        this.handleSettingChange = this.handleSettingChange.bind(this)
 
+        this.render()
         this._data = new Data()
     }
 
     // MARK: setup
     connectedCallback() {
         this.data.addEventListener("data-changed", this.handleDataChange)
-        this.render()
         this.addEventListeners()
     }
 
@@ -56,10 +59,12 @@ export class DataViewer extends HTMLElement {
 
     addEventListeners() {
         this.shadowRoot.addEventListener("click", this.handleTableClick)
+        this.shadowRoot.addEventListener("setting-change", this.handleSettingChange)
     }
 
     removeEventListeners() {
         this.shadowRoot.removeEventListener("click", this.handleTableClick)
+        this.shadowRoot.removeEventListener("setting-change", this.handleSettingChange)
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -67,54 +72,44 @@ export class DataViewer extends HTMLElement {
         switch (name) {
             case "src":
                 this.loadDataFromSrc(newValue)
-                break
+                return
             case "type":
                 this.options.type = newValue ?? DataViewer.defaults.type
-                this.render()
                 break
             case "locale":
                 this.options.locale = newValue ?? DataViewer.defaults.locale
-                this.render()
                 break
             case "na-rep":
                 this.options.naRep = newValue ?? DataViewer.defaults.naRep
-                this.render()
                 break
             case "hide-column-borders":
                 this.options.styling.columnBorders = !this.getBooleanAttribute(newValue)
-                this.render()
                 break
             case "hide-row-borders":
                 this.options.styling.rowBorders = !this.getBooleanAttribute(newValue)
-                this.render()
                 break
             case "hide-index-border":
                 this.options.styling.indexBorder = !this.getBooleanAttribute(newValue)
-                this.render()
                 break
             case "hide-thead-border":
                 this.options.styling.theadBorder = !this.getBooleanAttribute(newValue)
-                this.render()
                 break
             case "show-hover":
                 this.options.styling.hoverEffect = this.getBooleanAttribute(newValue)
-                this.render()
                 break
             case "collapse-columns":
                 this.options.styling.collapseColumns = this.getBooleanAttribute(newValue)
-                this.render()
                 break
             case "margin-labels":
                 const labels = newValue.split(";")
                 this.options.marginLabels = labels
-                this.render()
                 break
             case "section-levels":
                 const level = Math.max(0, parseInt(newValue) ?? DataViewer.defaults.styling.sectionLevels)
                 this.options.styling.sectionLevels = level
-                this.render()
                 break
         }
+        this.update()
     }
 
     getBooleanAttribute(value) {
@@ -138,6 +133,16 @@ export class DataViewer extends HTMLElement {
         }
     }
 
+    // MARK: handlers
+    handleSettingChange(event) {
+        const { setting, value } = event.detail
+        if (value) {
+            this.setAttribute(setting, value)
+        } else {
+            this.removeAttribute(setting)
+        }
+    }
+
     // MARK: getter/setter
     get data() {
         return this._data
@@ -147,19 +152,45 @@ export class DataViewer extends HTMLElement {
         this._data.setData(value)
     }
 
+    get table() {
+        return this.shadowRoot.querySelector("data-table")
+    }
+
     // MARK: render
     render() {
-        if (!this.data) return
-        const builder = TableBuilderFactory.create(this.options.type, this.data, this.options)
         this.shadowRoot.innerHTML = `
-            ${builder.getStyleSheet()}
-            ${builder.buildTable()}
+            <style>
+                :host {
+                    display: flex;
+                    position: relative;
+                    cursor: var(--cursor, auto)
+                }
+                settings-container {
+                    opacity: 0;
+                    transition: opacity 0.2s ease
+                }
+                :host(:hover) settings-container {
+                    opacity: .3;
+                }
+                :host(:hover) settings-container:hover {
+                    opacity: 1;
+                }
+                :host settings-container[open] {
+                    opacity: 1;
+                }
+            </style>
+            <data-table></data-table>
+            <settings-container></settings-container>
         `
+    }
+
+    update() {
+        this.table.update(this.data, this.options)
     }
 
     // MARK: handlers
     handleDataChange() {
-        this.render()
+        this.update()
         this.dispatchEvent(new CustomEvent("data-changed", { detail: this.data }))
     }
 
