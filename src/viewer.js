@@ -133,16 +133,6 @@ export class DataViewer extends HTMLElement {
         }
     }
 
-    // MARK: handlers
-    handleSettingChange(event) {
-        const { setting, value } = event.detail
-        if (value) {
-            this.setAttribute(setting, value)
-        } else {
-            this.removeAttribute(setting)
-        }
-    }
-
     // MARK: getter/setter
     get data() {
         return this._data
@@ -192,6 +182,15 @@ export class DataViewer extends HTMLElement {
     handleDataChange() {
         this.update()
         this.dispatchEvent(new CustomEvent("data-changed", { detail: this.data }))
+    }
+
+    handleSettingChange(event) {
+        const { setting, value } = event.detail
+        if (value) {
+            this.setAttribute(setting, value)
+        } else {
+            this.removeAttribute(setting)
+        }
     }
 
     handleTableClick(event) {
