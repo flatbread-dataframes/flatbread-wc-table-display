@@ -21,24 +21,23 @@ export class SettingsTrigger extends HTMLElement {
     // MARK: render
     render() {
         const styles = `
-            <style>
-                button {
-                    display: grid;
-                    place-items: center;
-                    width: 1.75rem;
-                    height: 1.75rem;
-                    border: 1px solid var(--border-color, currentColor);
-                    border-radius: 50%;
-                    background: var(--background-color, transparent);
-                    cursor: pointer;
-                    font-size: .925rem;
-                    line-height: 1;
-                    font-family: sans-serif;
-                }
-            </style>
+            button {
+                display: grid;
+                place-items: center;
+                width: 1.75rem;
+                height: 1.75rem;
+                border: 1px solid var(--border-color, currentColor);
+                border-radius: 50%;
+                background: var(--background-color, transparent);
+                cursor: pointer;
+                font-size: .925rem;
+                line-height: 1;
+                font-family: sans-serif;
+                color: currentColor;
+            }
         `
         this.shadowRoot.innerHTML = `
-            ${styles}
+            <style>${styles}</style>
             <button title="settings">•••</button>
         `
     }

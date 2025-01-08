@@ -162,7 +162,7 @@ export class DataViewer extends HTMLElement {
             <style>
                 :host {
                     display: flex;
-                    position: relative;
+                    align-items: start;
                     cursor: var(--cursor, auto)
                 }
                 settings-container {
@@ -170,7 +170,7 @@ export class DataViewer extends HTMLElement {
                     transition: opacity 0.2s ease
                 }
                 :host(:hover) settings-container {
-                    opacity: .3;
+                    opacity: .5;
                 }
                 :host(:hover) settings-container:hover {
                     opacity: 1;

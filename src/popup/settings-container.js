@@ -88,32 +88,30 @@ export class SettingsContainer extends HTMLElement {
     // MARK: render
     render() {
         const styles = `
-            <style>
-                :host {
-                    position: relative;
-                    display: inline-block;
-                }
+            :host {
+                position: relative;
+                display: inline-block;
+            }
 
-                settings-popup {
-                    position: absolute;
-                    top: 0;
-                    right: 100%;
-                    margin-right: 0.5rem;
-                    z-index: 100;
+            settings-popup {
+                position: absolute;
+                top: 0;
+                right: 100%;
+                margin-right: 0.5rem;
+                z-index: 100;
 
-                    opacity: 0;
-                    visibility: hidden;
-                    transition: opacity 0.2s ease, visibility 0.2s ease;
-                }
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.2s ease, visibility 0.2s ease;
+            }
 
-                :host([open]) settings-popup {
-                    opacity: 1;
-                    visibility: visible;
-                }
-            </style>
+            :host([open]) settings-popup {
+                opacity: 1;
+                visibility: visible;
+            }
         `
         this.shadowRoot.innerHTML = `
-            ${styles}
+            <style>${styles}</style>
             <settings-trigger></settings-trigger>
             <settings-popup></settings-popup>
         `
