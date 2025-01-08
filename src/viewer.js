@@ -153,9 +153,12 @@ export class DataViewer extends HTMLElement {
                 :host {
                     display: flex;
                     align-items: start;
+                    gap: 8px;
+                    position: relative;
                     cursor: var(--cursor, auto)
                 }
                 settings-container {
+                    position: static;
                     opacity: 0;
                     transition: opacity 0.2s ease
                 }

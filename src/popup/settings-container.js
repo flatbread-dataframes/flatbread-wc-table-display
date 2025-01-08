@@ -58,11 +58,21 @@ export class SettingsContainer extends HTMLElement {
         if (this.isVisible) {
             this.syncState()
             this.setAttribute("open", "")
+            this.positionPopup()
             document.addEventListener("click", this.handleDocumentClick)
         } else {
             this.removeAttribute("open")
             document.removeEventListener("click", this.handleDocumentClick)
         }
+    }
+
+    positionPopup() {
+        const trigger = this.trigger.getBoundingClientRect()
+        const popup = this.popup
+
+        // Position to the left of the trigger button
+        popup.style.top = `${trigger.top}px`
+        popup.style.right = `${window.innerWidth - trigger.left + 8}px` // 8px offset
     }
 
     /**
@@ -89,12 +99,13 @@ export class SettingsContainer extends HTMLElement {
     render() {
         const styles = `
             :host {
-                position: relative;
+                position: absolute;
                 display: inline-block;
+                z-index: 1000;
             }
 
             settings-popup {
-                position: absolute;
+                position: fixed;
                 top: 0;
                 right: 100%;
                 margin-right: 0.5rem;
