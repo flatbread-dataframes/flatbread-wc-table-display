@@ -7,6 +7,11 @@ export class DataTable extends HTMLElement {
     }
 
     update(data, options) {
+        if (!data?.values?.length) {
+            this.shadowRoot.innerHTML = ""
+            return
+        }
+
         const builder = TableBuilderFactory.create(options.type, data, options)
 
         this.shadowRoot.innerHTML = `
