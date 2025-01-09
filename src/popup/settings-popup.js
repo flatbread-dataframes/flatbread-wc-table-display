@@ -59,6 +59,7 @@ export class SettingsPopup extends HTMLElement {
     render() {
         const styles = `
             :host {
+                display: grid;
                 background: var(--background-color, white);
                 border: 1px solid var(--border-color, currentColor);
                 border-radius: 4px;
@@ -88,6 +89,8 @@ export class SettingsPopup extends HTMLElement {
 
             [role="tabpanel"] {
                 visibility: hidden;
+                grid-column: 1;
+                grid-row: 2;
             }
             [role="tabpanel"][selected] {
                 visibility: visible;
