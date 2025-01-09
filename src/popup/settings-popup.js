@@ -1,7 +1,11 @@
+import { FormatTable } from "./format/format-table.js"
+
 export class SettingsPopup extends HTMLElement {
-    constructor() {
+    constructor(data) {
         super()
         this.attachShadow({ mode: "open" })
+        this.data = data
+
         this.handleInputChange = this.handleInputChange.bind(this)
         this.handleTabClick = this.handleTabClick.bind(this)
     }
@@ -22,20 +26,6 @@ export class SettingsPopup extends HTMLElement {
     }
 
     removeEventListeners() {}
-
-    // MARK: api
-    syncState(dataViewer) {
-        // Get all current attribute values from dataViewer
-        const inputs = this.shadowRoot.querySelectorAll("input")
-        inputs.forEach(input => {
-            const attr = input.id
-            if (input.type === "number") {
-                input.value = dataViewer.getAttribute(attr) || 0
-            } else {
-                input.checked = dataViewer.hasAttribute(attr)
-            }
-        })
-    }
 
     // MARK: handlers
     handleInputChange(event) {
@@ -58,11 +48,11 @@ export class SettingsPopup extends HTMLElement {
         const panels = this.shadowRoot.querySelectorAll("[role=tabpanel]")
 
         tabs.forEach(tab => tab.setAttribute("aria-selected", "false"))
-        panels.forEach(panel => panel.hidden = true)
+        panels.forEach(panel => panel.removeAttribute("selected"))
 
         tab.setAttribute("aria-selected", "true")
         const panel = this.shadowRoot.querySelector(`#${tab.getAttribute("aria-controls")}`)
-        panel.hidden = false
+        panel.setAttribute("selected", "")
     }
 
     // MARK: render
@@ -96,6 +86,13 @@ export class SettingsPopup extends HTMLElement {
                 border-bottom-color: currentColor;
             }
 
+            [role="tabpanel"] {
+                visibility: hidden;
+            }
+            [role="tabpanel"][selected] {
+                visibility: visible;
+            }
+
             label {
                 display: flex;
                 align-items: center;
@@ -117,7 +114,7 @@ export class SettingsPopup extends HTMLElement {
                     aria-controls="format">Format</button>
             </nav>
 
-            <section role="tabpanel" id="general">
+            <section role="tabpanel" id="general" selected>
                 <label for="section-levels">
                     Section levels
                     <input type="number" id="section-levels" min="0" value="0">
@@ -148,10 +145,10 @@ export class SettingsPopup extends HTMLElement {
                 </label>
             </section>
 
-            <section role="tabpanel" id="format" hidden>
-                Format options will go here
-            </section>
+            <section role="tabpanel" id="format"></section>
         `
+        const formatTable = new FormatTable(this.data)
+        this.shadowRoot.getElementById("format").appendChild(formatTable)
     }
 }
 

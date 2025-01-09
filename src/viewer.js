@@ -42,8 +42,8 @@ export class DataViewer extends HTMLElement {
         this.handleTableClick = this.handleTableClick.bind(this)
         this.handleSettingChange = this.handleSettingChange.bind(this)
 
+        this.data = new Data()
         this.render()
-        this._data = new Data()
     }
 
     // MARK: setup
@@ -126,24 +126,20 @@ export class DataViewer extends HTMLElement {
             const response = await fetch(src)
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
             const rawData = await response.json()
-            this.data = rawData
+            this.data.setData(rawData)
         } catch (error) {
             console.error("Failed to fetch data:", error)
             this.showErrorMessage("Failed to load data")
         }
     }
 
-    // MARK: getter/setter
-    get data() {
-        return this._data
-    }
-
-    set data(value) {
-        this._data.setData(value)
-    }
-
+    // MARK: get/set
     get table() {
         return this.shadowRoot.querySelector("data-table")
+    }
+
+    get settingsContainer() {
+        return this.shadowRoot.querySelector("settings-container")
     }
 
     // MARK: render
@@ -173,8 +169,9 @@ export class DataViewer extends HTMLElement {
                 }
             </style>
             <data-table></data-table>
-            <settings-container></settings-container>
         `
+        const settingsContainer = new SettingsContainer(this.data)
+        this.shadowRoot.appendChild(settingsContainer)
     }
 
     update() {

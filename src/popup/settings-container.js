@@ -1,13 +1,20 @@
 import { SettingsTrigger } from "./settings-trigger.js"
 import { SettingsPopup } from "./settings-popup.js"
+import { FormatDialog } from "./format/format-dialog.js"
 
 export class SettingsContainer extends HTMLElement {
-    constructor() {
+    constructor(data) {
         super()
         this.attachShadow({ mode: "open" })
+        this.data = data
+
         this.handleTriggerClick = this.handleTriggerClick.bind(this)
         this.handleDocumentClick = this.handleDocumentClick.bind(this)
+        this.handleFormatDialogOpen = this.handleFormatDialogOpen.bind(this)
+        this.handleFormatDialogClose = this.handleFormatDialogClose.bind(this)
+
         this.isVisible = false
+        this.hasOpenDialog = false
     }
 
     // MARK: setup
@@ -22,14 +29,17 @@ export class SettingsContainer extends HTMLElement {
 
     addEventListeners() {
         this.trigger.addEventListener("click", this.handleTriggerClick)
+        this.addEventListener("dialog-open", this.handleFormatDialogOpen)
+        this.addEventListener("dialog-close", this.handleFormatDialogClose)
     }
 
     removeEventListeners() {
         this.trigger.removeEventListener("click", this.handleTriggerClick)
-        document.removeEventListener("click", this.handleDocumentClick)
+        this.removeEventListener("dialog-open", this.handleFormatDialogOpen)
+        this.removeEventListener("dialog-close", this.handleFormatDialogClose)
     }
 
-    // MARK: getter/setter
+    // MARK: get/set
     get trigger() {
         return this.shadowRoot.querySelector("settings-trigger")
     }
@@ -38,10 +48,23 @@ export class SettingsContainer extends HTMLElement {
         return this.shadowRoot.querySelector("settings-popup")
     }
 
+    // MARK: api
+    positionPopup() {
+        const trigger = this.trigger.getBoundingClientRect()
+        const popup = this.popup
+
+        // Position to the left of the trigger button
+        popup.style.top = `${trigger.top}px`
+        popup.style.right = `${window.innerWidth - trigger.left + 8}px` // 8px offset
+    }
+
     // MARK: handlers
-    syncState() {
-        const dataViewer = this.getRootNode().host
-        this.popup.syncState(dataViewer)
+    handleFormatDialogOpen() {
+        this.hasOpenDialog = true
+    }
+
+    handleFormatDialogClose() {
+        this.hasOpenDialog = false
     }
 
     /**
@@ -56,7 +79,10 @@ export class SettingsContainer extends HTMLElement {
     handleTriggerClick() {
         this.isVisible = !this.isVisible
         if (this.isVisible) {
-            this.syncState()
+            this.shadowRoot.querySelector("settings-popup")?.remove()
+            const settingsPopup = new SettingsPopup(this.data)
+            this.shadowRoot.appendChild(settingsPopup)
+
             this.setAttribute("open", "")
             this.positionPopup()
             document.addEventListener("click", this.handleDocumentClick)
@@ -64,15 +90,6 @@ export class SettingsContainer extends HTMLElement {
             this.removeAttribute("open")
             document.removeEventListener("click", this.handleDocumentClick)
         }
-    }
-
-    positionPopup() {
-        const trigger = this.trigger.getBoundingClientRect()
-        const popup = this.popup
-
-        // Position to the left of the trigger button
-        popup.style.top = `${trigger.top}px`
-        popup.style.right = `${window.innerWidth - trigger.left + 8}px` // 8px offset
     }
 
     /**
@@ -85,10 +102,10 @@ export class SettingsContainer extends HTMLElement {
      * @param {Event} event - The click event from the document
      */
     handleDocumentClick(event) {
-        const path = event.composedPath()
-        const isInside = path.includes(this)
+        if (this.hasOpenDialog) return
 
-        if (!isInside) {
+        const isInContainer = event.composedPath().includes(this)
+        if (!isInContainer) {
             this.isVisible = false
             this.removeAttribute("open")
             document.removeEventListener("click", this.handleDocumentClick)
@@ -124,7 +141,6 @@ export class SettingsContainer extends HTMLElement {
         this.shadowRoot.innerHTML = `
             <style>${styles}</style>
             <settings-trigger></settings-trigger>
-            <settings-popup></settings-popup>
         `
     }
 }
