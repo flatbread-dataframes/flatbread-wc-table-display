@@ -63,7 +63,7 @@ export const NumberFormatSpec = {
             currency: {
                 type: "select",
                 label: "Currency",
-                options: ["EUR", "USD", "GBP"],
+                options: ["EUR", "USD", "GBP", "CNY", "JPY", "SEK", "NOK"],
                 default: "EUR"
             },
             currencyDisplay: {
