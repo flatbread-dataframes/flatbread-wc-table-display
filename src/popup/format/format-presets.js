@@ -58,3 +58,17 @@ export function getPresetsForType(dtype) {
     }
     return presets[dtype] || {}
 }
+
+export function isCustomFormat(options, presets) {
+    if (!options) return false
+    return !Object.values(presets)
+        .some(preset => JSON.stringify(preset.options) === JSON.stringify(options))
+}
+
+export function matchPreset(options, presets) {
+    if (!options) return "standard"
+    return Object.entries(presets)
+        .find(([, preset]) =>
+            JSON.stringify(preset.options) === JSON.stringify(options)
+        )?.[0] || ""
+}
