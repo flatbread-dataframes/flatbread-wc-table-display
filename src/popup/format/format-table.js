@@ -1,4 +1,5 @@
 import { FormatDialog } from "./format-dialog.js"
+import { getFormatSpec } from "./format-specs.js"
 import { getPresetsForType, isCustomFormat, matchPreset } from "./format-presets.js"
 
 export class FormatTable extends HTMLElement {
@@ -117,15 +118,27 @@ export class FormatTable extends HTMLElement {
         this.handleDialogOpen()
     }
 
-    getFormatSummary(options) {
+    getFormatSummary(options, dtype) {
         if (!options) return "-"
 
-        const summaries = []
-        if (options.style === "currency") summaries.push("€")
-        if (options.notation !== "standard") summaries.push(options.notation)
-        if (options.useGrouping) summaries.push("thousands")
+        const spec = getFormatSpec(dtype)
+        if (!spec) return "-"
+
+        const summaries = Object.entries(options)
+            .map(([key, value]) => {
+                const optionSpec = this.getSpecForOption(key, spec)
+                return optionSpec?.summary?.(value)
+            })
+            .filter(Boolean)
 
         return summaries.length ? summaries.join(", ") : "-"
+    }
+
+    getSpecForOption(key, spec) {
+        for (const group of Object.values(spec.options)) {
+            if (key in group) return group[key]
+        }
+        return null
     }
 
     // MARK: render
@@ -195,7 +208,7 @@ export class FormatTable extends HTMLElement {
             <tr data-column-index="${idx}">
                 <td>${Array.isArray(col) ? col.at(-1) : col}</td>
                 <td>${attrs.dtype ?? "-"}</td>
-                <td>${this.getFormatSummary(attrs.formatOptions)}</td>
+                <td>${this.getFormatSummary(attrs.formatOptions, attrs.dtype)}</td>
                 <td>
                     <select data-action="preset">
                         <option value="" disabled ${isCustom ? "selected" : ""}>Custom</option>

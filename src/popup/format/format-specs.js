@@ -1,3 +1,14 @@
+// Optional helper for getting a specific option's spec
+export function getOptionSpec(dtype, optionKey) {
+    const spec = getFormatSpec(dtype)
+    if (!spec) return null
+
+    for (const group of Object.values(spec.options)) {
+        if (optionKey in group) return group[optionKey]
+    }
+    return null
+}
+
 export const NumberFormatSpec = {
     options: {
         format: {
@@ -9,30 +20,34 @@ export const NumberFormatSpec = {
                 controlMapping: {
                     currency: "currencyOptions",
                     percent: "percentOptions"
-                }
+                },
+                summary: value => value === "percent" ? "%" : null,
             },
             notation: {
                 type: "select",
                 label: "Notation",
                 options: ["standard", "compact", "engineering", "scientific"],
                 default: "standard",
+                summary: value => ({standard: null, compact: "comp", engineering: "eng", scientific: "sci"})[value],
             },
             useGrouping: {
                 type: "boolean",
                 label: "Show thousands separator",
-                default: true
+                default: true,
+                summary: value => value ? "sep" : null,
             },
             signDisplay: {
                 type: "select",
                 label: "Sign display",
                 options: ["auto", "always", "never", "exceptZero"],
-                default: "auto"
+                default: "auto",
+                summary: value => ["auto", "never"].includes(value) ? null : "+",
             },
             roundingMode: {
                 type: "select",
                 label: "Rounding mode",
                 options: ["halfExpand", "ceil", "floor", "expand", "trunc"],
-                default: "halfExpand"
+                default: "halfExpand",
             }
         },
         decimalOptions: {
@@ -42,20 +57,21 @@ export const NumberFormatSpec = {
                 label: "Minimum decimals",
                 min: 0,
                 max: 20,
-                default: 2
+                default: 2,
+                summary: value => value > 0 ? `${value}d` : null,
             },
             maximumFractionDigits: {
                 type: "number",
                 label: "Maximum decimals",
                 min: 0,
                 max: 20,
-                default: 2
+                default: 2,
             },
             trailingZeroDisplay: {
                 type: "select",
                 label: "Trailing zeros",
                 options: ["auto", "stripIfInteger"],
-                default: "auto"
+                default: "auto",
             }
         },
         currencyOptions: {
@@ -64,19 +80,20 @@ export const NumberFormatSpec = {
                 type: "select",
                 label: "Currency",
                 options: ["EUR", "USD", "GBP", "CNY", "JPY", "SEK", "NOK"],
-                default: "EUR"
+                default: "EUR",
+                summary: value => value,
             },
             currencyDisplay: {
                 type: "select",
                 label: "Currency display",
                 options: ["symbol", "narrowSymbol", "code", "name"],
-                default: "symbol"
+                default: "symbol",
             },
             currencySign: {
                 type: "select",
                 label: "Sign display",
                 options: ["standard", "accounting"],
-                default: "standard"
+                default: "standard",
             }
         },
         percentOptions: {
@@ -86,7 +103,7 @@ export const NumberFormatSpec = {
                 label: "Scale factor",
                 min: 1,
                 max: 100,
-                default: 1
+                default: 1,
             }
         }
     }
@@ -179,4 +196,15 @@ export const DateFormatSpec = {
             }
         }
     }
+}
+
+export const FORMAT_SPECS = {
+    float: NumberFormatSpec,
+    int: NumberFormatSpec,
+    datetime: DateFormatSpec
+    // Add other specs here
+}
+
+export function getFormatSpec(dtype) {
+    return FORMAT_SPECS[dtype] ?? null
 }

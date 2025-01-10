@@ -1,5 +1,5 @@
 import { FormatBuilder } from "./format-builder.js"
-import { NumberFormatSpec, DateFormatSpec } from "./format-specs.js"
+import { getFormatSpec } from "./format-specs.js"
 
 export class FormatDialog extends HTMLElement {
     constructor() {
@@ -34,13 +34,7 @@ export class FormatDialog extends HTMLElement {
 
     // MARK: get/set
     get spec() {
-        const specs = {
-            float: NumberFormatSpec,
-            int: NumberFormatSpec,
-            datetime: DateFormatSpec,
-            // Additional specs will be added here
-        }
-        return specs[this.dataType]
+        return getFormatSpec(this.dataType)
     }
 
     get form() {
