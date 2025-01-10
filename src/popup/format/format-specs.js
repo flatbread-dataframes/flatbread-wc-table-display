@@ -119,9 +119,9 @@ export const DateFormatSpec = {
                 default: "preset",
                 controlMapping: {
                     preset: "presetOptions",
-                    custom: "customOptions"
+                    custom: "customOptions",
                 }
-            }
+            },
         },
         presetOptions: {
             sectionLabel: "Preset Format",
@@ -129,13 +129,15 @@ export const DateFormatSpec = {
                 type: "select",
                 label: "Date style",
                 options: ["full", "long", "medium", "short", "none"],
-                default: "short"
+                default: "short",
+                summary: value => value === "none" ? null : value.charAt(0),
             },
             timeStyle: {
                 type: "select",
                 label: "Time style",
                 options: ["full", "long", "medium", "short", "none"],
-                default: "none"
+                default: "none",
+                summary: value => value === "none" ? null : "t",
             }
         },
         customOptions: {
@@ -144,55 +146,62 @@ export const DateFormatSpec = {
                 type: "select",
                 label: "Weekday",
                 options: ["long", "short", "narrow", "none"],
-                default: "none"
+                default: "none",
             },
             era: {
                 type: "select",
                 label: "Era",
                 options: ["long", "short", "narrow", "none"],
-                default: "none"
+                default: "none",
             },
             year: {
                 type: "select",
                 label: "Year",
                 options: ["numeric", "2-digit", "none"],
-                default: "numeric"
+                default: "numeric",
+                summary: value => value === "none" ? null : "y",
             },
             month: {
                 type: "select",
                 label: "Month",
                 options: ["numeric", "2-digit", "long", "short", "narrow", "none"],
-                default: "numeric"
+                default: "numeric",
+                summary: value => value === "none" ? null : "m",
             },
             day: {
                 type: "select",
                 label: "Day",
                 options: ["numeric", "2-digit", "none"],
-                default: "numeric"
+                default: "numeric",
+                summary: value => value === "none" ? null : "d",
             },
             hour: {
                 type: "select",
                 label: "Hour",
                 options: ["numeric", "2-digit", "none"],
-                default: "none"
+                default: "none",
+                summary: value => value === "none" ? null : "H",
+
             },
             minute: {
                 type: "select",
                 label: "Minute",
                 options: ["numeric", "2-digit", "none"],
-                default: "none"
+                default: "none",
+                summary: value => value === "none" ? null : "M",
             },
             second: {
                 type: "select",
                 label: "Second",
                 options: ["numeric", "2-digit", "none"],
-                default: "none"
+                default: "none",
+                summary: value => value === "none" ? null : "S",
             },
             hourCycle: {
                 type: "select",
                 label: "Hour cycle",
                 options: ["h11", "h12", "h23", "h24"],
-                default: "h23"
+                default: "h23",
             }
         }
     }
