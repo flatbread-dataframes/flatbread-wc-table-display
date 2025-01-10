@@ -1,4 +1,5 @@
 import { FormatDialog } from "./format-dialog.js"
+import { getPresetsForType } from "./format-presets.js"
 
 export class FormatTable extends HTMLElement {
     constructor(data) {
@@ -7,6 +8,7 @@ export class FormatTable extends HTMLElement {
         this.data = data
 
         this.handleEditClick = this.handleEditClick.bind(this)
+        this.handlePresetChange = this.handlePresetChange.bind(this)
         this.handleDialogOpen = this.handleDialogOpen.bind(this)
         this.handleDialogClose = this.handleDialogClose.bind(this)
         this.handleDialogFormatApply = this.handleDialogFormatApply.bind(this)
@@ -26,10 +28,12 @@ export class FormatTable extends HTMLElement {
 
     addEventListeners() {
         this.shadowRoot.addEventListener("click", this.handleEditClick)
+        this.shadowRoot.addEventListener("change", this.handlePresetChange)
     }
 
     removeEventListeners() {
         this.shadowRoot.removeEventListener("click", this.handleEditClick)
+        this.shadowRoot.removeEventListener("change", this.handlePresetChange)
     }
 
     // MARK: get/set
@@ -49,6 +53,27 @@ export class FormatTable extends HTMLElement {
         const row = editButton.closest("tr")
         const columnIndex = parseInt(row.dataset.columnIndex)
         this.openDialog(columnIndex)
+    }
+
+    handlePresetChange(event) {
+        if (!event.target.matches("[data-action='preset']")) return
+
+        const select = event.target
+        const row = select.closest("tr")
+        const columnIndex = parseInt(row.dataset.columnIndex)
+        const presetKey = select.value
+
+        if (!presetKey) return // "Custom" selected
+
+        const attrs = this.data.columns.attrs[columnIndex]
+        const presets = getPresetsForType(attrs.dtype)
+        const preset = presets[presetKey]
+
+        if (preset) {
+            const currentFormatOptions = [...(this.data.formatOptions ?? [])]
+            currentFormatOptions[columnIndex] = preset.options
+            this.data.formatOptions = currentFormatOptions
+        }
     }
 
     handleDialogOpen() {
@@ -72,24 +97,6 @@ export class FormatTable extends HTMLElement {
     }
 
     // MARK: api
-    update() {
-        if (!this.tbody) return
-
-        this.tbody.innerHTML = this.data.columns.values.map((col, idx) => {
-            const attrs = this.data.columns.attrs[idx]
-            return `
-                <tr data-column-index="${idx}">
-                    <td>${Array.isArray(col) ? col.at(-1) : col}</td>
-                    <td>${attrs.dtype ?? "-"}</td>
-                    <td>${this.getFormatSummary(attrs.formatOptions)}</td>
-                    <td>
-                        <button data-action="edit">Edit</button>
-                    </td>
-                </tr>
-            `
-        }).join("")
-    }
-
     openDialog(columnIndex) {
         const column = this.data.columns.values[columnIndex]
         const attrs = this.data.columns.attrs[columnIndex]
@@ -152,6 +159,7 @@ export class FormatTable extends HTMLElement {
                         <th>Name</th>
                         <th>Type</th>
                         <th>Format</th>
+                        <th>Preset</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -160,6 +168,36 @@ export class FormatTable extends HTMLElement {
         `
         this.update()
     }
+
+    update() {
+        if (!this.tbody) return
+
+        this.tbody.innerHTML = this.data.columns.values.map((col, idx) => {
+            const attrs = this.data.columns.attrs[idx]
+            const presets = getPresetsForType(attrs.dtype)
+            const presetOptions = Object.entries(presets)
+                .map(([key, preset]) => `<option value="${key}">${preset.label}</option>`)
+                .join("")
+
+            return `
+                <tr data-column-index="${idx}">
+                    <td>${Array.isArray(col) ? col.at(-1) : col}</td>
+                    <td>${attrs.dtype ?? "-"}</td>
+                    <td>${this.getFormatSummary(attrs.formatOptions)}</td>
+                    <td>
+                        <select data-action="preset">
+                            <option value="">Custom</option>
+                            ${presetOptions}
+                        </select>
+                    </td>
+                    <td>
+                        <button data-action="edit">Edit</button>
+                    </td>
+                </tr>
+            `
+        }).join("")
+    }
+
 }
 
 customElements.define("format-table", FormatTable)
