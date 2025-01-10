@@ -1,6 +1,6 @@
 export const NumberPresets = {
     default: {
-        label: "Default",
+        label: "Standard",
         options: {}
     },
     currency: {
@@ -32,7 +32,7 @@ export const NumberPresets = {
 
 export const DatePresets = {
     default: {
-        label: "Default",
+        label: "Standard",
         options: {}
     },
     date: {
