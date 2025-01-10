@@ -75,6 +75,8 @@ export class FormatTable extends HTMLElement {
             currentFormatOptions[columnIndex] = preset.options
             this.data.formatOptions = currentFormatOptions
         }
+
+        this.update()
     }
 
     handleDialogOpen() {
