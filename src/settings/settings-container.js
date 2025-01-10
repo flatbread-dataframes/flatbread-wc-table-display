@@ -129,11 +129,13 @@ export class SettingsContainer extends HTMLElement {
                 opacity: 0;
                 visibility: hidden;
                 transition: opacity 0.2s ease, visibility 0.2s ease;
+                pointer-events: none;
             }
 
             :host([open]) settings-popup {
                 opacity: 1;
                 visibility: visible;
+                pointer-events: auto;
             }
         `
         this.shadowRoot.innerHTML = `
