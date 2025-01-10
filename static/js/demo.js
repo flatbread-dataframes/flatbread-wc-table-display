@@ -18,17 +18,7 @@ class Demo {
             })
         })
 
-        // Formatting elements
-        document.getElementById("as-currency").addEventListener("change", () => this.handleFormattingChange())
-        document.getElementById("notation").addEventListener("change", () => this.handleFormattingChange())
-        document.getElementById("sep-thousands").addEventListener("change", () => this.handleFormattingChange())
-
         // Controls
-        document.getElementById("controls").addEventListener("change", event => {
-            if (!event.target.matches(`[type="checkbox"]`)) return
-            this.handleStylingChange(event)
-        })
-
         document.getElementById("n").addEventListener("change", event => {
             this.updateTable(event.target.value)
         })
@@ -77,28 +67,6 @@ class Demo {
         const op = this.getCalculation(n)
         const newValues = this.dataViewer.data.values.map(row => row.map(op))
         this.dataViewer.data.values = newValues
-    }
-
-    getFormatOptions() {
-        return {
-            style: document.querySelector(`input[name="as-currency"]`).checked ? "currency" : "decimal",
-            notation: document.getElementById("notation").value,
-            currency: "EUR",
-            useGrouping: document.querySelector('input[name="sep-thousands"]').checked,
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-            trailingZeroDisplay: document.querySelector(`input[name="as-currency"]`).checked ? "auto" : "stripIfInteger"
-        }
-    }
-
-    handleFormattingChange() {
-        const formatOptions = Array(this.dataViewer.data.values.length).fill(this.getFormatOptions())
-        this.dataViewer.data.formatOptions = formatOptions
-    }
-
-    handleStylingChange(event) {
-        const attr = event.target.id
-        this.dataViewer.toggleAttribute(attr)
     }
 }
 
