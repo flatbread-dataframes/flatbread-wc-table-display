@@ -55,7 +55,7 @@ export class SettingsContainer extends HTMLElement {
 
         // Position to the left of the trigger button
         popup.style.top = `${trigger.top}px`
-        popup.style.right = `${window.innerWidth - trigger.left + 8}px` // 8px offset
+        popup.style.left = `${trigger.left - popup.offsetWidth - 8}px` // 8px offset
     }
 
     // MARK: handlers
@@ -123,8 +123,6 @@ export class SettingsContainer extends HTMLElement {
 
             settings-popup {
                 position: fixed;
-                top: 0;
-                right: 100%;
                 margin-right: 0.5rem;
                 z-index: 100;
 

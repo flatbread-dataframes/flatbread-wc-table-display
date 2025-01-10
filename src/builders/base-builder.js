@@ -24,7 +24,8 @@ export class BaseTableBuilder {
         return `
             table {
                 border-collapse: separate;
-                border-spacing: 0
+                border-spacing: 0;
+                cursor: var(--cursor, auto);
             }
             tbody th { text-align: left }
             td { text-align: right }

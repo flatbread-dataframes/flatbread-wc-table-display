@@ -1,7 +1,9 @@
 import { FormatBuilder } from "./format-builder.js"
 import { getFormatSpec } from "./format-specs.js"
+import { DraggableMixin } from "../drag/draggable-mixin.js"
+import { DragHandle } from "../drag/drag-handle.js"
 
-export class FormatDialog extends HTMLElement {
+export class FormatDialog extends DraggableMixin(HTMLElement) {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
@@ -18,6 +20,8 @@ export class FormatDialog extends HTMLElement {
     // MARK: setup
     connectedCallback() {
         this.render()
+        this.initializeDragHandle()
+        this.positionDialog()
         this.addEventListeners()
     }
 
@@ -32,6 +36,13 @@ export class FormatDialog extends HTMLElement {
         cancelBtn?.addEventListener("click", this.handleCancel)
     }
 
+    initializePosition() {
+        const rect = this.getBoundingClientRect()
+        this.style.top = `${rect.top}px`
+        this.style.left = `${rect.left}px`
+        this.style.transform = 'none'
+    }
+
     // MARK: get/set
     get spec() {
         return getFormatSpec(this.dataType)
@@ -42,6 +53,15 @@ export class FormatDialog extends HTMLElement {
     }
 
     // MARK: api
+    positionDialog() {
+        const rect = this.getBoundingClientRect()
+        const viewportWidth = document.documentElement.clientWidth
+        const viewportHeight = document.documentElement.clientHeight
+
+        this.style.left = `${(viewportWidth - rect.width) / 2}px`
+        this.style.top = `${(viewportHeight - rect.height) / 2}px`
+    }
+
     updateDependentFieldsets() {
         // Reset all dependent fieldsets to hidden
         this.form.querySelectorAll("[data-dependent]")
@@ -118,15 +138,18 @@ export class FormatDialog extends HTMLElement {
         const styles = `
             :host {
                 position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
                 background: var(--background-color, white);
                 border: 1px solid var(--border-color, currentColor);
                 border-radius: 4px;
                 padding: 1rem;
                 min-width: 300px;
                 z-index: 1001;
+            }
+
+            header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
             }
 
             h3 {
@@ -175,7 +198,10 @@ export class FormatDialog extends HTMLElement {
 
         this.shadowRoot.innerHTML = `
             <style>${styles}</style>
-            <h3>Format Settings: ${this.columnName}</h3>
+            <header>
+                <h3>Format Settings: ${this.columnName}</h3>
+                <drag-handle></drag-handle>
+            </header>
             <form>
                 <div class="form-content">
                     ${this.buildFormContent()}

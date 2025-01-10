@@ -1,6 +1,8 @@
 import { FormatTable } from "./format/format-table.js"
+import { DraggableMixin } from "./drag/draggable-mixin.js"
+import { DragHandle } from "./drag/drag-handle.js"
 
-export class SettingsPopup extends HTMLElement {
+export class SettingsPopup extends DraggableMixin(HTMLElement) {
     constructor(data) {
         super()
         this.attachShadow({ mode: "open" })
@@ -13,6 +15,7 @@ export class SettingsPopup extends HTMLElement {
     // MARK: setup
     connectedCallback() {
         this.render()
+        this.initializeDragHandle()
         this.addEventListeners()
     }
 
@@ -66,6 +69,12 @@ export class SettingsPopup extends HTMLElement {
                 padding: 1rem;
             }
 
+            header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+            }
+
             nav {
                 display: flex;
                 gap: 0.5rem;
@@ -108,14 +117,17 @@ export class SettingsPopup extends HTMLElement {
         `
         this.shadowRoot.innerHTML = `
             <style>${styles}</style>
-            <nav role="tablist">
-                <button role="tab"
-                    aria-selected="true"
-                    aria-controls="general">General</button>
-                <button role="tab"
-                    aria-selected="false"
-                    aria-controls="format">Format</button>
-            </nav>
+            <header>
+                <nav role="tablist">
+                    <button role="tab"
+                        aria-selected="true"
+                        aria-controls="general">General</button>
+                    <button role="tab"
+                        aria-selected="false"
+                        aria-controls="format">Format</button>
+                </nav>
+                <drag-handle></drag-handle>
+            </header>
 
             <section role="tabpanel" id="general" selected>
                 <label for="section-levels">

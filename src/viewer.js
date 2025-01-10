@@ -151,7 +151,6 @@ export class DataViewer extends HTMLElement {
                     align-items: start;
                     gap: 8px;
                     position: relative;
-                    cursor: var(--cursor, auto)
                 }
                 settings-container {
                     position: static;
