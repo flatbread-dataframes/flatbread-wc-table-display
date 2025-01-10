@@ -1,5 +1,5 @@
 import { Data } from "./data.js"
-import { SettingsContainer } from "./popup/settings-container.js"
+import { SettingsContainer } from "./settings/settings-container.js"
 import { DataTable } from "./table.js"
 
 export class DataViewer extends HTMLElement {
