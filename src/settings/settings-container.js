@@ -1,5 +1,6 @@
 import { SettingsTrigger } from "./settings-trigger.js"
 import { SettingsPopup } from "./settings-popup.js"
+import { BREAKPOINTS } from "../config.js"
 
 export class SettingsContainer extends HTMLElement {
     constructor(data, options) {
@@ -90,6 +91,10 @@ export class SettingsContainer extends HTMLElement {
                 visibility: hidden;
                 transition: opacity 0.2s ease, visibility 0.2s ease;
                 pointer-events: none;
+
+                @media (max-width: ${BREAKPOINTS.POPUP_MOBILE}) {
+                    width: auto;
+                }
             }
 
             :host([open]) settings-popup {

@@ -1,3 +1,5 @@
+import { BREAKPOINTS } from "../../config.js"
+
 export class DragHandle extends HTMLElement {
     constructor() {
         super()
@@ -17,7 +19,7 @@ export class DragHandle extends HTMLElement {
                 cursor: grab;
                 user-select: none;
 
-                @media (max-width: 768px) {
+                @media (max-width: ${BREAKPOINTS.POPUP_MOBILE}) {
                     display: none;
                 }
             }

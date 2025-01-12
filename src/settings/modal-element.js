@@ -1,5 +1,6 @@
 import { DraggableMixin } from "./drag/draggable-mixin.js"
 import { DragHandle } from "./drag/drag-handle.js"
+import { MEDIA_QUERIES, BREAKPOINTS } from "../config.js"
 
 export class ModalElement extends DraggableMixin(HTMLElement) {
     static modalStacks = new WeakMap()
@@ -101,7 +102,7 @@ export class ModalElement extends DraggableMixin(HTMLElement) {
 
     // MARK: api
     position() {
-        if (!window.matchMedia("(min-width: 769px)").matches) return
+        if (!MEDIA_QUERIES.POPUP_MOBILE.matches) return
         const rect = this.getBoundingClientRect()
         this.style.left = `${(window.innerWidth - rect.width) / 2}px`
         this.style.top = `${(window.innerHeight - rect.height) / 2}px`
@@ -119,7 +120,7 @@ export class ModalElement extends DraggableMixin(HTMLElement) {
                 padding: 1rem;
                 z-index: 1000;
 
-                @media (max-width: 768px) {
+                @media (max-width: ${BREAKPOINTS.POPUP_MOBILE}) {
                     inset: 1rem 1rem auto 1rem;
                     min-width: 0;
                     max-height: calc(100vh - 2rem);

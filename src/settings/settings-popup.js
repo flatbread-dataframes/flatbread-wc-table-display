@@ -1,5 +1,6 @@
 import { ModalElement } from "./modal-element.js"
 import { FormatTable } from "./format/format-table.js"
+import { MEDIA_QUERIES } from "../config.js"
 
 export class SettingsPopup extends ModalElement {
     constructor(data, options, state) {
@@ -73,15 +74,13 @@ export class SettingsPopup extends ModalElement {
 
     // MARK: api
     position() {
-        if (!window.matchMedia("(min-width: 769px)").matches) return
+        if (!MEDIA_QUERIES.POPUP_MOBILE.matches) return
         if (!this.triggerElement) return
 
         const trigger = this.triggerElement.getBoundingClientRect()
-        if (window.matchMedia("(min-width: 769px)").matches) {
-            // Position left edge of popup so its right edge aligns with trigger
-            this.style.top = `${trigger.top}px`
-            this.style.left = `${trigger.left - this.offsetWidth - 8}px`
-        }
+        // Position left edge of popup so its right edge aligns with trigger
+        this.style.top = `${trigger.top}px`
+        this.style.left = `${trigger.left - this.offsetWidth - 8}px`
     }
 
     // MARK: render
