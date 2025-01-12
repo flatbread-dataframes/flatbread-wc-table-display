@@ -5,7 +5,8 @@ import { DataTable } from "./table.js"
 export class DataViewer extends HTMLElement {
     static get observedAttributes() {
         return [
-            "src", "type", "locale", "na-rep",
+            "src", "type", "hide-settings-menu",
+            "locale", "na-rep",
             "hide-column-borders", "hide-row-borders",
             "hide-thead-border", "hide-index-border",
             "show-hover", "margin-labels",
@@ -20,6 +21,7 @@ export class DataViewer extends HTMLElement {
             buffer: 30,
             marginLabels: [],
             type: "default",
+            settingsMenu: true,
             styling: {
                 sectionLevels: 0,
                 collapseColumns: null,
@@ -75,6 +77,10 @@ export class DataViewer extends HTMLElement {
                 return
             case "type":
                 this.options.type = newValue ?? DataViewer.defaults.type
+                break
+            case "hide-settings-menu":
+                // currently handled only with css (see styles)
+                this.options.settingsMenu = !this.getBooleanAttribute(newValue) ?? DataViewer.defaults.settingsMenu
                 break
             case "locale":
                 this.options.locale = newValue ?? DataViewer.defaults.locale
@@ -165,6 +171,9 @@ export class DataViewer extends HTMLElement {
                 }
                 :host settings-container[open] {
                     opacity: 1;
+                }
+                :host([hide-settings-menu]) settings-container {
+                    display: none;
                 }
                 @media (hover: none) {
                     :host settings-container {
