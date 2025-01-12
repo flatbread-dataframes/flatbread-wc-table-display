@@ -183,7 +183,7 @@ export class DataViewer extends HTMLElement {
             </style>
             <data-table></data-table>
         `
-        const settingsContainer = new SettingsContainer(this.data)
+        const settingsContainer = new SettingsContainer(this.data, this.options)
         this.shadowRoot.appendChild(settingsContainer)
     }
 

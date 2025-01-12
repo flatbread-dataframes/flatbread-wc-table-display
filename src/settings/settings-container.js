@@ -3,10 +3,11 @@ import { SettingsPopup } from "./settings-popup.js"
 import { FormatDialog } from "./format/format-dialog.js"
 
 export class SettingsContainer extends HTMLElement {
-    constructor(data) {
+    constructor(data, options) {
         super()
         this.attachShadow({ mode: "open" })
         this.data = data
+        this.options = options
 
         this.handleTriggerClick = this.handleTriggerClick.bind(this)
         this.handleModalClose = this.handleModalClose.bind(this)
@@ -55,7 +56,7 @@ export class SettingsContainer extends HTMLElement {
         if (this.isVisible) {
             this.handleModalClose() // Use existing close handler
         } else {
-            const settingsPopup = new SettingsPopup(this.data)
+            const settingsPopup = new SettingsPopup(this.data, this.options)
             settingsPopup.triggerElement = this.trigger
             this.shadowRoot.appendChild(settingsPopup)
             this.isVisible = true

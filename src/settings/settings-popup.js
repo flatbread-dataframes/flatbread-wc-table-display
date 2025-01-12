@@ -2,9 +2,10 @@ import { ModalElement } from "./modal-element.js"
 import { FormatTable } from "./format/format-table.js"
 
 export class SettingsPopup extends ModalElement {
-    constructor(data) {
+    constructor(data, options) {
         super()
         this.data = data
+        this.options = options
 
         this.handleInputChange = this.handleInputChange.bind(this)
         this.handleTabClick = this.handleTabClick.bind(this)
@@ -29,7 +30,7 @@ export class SettingsPopup extends ModalElement {
             composed: true,
             detail: {
                 setting: input.id,
-                value: input.type === "number" ? input.value : input.checked
+                value: ["number", "text"].includes(input.type) ? input.value : input.checked
             }
         }))
     }
@@ -125,28 +126,32 @@ export class SettingsPopup extends ModalElement {
                     Section levels
                     <input type="number" id="section-levels" min="0" value="0">
                 </label>
+                <label for="na-rep">
+                    Na rep
+                    <input type="text" id="na-rep" value="${this.options.naRep}">
+                </label>
                 <label for="hide-column-borders">
-                    <input type="checkbox" id="hide-column-borders">
+                    <input type="checkbox" id="hide-column-borders" ${!this.options.styling.columnBorders ? "checked" : ""}>
                     Hide column borders
                 </label>
                 <label for="hide-row-borders">
-                    <input type="checkbox" id="hide-row-borders">
+                    <input type="checkbox" id="hide-row-borders" ${!this.options.styling.rowBorders ? "checked" : ""}>
                     Hide row borders
                 </label>
                 <label for="hide-index-border">
-                    <input type="checkbox" id="hide-index-border">
+                    <input type="checkbox" id="hide-index-border" ${!this.options.styling.indexBorder ? "checked" : ""}>
                     Hide index border
                 </label>
                 <label for="hide-thead-border">
-                    <input type="checkbox" id="hide-thead-border">
+                    <input type="checkbox" id="hide-thead-border" ${!this.options.styling.theadBorder ? "checked" : ""}>
                     Hide thead border
                 </label>
                 <label for="show-hover">
-                    <input type="checkbox" id="show-hover">
+                    <input type="checkbox" id="show-hover" ${this.options.styling.showHover ? "checked" : ""}>
                     Show hover effect
                 </label>
                 <label for="collapse-columns">
-                    <input type="checkbox" id="collapse-columns">
+                    <input type="checkbox" id="collapse-columns" ${this.options.styling.collapseColumns ? "checked" : ""}>
                     Collapse columns
                 </label>
             </section>
