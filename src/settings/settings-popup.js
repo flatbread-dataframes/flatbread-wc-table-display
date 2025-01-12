@@ -124,7 +124,7 @@ export class SettingsPopup extends ModalElement {
             <section role="tabpanel" id="general" selected>
                 <label for="section-levels">
                     Section levels
-                    <input type="number" id="section-levels" min="0" value="0">
+                    <input type="number" id="section-levels" min="0" value="${this.options.styling.sectionLevels}">
                 </label>
                 <label for="na-rep">
                     Na rep
