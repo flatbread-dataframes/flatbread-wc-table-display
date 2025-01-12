@@ -1,6 +1,5 @@
 import { SettingsTrigger } from "./settings-trigger.js"
 import { SettingsPopup } from "./settings-popup.js"
-import { FormatDialog } from "./format/format-dialog.js"
 
 export class SettingsContainer extends HTMLElement {
     constructor(data, options) {
@@ -8,9 +7,13 @@ export class SettingsContainer extends HTMLElement {
         this.attachShadow({ mode: "open" })
         this.data = data
         this.options = options
+        this.state = {
+            selectedTab: null,
+        }
 
         this.handleTriggerClick = this.handleTriggerClick.bind(this)
         this.handleModalClose = this.handleModalClose.bind(this)
+        this.handleTabSelect = this.handleTabSelect.bind(this)
     }
 
     // MARK: setup
@@ -26,6 +29,7 @@ export class SettingsContainer extends HTMLElement {
     addEventListeners() {
         this.trigger.addEventListener("click", this.handleTriggerClick)
         this.shadowRoot.addEventListener("modal-close", this.handleModalClose)
+        this.shadowRoot.addEventListener("select-tab", this.handleTabSelect)
     }
 
     removeEventListeners() {
@@ -44,7 +48,6 @@ export class SettingsContainer extends HTMLElement {
 
     // MARK: handlers
     handleModalClose() {
-        // Only close the container if the settings popup is being closed
         this.isVisible = false
         this.removeAttribute("open")
         this.popup?.remove()
@@ -54,14 +57,18 @@ export class SettingsContainer extends HTMLElement {
         event.stopPropagation()
 
         if (this.isVisible) {
-            this.handleModalClose() // Use existing close handler
+            this.handleModalClose()
         } else {
-            const settingsPopup = new SettingsPopup(this.data, this.options)
+            const settingsPopup = new SettingsPopup(this.data, this.options, this.state)
             settingsPopup.triggerElement = this.trigger
             this.shadowRoot.appendChild(settingsPopup)
             this.isVisible = true
             this.setAttribute("open", "")
         }
+    }
+
+    handleTabSelect(event) {
+        this.state.selectedTab = event.detail.selectedTab
     }
 
     // MARK: render

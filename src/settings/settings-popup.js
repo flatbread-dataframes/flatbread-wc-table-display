@@ -2,13 +2,15 @@ import { ModalElement } from "./modal-element.js"
 import { FormatTable } from "./format/format-table.js"
 
 export class SettingsPopup extends ModalElement {
-    constructor(data, options) {
+    constructor(data, options, state) {
         super()
         this.data = data
         this.options = options
+        this.state = state ?? {}
 
         this.handleInputChange = this.handleInputChange.bind(this)
         this.handleTabClick = this.handleTabClick.bind(this)
+        this.handleSelectTab = this.handleSelectTab.bind(this)
     }
 
     // MARK: setup
@@ -20,6 +22,15 @@ export class SettingsPopup extends ModalElement {
     addEventListeners() {
         this.shadowRoot.addEventListener("change", this.handleInputChange)
         this.shadowRoot.addEventListener("click", this.handleTabClick)
+    }
+
+    // MARK: get/set
+    get tabs() {
+        return this.shadowRoot.querySelectorAll("[role=tab]")
+    }
+
+    get panels() {
+        return this.shadowRoot.querySelectorAll("[role=tabpanel]")
     }
 
     // MARK: handlers
@@ -38,16 +49,26 @@ export class SettingsPopup extends ModalElement {
     handleTabClick(event) {
         const tab = event.target.closest("[role=tab]")
         if (!tab) return
+        this.handleSelectTab(tab)
+    }
 
-        const tabs = this.shadowRoot.querySelectorAll("[role=tab]")
-        const panels = this.shadowRoot.querySelectorAll("[role=tabpanel]")
+    handleSelectTab(tab) {
+        this.state.selectedTab = tab.getAttribute("aria-controls")
 
-        tabs.forEach(tab => tab.setAttribute("aria-selected", "false"))
-        panels.forEach(panel => panel.removeAttribute("selected"))
+        this.tabs.forEach(tab => tab.setAttribute("aria-selected", "false"))
+        this.panels.forEach(panel => panel.removeAttribute("selected"))
 
         tab.setAttribute("aria-selected", "true")
-        const panel = this.shadowRoot.querySelector(`#${tab.getAttribute("aria-controls")}`)
+        const panel = this.shadowRoot.getElementById(this.state.selectedTab)
         panel.setAttribute("selected", "")
+
+        this.dispatchEvent(new CustomEvent("select-tab", {
+            bubbles: true,
+            composed: true,
+            detail: {
+                selectedTab: this.state.selectedTab,
+            }
+        }))
     }
 
     // MARK: api
@@ -163,6 +184,10 @@ export class SettingsPopup extends ModalElement {
         super.render()
         const formatTable = new FormatTable(this.data)
         this.shadowRoot.getElementById("format").appendChild(formatTable)
+        if (this.state.selectedTab) {
+            const tab = this.shadowRoot.querySelector(`[aria-controls="${this.state.selectedTab}"]`)
+            this.handleSelectTab(tab)
+        }
     }
 }
 
