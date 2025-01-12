@@ -1,11 +1,9 @@
+import { ModalElement } from "./modal-element.js"
 import { FormatTable } from "./format/format-table.js"
-import { DraggableMixin } from "./drag/draggable-mixin.js"
-import { DragHandle } from "./drag/drag-handle.js"
 
-export class SettingsPopup extends DraggableMixin(HTMLElement) {
+export class SettingsPopup extends ModalElement {
     constructor(data) {
         super()
-        this.attachShadow({ mode: "open" })
         this.data = data
 
         this.handleInputChange = this.handleInputChange.bind(this)
@@ -14,21 +12,14 @@ export class SettingsPopup extends DraggableMixin(HTMLElement) {
 
     // MARK: setup
     connectedCallback() {
-        this.render()
-        this.initializeDragHandle()
+        super.connectedCallback()
         this.addEventListeners()
     }
 
-    disconnectedCallback() {
-        this.removeEventListeners()
-    }
-
     addEventListeners() {
-        this.shadowRoot.addEventListener("change", this.handleInputChange.bind(this))
+        this.shadowRoot.addEventListener("change", this.handleInputChange)
         this.shadowRoot.addEventListener("click", this.handleTabClick)
     }
-
-    removeEventListeners() {}
 
     // MARK: handlers
     handleInputChange(event) {
@@ -58,23 +49,22 @@ export class SettingsPopup extends DraggableMixin(HTMLElement) {
         panel.setAttribute("selected", "")
     }
 
+    // MARK: api
+    position() {
+        if (!window.matchMedia("(min-width: 769px)").matches) return
+        if (!this.triggerElement) return
+
+        const trigger = this.triggerElement.getBoundingClientRect()
+        if (window.matchMedia("(min-width: 769px)").matches) {
+            // Position left edge of popup so its right edge aligns with trigger
+            this.style.top = `${trigger.top}px`
+            this.style.left = `${trigger.left - this.offsetWidth - 8}px`
+        }
+    }
+
     // MARK: render
-    render() {
-        const styles = `
-            :host {
-                display: grid;
-                background: var(--background-color, white);
-                border: 1px solid var(--border-color, currentColor);
-                border-radius: 4px;
-                padding: 1rem;
-            }
-
-            header {
-                display: flex;
-                align-items: flex-start;
-                justify-content: space-between;
-            }
-
+    getComponentStyles() {
+        return `
             nav {
                 display: flex;
                 gap: 0.5rem;
@@ -99,7 +89,8 @@ export class SettingsPopup extends DraggableMixin(HTMLElement) {
             [role="tabpanel"] {
                 visibility: hidden;
                 grid-column: 1;
-                grid-row: 2;
+                grid-row: 3;
+                overflow-x: auto;
             }
             [role="tabpanel"][selected] {
                 visibility: visible;
@@ -115,19 +106,19 @@ export class SettingsPopup extends DraggableMixin(HTMLElement) {
                 width: 3rem;
             }
         `
-        this.shadowRoot.innerHTML = `
-            <style>${styles}</style>
-            <header>
-                <nav role="tablist">
-                    <button role="tab"
-                        aria-selected="true"
-                        aria-controls="general">General</button>
-                    <button role="tab"
-                        aria-selected="false"
-                        aria-controls="format">Format</button>
-                </nav>
-                <drag-handle></drag-handle>
-            </header>
+    }
+
+    buildContent() {
+        return `
+            ${this.buildHeader("Settings")}
+            <nav role="tablist">
+                <button role="tab"
+                    aria-selected="true"
+                    aria-controls="general">General</button>
+                <button role="tab"
+                    aria-selected="false"
+                    aria-controls="format">Format</button>
+            </nav>
 
             <section role="tabpanel" id="general" selected>
                 <label for="section-levels">
@@ -160,8 +151,11 @@ export class SettingsPopup extends DraggableMixin(HTMLElement) {
                 </label>
             </section>
 
-            <section role="tabpanel" id="format"></section>
-        `
+            <section role="tabpanel" id="format"></section>`
+    }
+
+    render() {
+        super.render()
         const formatTable = new FormatTable(this.data)
         this.shadowRoot.getElementById("format").appendChild(formatTable)
     }

@@ -1,15 +1,16 @@
+import { ModalElement } from "../modal-element.js"
 import { FormatBuilder } from "./format-builder.js"
 import { getFormatSpec } from "./format-specs.js"
-import { DraggableMixin } from "../drag/draggable-mixin.js"
-import { DragHandle } from "../drag/drag-handle.js"
 
-export class FormatDialog extends DraggableMixin(HTMLElement) {
-    constructor() {
+export class FormatDialog extends ModalElement {
+    constructor(state) {
         super()
-        this.attachShadow({ mode: "open" })
-        this.dataType = null
-        this.columnName = ""
-        this.currentOptions = {}
+        const { dtype, columnName, formatOptions, columnIndex } = state
+
+        this.dataType = dtype ?? null
+        this.columnName = columnName ?? ""
+        this.currentOptions = formatOptions ?? {}
+        this.columnIndex = columnIndex ?? null
 
         this.handleSubmit = this.handleSubmit.bind(this)
         this.handleChange = this.handleChange.bind(this)
@@ -19,14 +20,12 @@ export class FormatDialog extends DraggableMixin(HTMLElement) {
 
     // MARK: setup
     connectedCallback() {
-        this.render()
-        this.initializeDragHandle()
-        this.positionDialog()
+        super.connectedCallback()
         this.addEventListeners()
     }
 
     addEventListeners() {
-        const form = this.shadowRoot.querySelector("form")
+        const form = this.form
         form.addEventListener("submit", this.handleSubmit)
         form.addEventListener("change", this.handleChange)
 
@@ -36,13 +35,6 @@ export class FormatDialog extends DraggableMixin(HTMLElement) {
         cancelBtn?.addEventListener("click", this.handleCancel)
     }
 
-    initializePosition() {
-        const rect = this.getBoundingClientRect()
-        this.style.top = `${rect.top}px`
-        this.style.left = `${rect.left}px`
-        this.style.transform = 'none'
-    }
-
     // MARK: get/set
     get spec() {
         return getFormatSpec(this.dataType)
@@ -50,51 +42,6 @@ export class FormatDialog extends DraggableMixin(HTMLElement) {
 
     get form() {
         return this.shadowRoot.querySelector("form")
-    }
-
-    // MARK: api
-    positionDialog() {
-        const rect = this.getBoundingClientRect()
-        const viewportWidth = document.documentElement.clientWidth
-        const viewportHeight = document.documentElement.clientHeight
-
-        this.style.left = `${(viewportWidth - rect.width) / 2}px`
-        this.style.top = `${(viewportHeight - rect.height) / 2}px`
-    }
-
-    updateDependentFieldsets() {
-        // Reset all dependent fieldsets to hidden
-        this.form.querySelectorAll("[data-dependent]")
-            .forEach(group => group.classList.remove("active"))
-
-        // Show fieldsets for any selected options with targets
-        this.form.querySelectorAll("[data-group-target]:checked")
-            .forEach(option => {
-                const fieldset = this.form.querySelector(`[data-group="${option.dataset.groupTarget}"]`)
-                fieldset?.classList.add("active")
-            })
-    }
-
-    getFormData() {
-        const formData = {}
-        const selector = "fieldset:where(:not([data-dependent]), [data-dependent].active) :where(input, select)"
-
-        this.shadowRoot.querySelectorAll(selector).forEach(input => {
-            let value
-            if (input.type === "checkbox") {
-                value = input.checked
-            } else if (input.type === "number") {
-                value = input.value ? Number(input.value) : null
-            } else {
-                value = input.value === "" || input.value === "none" ? undefined : input.value
-            }
-
-            if (value !== null) {
-                formData[input.name] = value
-            }
-        })
-
-        return formData
     }
 
     // MARK: handlers
@@ -117,48 +64,51 @@ export class FormatDialog extends DraggableMixin(HTMLElement) {
                 columnIndex: this.columnIndex
             }
         }))
-
-        this.dispatchEvent(new CustomEvent("dialog-close", {
-            bubbles: true,
-            composed: true
-        }))
-        this.remove()
+        this.handleClose()
     }
 
     handleCancel() {
-        this.dispatchEvent(new CustomEvent("dialog-close", {
-            bubbles: true,
-            composed: true
-        }))
-        this.remove()
+        this.handleClose()
+    }
+
+    // MARK: api
+    updateDependentFieldsets() {
+        this.form.querySelectorAll("[data-dependent]")
+            .forEach(group => group.classList.remove("active"))
+
+        this.form.querySelectorAll("[data-group-target]:checked")
+            .forEach(option => {
+                const fieldset = this.form.querySelector(`[data-group="${option.dataset.groupTarget}"]`)
+                fieldset?.classList.add("active")
+            })
+    }
+
+    getFormData() {
+        const formData = {}
+        const selector = "fieldset:where(:not([data-dependent]), [data-dependent].active) :where(input, select)"
+
+        this.shadowRoot.querySelectorAll(selector).forEach(input => {
+            let value
+            if (input.type === "checkbox") {
+                value = input.checked
+            } else if (input.type === "number") {
+                value = input.value !== "" ? Number(input.value) : null
+            } else {
+                value = input.value === "" || input.value === "none" ? undefined : input.value
+            }
+
+            if (value !== null) {
+                formData[input.name] = value
+            }
+        })
+
+        return formData
     }
 
     // MARK: render
-    render() {
-        const styles = `
-            :host {
-                position: fixed;
-                background: var(--background-color, white);
-                border: 1px solid var(--border-color, currentColor);
-                border-radius: 4px;
-                padding: 1rem;
-                min-width: 300px;
-                z-index: 1001;
-            }
-
-            header {
-                display: flex;
-                align-items: flex-start;
-                justify-content: space-between;
-            }
-
-            h3 {
-                margin-top: 0;
-                margin-bottom: 1rem;
-                padding-bottom: 0.5rem;
-                border-bottom: 1px solid var(--border-color, currentColor);
-            }
-
+    getStyles() {
+        return `
+            ${this.getBaseStyles()}
             form {
                 display: flex;
                 flex-direction: column;
@@ -195,16 +145,19 @@ export class FormatDialog extends DraggableMixin(HTMLElement) {
                 display: block;
             }
         `
+    }
 
-        this.shadowRoot.innerHTML = `
-            <style>${styles}</style>
-            <header>
-                <h3>Format Settings: ${this.columnName}</h3>
-                <drag-handle></drag-handle>
-            </header>
+    buildContent() {
+        const formContent = !this.dataType || !this.spec
+            ? "No format options available for this type"
+            : new FormatBuilder(this.spec, this.currentOptions).buildFormControls()
+
+        return `
+            <style>${this.getStyles()}</style>
+            ${this.buildHeader(`Format Settings: ${this.columnName}`)}
             <form>
                 <div class="form-content">
-                    ${this.buildFormContent()}
+                    ${formContent}
                 </div>
                 <div class="actions">
                     <button type="button" data-action="apply">Apply</button>
@@ -212,16 +165,11 @@ export class FormatDialog extends DraggableMixin(HTMLElement) {
                 </div>
             </form>
         `
-        this.updateDependentFieldsets()
     }
 
-    buildFormContent() {
-        if (!this.dataType || !this.spec) {
-            return "No format options available for this type"
-        }
-
-        const builder = new FormatBuilder(this.spec, this.currentOptions)
-        return builder.buildFormControls()
+    render() {
+        super.render()
+        this.updateDependentFieldsets()
     }
 }
 

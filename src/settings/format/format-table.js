@@ -30,6 +30,9 @@ export class FormatTable extends HTMLElement {
     addEventListeners() {
         this.shadowRoot.addEventListener("click", this.handleEditClick)
         this.shadowRoot.addEventListener("change", this.handlePresetChange)
+        this.shadowRoot.addEventListener("modal-open", this.handleDialogOpen)
+        this.shadowRoot.addEventListener("modal-close", this.handleDialogClose)
+        this.shadowRoot.addEventListener("format-apply", this.handleDialogFormatApply)
     }
 
     removeEventListeners() {
@@ -50,6 +53,8 @@ export class FormatTable extends HTMLElement {
     handleEditClick(event) {
         const editButton = event.target.closest("button[data-action='edit']")
         if (!editButton || this.hasOpenDialog) return
+
+        event.stopPropagation()
 
         const row = editButton.closest("tr")
         const columnIndex = parseInt(row.dataset.columnIndex)
@@ -81,15 +86,11 @@ export class FormatTable extends HTMLElement {
 
     handleDialogOpen() {
         this.hasOpenDialog = true
-        this.dispatchEvent(new CustomEvent("dialog-open", {
-            bubbles: true,
-            composed: true
-        }))
     }
 
-    handleDialogClose() {
+    handleDialogClose(event) {
+        event.stopPropagation()
         this.hasOpenDialog = false
-        this.dialog?.remove()
     }
 
     handleDialogFormatApply(event) {
@@ -102,22 +103,14 @@ export class FormatTable extends HTMLElement {
 
     // MARK: api
     openDialog(columnIndex) {
+        const { dtype, formatOptions } = this.data.columns.attrs[columnIndex]
         const column = this.data.columns.values[columnIndex]
-        const attrs = this.data.columns.attrs[columnIndex]
         const columnName = Array.isArray(column) ? column.at(-1) : column
 
-        const dialog = document.createElement("format-dialog")
-        dialog.columnIndex = columnIndex
-        dialog.columnName = columnName
-        dialog.dataType = attrs.dtype
-        dialog.currentOptions = attrs.formatOptions ?? {}
-
-        dialog.addEventListener("dialog-close", this.handleDialogClose)
-        dialog.addEventListener("dialog-open", this.handleDialogOpen)
-        dialog.addEventListener("format-apply", this.handleDialogFormatApply)
+        const state = { columnIndex, columnName, dtype, formatOptions }
+        const dialog = new FormatDialog(state)
 
         this.shadowRoot.appendChild(dialog)
-        this.handleDialogOpen()
     }
 
     getFormatSummary(options, dtype) {
@@ -151,7 +144,6 @@ export class FormatTable extends HTMLElement {
             }
 
             table {
-                width: 100%;
                 border-collapse: collapse;
             }
 

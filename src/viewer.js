@@ -166,6 +166,11 @@ export class DataViewer extends HTMLElement {
                 :host settings-container[open] {
                     opacity: 1;
                 }
+                @media (hover: none) {
+                    :host settings-container {
+                        opacity: 1;
+                    }
+                }
             </style>
             <data-table></data-table>
         `

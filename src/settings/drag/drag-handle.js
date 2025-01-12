@@ -16,6 +16,10 @@ export class DragHandle extends HTMLElement {
                 padding: 0.5rem;
                 cursor: grab;
                 user-select: none;
+
+                @media (max-width: 768px) {
+                    display: none;
+                }
             }
 
             :host([data-dragging]) {

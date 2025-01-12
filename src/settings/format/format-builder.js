@@ -84,7 +84,7 @@ export class FormatBuilder {
                 ${config.label}
                 <input type="number"
                     name="${key}"
-                    value="${current || ""}"
+                    value="${current ?? ""}"
                     ${min}
                     ${max}
                 >

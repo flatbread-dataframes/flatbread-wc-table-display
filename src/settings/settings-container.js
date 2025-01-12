@@ -9,12 +9,7 @@ export class SettingsContainer extends HTMLElement {
         this.data = data
 
         this.handleTriggerClick = this.handleTriggerClick.bind(this)
-        this.handleDocumentClick = this.handleDocumentClick.bind(this)
-        this.handleFormatDialogOpen = this.handleFormatDialogOpen.bind(this)
-        this.handleFormatDialogClose = this.handleFormatDialogClose.bind(this)
-
-        this.isVisible = false
-        this.hasOpenDialog = false
+        this.handleModalClose = this.handleModalClose.bind(this)
     }
 
     // MARK: setup
@@ -29,14 +24,12 @@ export class SettingsContainer extends HTMLElement {
 
     addEventListeners() {
         this.trigger.addEventListener("click", this.handleTriggerClick)
-        this.addEventListener("dialog-open", this.handleFormatDialogOpen)
-        this.addEventListener("dialog-close", this.handleFormatDialogClose)
+        this.shadowRoot.addEventListener("modal-close", this.handleModalClose)
     }
 
     removeEventListeners() {
         this.trigger.removeEventListener("click", this.handleTriggerClick)
-        this.removeEventListener("dialog-open", this.handleFormatDialogOpen)
-        this.removeEventListener("dialog-close", this.handleFormatDialogClose)
+        this.shadowRoot.removeEventListener("modal-close", this.handleModalClose)
     }
 
     // MARK: get/set
@@ -48,67 +41,25 @@ export class SettingsContainer extends HTMLElement {
         return this.shadowRoot.querySelector("settings-popup")
     }
 
-    // MARK: api
-    positionPopup() {
-        const trigger = this.trigger.getBoundingClientRect()
-        const popup = this.popup
-
-        // Position to the left of the trigger button
-        popup.style.top = `${trigger.top}px`
-        popup.style.left = `${trigger.left - popup.offsetWidth - 8}px` // 8px offset
-    }
-
     // MARK: handlers
-    handleFormatDialogOpen() {
-        this.hasOpenDialog = true
+    handleModalClose() {
+        // Only close the container if the settings popup is being closed
+        this.isVisible = false
+        this.removeAttribute("open")
+        this.popup?.remove()
     }
 
-    handleFormatDialogClose() {
-        this.hasOpenDialog = false
-    }
+    handleTriggerClick(event) {
+        event.stopPropagation()
 
-    /**
-     * Toggles visibility of settings popup when trigger is clicked
-     *
-     * If popup is visible, hides it and removes document click listener.
-     * If popup is hidden, shows it and adds document click listener
-     * to handle clicking outside.
-     *
-     * @param {Event} event - The click event from the trigger
-     */
-    handleTriggerClick() {
-        this.isVisible = !this.isVisible
         if (this.isVisible) {
-            this.shadowRoot.querySelector("settings-popup")?.remove()
-            const settingsPopup = new SettingsPopup(this.data)
-            this.shadowRoot.appendChild(settingsPopup)
-
-            this.setAttribute("open", "")
-            this.positionPopup()
-            document.addEventListener("click", this.handleDocumentClick)
+            this.handleModalClose() // Use existing close handler
         } else {
-            this.removeAttribute("open")
-            document.removeEventListener("click", this.handleDocumentClick)
-        }
-    }
-
-    /**
-     * Handles clicks on the document to determine if popup should close
-     *
-     * When popup is open, checks if click occurred outside both the trigger
-     * and popup. If so, hides popup and removes document click listener.
-     * Uses composedPath() to handle clicks through shadow DOM boundaries.
-     *
-     * @param {Event} event - The click event from the document
-     */
-    handleDocumentClick(event) {
-        if (this.hasOpenDialog) return
-
-        const isInContainer = event.composedPath().includes(this)
-        if (!isInContainer) {
-            this.isVisible = false
-            this.removeAttribute("open")
-            document.removeEventListener("click", this.handleDocumentClick)
+            const settingsPopup = new SettingsPopup(this.data)
+            settingsPopup.triggerElement = this.trigger
+            this.shadowRoot.appendChild(settingsPopup)
+            this.isVisible = true
+            this.setAttribute("open", "")
         }
     }
 
@@ -123,6 +74,7 @@ export class SettingsContainer extends HTMLElement {
 
             settings-popup {
                 position: fixed;
+                width: max-content;
                 margin-right: 0.5rem;
                 z-index: 100;
 
