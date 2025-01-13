@@ -112,7 +112,8 @@ export class ModalElement extends DraggableMixin(HTMLElement) {
     getBaseStyles() {
         return `
             :host {
-                display: grid;
+                box-sizing: border-box;
+                display: block;
                 position: fixed;
                 background: var(--background-color, white);
                 border: 1px solid var(--border-color, currentColor);
@@ -124,7 +125,6 @@ export class ModalElement extends DraggableMixin(HTMLElement) {
                     inset: 1rem 1rem auto 1rem;
                     min-width: 0;
                     max-height: calc(100vh - 2rem);
-                    overflow-y: auto;
                 }
             }
 

@@ -1,6 +1,7 @@
-import { ModalElement } from "./modal-element.js"
+import { ModalElement } from "../components/modal-element.js"
 import { FormatTable } from "./format/format-table.js"
 import { MEDIA_QUERIES } from "../config.js"
+import { SliderInput } from "../components/input-slider.js"
 
 export class SettingsPopup extends ModalElement {
     constructor(data, options, state) {
@@ -37,12 +38,23 @@ export class SettingsPopup extends ModalElement {
     // MARK: handlers
     handleInputChange(event) {
         const input = event.target
+        const valueMap = {
+            number: input => input.value,
+            text: input => input.value,
+            checkbox: input => input.checked,
+            range: input => input.value,
+            "slider-input": input => input.value
+        }
+
+        const getValue = valueMap[input.type] || valueMap[input.tagName.toLowerCase()]
+        if (!getValue) return
+
         this.dispatchEvent(new CustomEvent("setting-change", {
             bubbles: true,
             composed: true,
             detail: {
                 setting: input.id,
-                value: ["number", "text"].includes(input.type) ? input.value : input.checked
+                value: getValue(input)
             }
         }))
     }
@@ -86,11 +98,22 @@ export class SettingsPopup extends ModalElement {
     // MARK: render
     getComponentStyles() {
         return `
+            :host {
+                display: grid;
+                grid-template-rows: auto auto 1fr;  /* header, nav, main */
+                max-height: 47vh;
+                overflow: hidden;
+            }
             nav {
                 display: flex;
                 gap: 0.5rem;
                 margin-bottom: 1rem;
                 border-bottom: 1px solid var(--border-color, currentColor);
+            }
+            main {
+                min-height: 0;
+                display: grid;
+                grid-template-rows: 1fr;
             }
 
             [role="tab"] {
@@ -101,6 +124,7 @@ export class SettingsPopup extends ModalElement {
                 cursor: pointer;
                 border-bottom: 2px solid transparent;
                 margin-bottom: -1px;
+                overflow-y: auto;
             }
 
             [role="tab"][aria-selected="true"] {
@@ -110,8 +134,10 @@ export class SettingsPopup extends ModalElement {
             [role="tabpanel"] {
                 visibility: hidden;
                 grid-column: 1;
-                grid-row: 3;
+                grid-row: 1;
                 overflow-x: auto;
+                overflow-y: auto;
+                min-height: 0;
             }
             [role="tabpanel"][selected] {
                 visibility: visible;
@@ -141,42 +167,49 @@ export class SettingsPopup extends ModalElement {
                     aria-controls="format">Format</button>
             </nav>
 
-            <section role="tabpanel" id="general" selected>
-                <label for="section-levels">
-                    Section levels
-                    <input type="number" id="section-levels" min="0" value="${this.options.styling.sectionLevels}">
-                </label>
-                <label for="na-rep">
-                    Na rep
-                    <input type="text" id="na-rep" value="${this.options.naRep}">
-                </label>
-                <label for="hide-column-borders">
-                    <input type="checkbox" id="hide-column-borders" ${!this.options.styling.columnBorders ? "checked" : ""}>
-                    Hide column borders
-                </label>
-                <label for="hide-row-borders">
-                    <input type="checkbox" id="hide-row-borders" ${!this.options.styling.rowBorders ? "checked" : ""}>
-                    Hide row borders
-                </label>
-                <label for="hide-index-border">
-                    <input type="checkbox" id="hide-index-border" ${!this.options.styling.indexBorder ? "checked" : ""}>
-                    Hide index border
-                </label>
-                <label for="hide-thead-border">
-                    <input type="checkbox" id="hide-thead-border" ${!this.options.styling.theadBorder ? "checked" : ""}>
-                    Hide thead border
-                </label>
-                <label for="show-hover">
-                    <input type="checkbox" id="show-hover" ${this.options.styling.showHover ? "checked" : ""}>
-                    Show hover effect
-                </label>
-                <label for="collapse-columns">
-                    <input type="checkbox" id="collapse-columns" ${this.options.styling.collapseColumns ? "checked" : ""}>
-                    Collapse columns
-                </label>
-            </section>
+            <main>
+                <section role="tabpanel" id="general" selected>
+                    <label for="section-levels">
+                        Section levels
+                        <slider-input
+                            id="section-levels"
+                            max="${this.data.index.nlevels - 1}"
+                            value="${this.options.styling.sectionLevels}"
+                        >
+                    </label>
+                    <label for="na-rep">
+                        Na rep
+                        <input type="text" id="na-rep" value="${this.options.naRep}">
+                    </label>
+                    <label for="hide-column-borders">
+                        <input type="checkbox" id="hide-column-borders" ${!this.options.styling.columnBorders ? "checked" : ""}>
+                        Hide column borders
+                    </label>
+                    <label for="hide-row-borders">
+                        <input type="checkbox" id="hide-row-borders" ${!this.options.styling.rowBorders ? "checked" : ""}>
+                        Hide row borders
+                    </label>
+                    <label for="hide-index-border">
+                        <input type="checkbox" id="hide-index-border" ${!this.options.styling.indexBorder ? "checked" : ""}>
+                        Hide index border
+                    </label>
+                    <label for="hide-thead-border">
+                        <input type="checkbox" id="hide-thead-border" ${!this.options.styling.theadBorder ? "checked" : ""}>
+                        Hide thead border
+                    </label>
+                    <label for="show-hover">
+                        <input type="checkbox" id="show-hover" ${this.options.styling.showHover ? "checked" : ""}>
+                        Show hover effect
+                    </label>
+                    <label for="collapse-columns">
+                        <input type="checkbox" id="collapse-columns" ${this.options.styling.collapseColumns ? "checked" : ""}>
+                        Collapse columns
+                    </label>
+                </section>
 
-            <section role="tabpanel" id="format"></section>`
+                <section role="tabpanel" id="format"></section>
+            </main>
+        `
     }
 
     render() {

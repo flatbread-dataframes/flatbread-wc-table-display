@@ -1,4 +1,4 @@
-import { ModalElement } from "../modal-element.js"
+import { ModalElement } from "../../components/modal-element.js"
 import { FormatBuilder } from "./format-builder.js"
 import { getFormatSpec } from "./format-specs.js"
 
