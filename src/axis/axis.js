@@ -13,16 +13,13 @@ export class Axis {
     // Returns length of values on axis as int
     get length() { return this.values.length }
     // Returns number of levels on index as int
-    get nlevels() {
-        if (this.isMultiIndex) return this.values[0].length
-        return 1
-    }
+    get nlevels() { return this.values[0]?.length }
     // Returns levels on index as array of ints
     get ilevels() { return [...Array(this.nlevels).keys()] }
     // Returns positions on axis as array of ints
     get ilocs() { return [...Array(this.length).keys()] }
     // Returns whether axis has multiple levels
-    get isMultiIndex() { return Array.isArray(this.values[0]) }
+    get isMultiIndex() { return this.nlevels > 1 }
 
     // Iterator
     [Symbol.iterator]() {
