@@ -103,6 +103,7 @@ export class InputDatalist extends HTMLElement {
         } else {
             this.value = this.getAttribute("value") ?? this.defaultOption
         }
+        this.dispatchEvent(new Event("change", { bubbles: true }))
     }
 
     // MARK: api
