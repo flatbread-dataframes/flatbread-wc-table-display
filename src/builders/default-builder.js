@@ -149,7 +149,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
     buildSingleLevelHeader() {
         const columnGroups = this.buildColumnGroupsRow(0)
 
-        return this.shouldCollapseColumns()
+        return this.options.styling.collapseColumns
             ? this.buildColumnsRow()
             : `${columnGroups}${this.buildIndexNamesRow()}`
     }
@@ -164,7 +164,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             .map(level => this.buildColumnGroupsRow(level))
             .join("")
 
-        return this.shouldCollapseColumns()
+        return this.options.styling.collapseColumns
         ? `${groupRows}${this.buildColumnsRow()}`
         : `${groupRows}${this.buildIndexNamesRow()}`
     }
@@ -176,7 +176,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
     getLevelsForHeader() {
         const allLevels = this.data.columns.ilevels
 
-        return this.shouldCollapseColumns()
+        return this.options.styling.collapseColumns
             ? allLevels.slice(0, -1)  // Exclude last level when collapsed
             : allLevels               // Include all levels when not collapsed
     }
@@ -300,30 +300,6 @@ export class DefaultTableBuilder extends BaseTableBuilder {
         }
 
         return `<th ${this.buildAttributeString(attributes)}>${span.value[level]}</th>`
-    }
-
-    /**
-     * Determines whether columns should be collapsed based on explicit settings
-     * or automatic conditions.
-     *
-     * Columns are collapsed if:
-     * - An explicit collapse setting was provided via attribute, or
-     * - No column names are defined (or is an empty array), or
-     * - For multi-index columns, the name of the last level is null
-     *
-     * @returns {boolean} True if columns should be collapsed, false otherwise
-     */
-    shouldCollapseColumns() {
-        const { collapseColumns } = this.options.styling
-        if (collapseColumns !== null) return collapseColumns
-
-        if (!this.data.columnNames?.length) return true
-
-        if (this.data.columns.isMultiIndex) {
-            if (this.data.columnNames.at(-1) == null) return true
-        }
-
-        return false
     }
 
     // MARK: Body

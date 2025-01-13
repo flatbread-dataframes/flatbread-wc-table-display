@@ -166,7 +166,6 @@ export class SettingsPopup extends ModalElement {
                 >
             </label>`
             : ""
-
         return `
             ${this.buildHeader("Settings")}
             <nav role="tablist">

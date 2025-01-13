@@ -96,12 +96,7 @@ export class DataViewer extends HTMLElement {
                 this.options.naRep = newValue ?? DataViewer.defaults.naRep
                 break
             case "hide-column-borders":
-                const hideColumns = this.getBooleanAttribute(newValue)
-                if (hideColumns !== null) {
-                    this.options.styling.columnBorders = !hideColumns
-                } else {
-                    this.options.styling.columnBorders = null
-                }
+                this.options.styling.columnBorders = !this.getBooleanAttribute(newValue)
                 break
             case "hide-row-borders":
                 this.options.styling.rowBorders = !this.getBooleanAttribute(newValue)
@@ -142,15 +137,6 @@ export class DataViewer extends HTMLElement {
         this.update()
     }
 
-    getBooleanAttribute(value) {
-        // Return false if attribute is not present
-        if (value === null) return false
-        // Return true if attribute is present without value
-        if (value === "") return true
-        // Return boolean based on string value
-        return value.toLowerCase() === "true"
-    }
-
     async loadDataFromSrc(src) {
         try {
             const response = await fetch(src)
@@ -170,6 +156,44 @@ export class DataViewer extends HTMLElement {
 
     get settingsContainer() {
         return this.shadowRoot.querySelector("settings-container")
+    }
+
+    updateCalculatedOptions() {
+        this.updateColumnBorders()
+        this.updateColumnCollapse()
+        this.updateSectionLevels()
+    }
+
+    updateColumnBorders() {
+        if (this.options.styling.columnBorders !== null) return
+
+        this.options.styling.columnBorders = this.data.columns.isMultiIndex
+    }
+
+    updateColumnCollapse() {
+        if (this.options.styling.collapseColumns !== null) return
+
+        const hasColumnNames = this.data.columnNames?.length
+        const lastNameIsNull = this.data.columns.isMultiIndex &&
+            this.data.columnNames?.at(-1) === null
+
+        this.options.styling.collapseColumns = !hasColumnNames || lastNameIsNull || !this.data.columns.isMultiIndex
+    }
+
+    updateSectionLevels() {
+        const maxLevels = Math.max(0, this.data.index.nlevels - 1)
+        const requestedLevels = this.options.styling.sectionLevels
+
+        this.options.styling.sectionLevels = Math.min(requestedLevels, maxLevels)
+    }
+
+    getBooleanAttribute(value) {
+        // Return false if attribute is not present
+        if (value === null) return false
+        // Return true if attribute is present without value
+        if (value === "") return true
+        // Return boolean based on string value
+        return value.toLowerCase() === "true"
     }
 
     // MARK: render
@@ -212,6 +236,9 @@ export class DataViewer extends HTMLElement {
     }
 
     update() {
+        if (this.data?.values?.length) {
+            this.updateCalculatedOptions()
+        }
         const viewData = this.data.createTrimmedView(this.options)
         this.table.update(viewData, this.options)
     }
@@ -224,11 +251,7 @@ export class DataViewer extends HTMLElement {
 
     handleSettingChange(event) {
         const { setting, value } = event.detail
-        if (value) {
-            this.setAttribute(setting, value)
-        } else {
-            this.removeAttribute(setting)
-        }
+        this.setAttribute(setting, value)
     }
 
     handleTableClick(event) {
