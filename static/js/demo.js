@@ -8,7 +8,18 @@ class Demo {
     setupEventListeners() {
         // Settings elements
         document.getElementById("src").addEventListener("change", event => {
-            this.dataViewer.setAttribute("src", event.target.value)
+            const wrapper = document.getElementById("data-viewer-wrapper")
+
+            // Remove existing viewer
+            wrapper.querySelector("data-viewer")?.remove()
+
+            // Create and configure new viewer
+            const viewer = document.createElement("data-viewer")
+            viewer.setAttribute("src", event.target.value)
+            viewer.setAttribute("locale", this.getLocale())
+            viewer.setAttribute("margin-labels", "Total;Totaal;Subtotal")
+
+            wrapper.appendChild(viewer)
         })
 
         document.querySelectorAll('input[name="locale"]').forEach(radio => {
@@ -67,6 +78,16 @@ class Demo {
         const op = this.getCalculation(n)
         const newValues = this.dataViewer.data.values.map(row => row.map(op))
         this.dataViewer.data.values = newValues
+    }
+
+    resetAttributes(element, attributesToKeep) {
+        const attributes = [...element.attributes]
+        attributes.forEach(attr => {
+            if (!attributesToKeep.includes(attr.name)) {
+                element.removeAttribute(attr.name)
+            }
+        })
+        return element
     }
 }
 
