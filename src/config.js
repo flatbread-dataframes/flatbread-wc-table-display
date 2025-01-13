@@ -15,6 +15,7 @@ export const COMMON_LOCALES = {
     "fr-FR": "French",
     "es-ES": "Spanish",
     "it-IT": "Italian",
+    "pt-PT": "Portuguese",
 
     // Nordic
     "sv-SE": "Swedish",
@@ -22,17 +23,35 @@ export const COMMON_LOCALES = {
     "da-DK": "Danish",
     "fi-FI": "Finnish",
 
-    // Asia
+    // Eastern Europe
+    "ru-RU": "Russian",
+    "pl-PL": "Polish",
+    "tr-TR": "Turkish",
+
+    // Middle East
+    "ar-SA": "Arabic (Saudi Arabia)",
+    "he-IL": "Hebrew",
+    "fa-IR": "Persian",
+
+    // Asia Pacific
     "zh-CN": "Chinese (Simplified)",
     "zh-TW": "Chinese (Traditional)",
     "ja-JP": "Japanese",
     "ko-KR": "Korean",
-
-    // Other major
-    "ar-SA": "Arabic",
     "hi-IN": "Hindi",
-    "ru-RU": "Russian",
+    "bn-IN": "Bengali",
+    "th-TH": "Thai",
+    "vi-VN": "Vietnamese",
+    "id-ID": "Indonesian",
+
+    // Americas
     "pt-BR": "Portuguese (Brazil)",
+    "es-MX": "Spanish (Mexico)",
+    "es-AR": "Spanish (Argentina)",
+
+    // Oceania
+    "en-AU": "English (Australia)",
+    "en-NZ": "English (New Zealand)"
 }
 
 // Most commonly used locales for easy access
