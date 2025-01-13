@@ -1,4 +1,6 @@
-// Optional helper for getting a specific option's spec
+import { PREFERRED_CURRENCIES } from "../../config.js"
+
+
 export function getOptionSpec(dtype, optionKey) {
     const spec = getFormatSpec(dtype)
     if (!spec) return null
@@ -77,15 +79,10 @@ export const NumberFormatSpec = {
         currencyOptions: {
             sectionLabel: "Currency Format",
             currency: {
-                // type: "select",
-                // label: "Currency",
-                // options: ["EUR", "USD", "GBP", "CNY", "JPY", "SEK", "NOK"],
-                // default: "EUR",
-                // summary: value => value,
                 type: "datalist",
                 label: "Currency",
                 options: Intl.supportedValuesOf("currency"),
-                commonOptions: ["EUR", "USD", "GBP", "CNY", "JPY", "SEK", "NOK"],
+                commonOptions: PREFERRED_CURRENCIES,
                 default: "EUR",
                 summary: value => value
             },
