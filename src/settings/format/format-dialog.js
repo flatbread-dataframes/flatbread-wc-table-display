@@ -85,16 +85,27 @@ export class FormatDialog extends ModalElement {
 
     getFormData() {
         const formData = {}
-        const selector = "fieldset:where(:not([data-dependent]), [data-dependent].active) :where(input, select)"
+        const selector = `
+            fieldset:where(:not([data-dependent]),
+            [data-dependent].active) :where(input, select, input-datalist)
+        `
 
         this.shadowRoot.querySelectorAll(selector).forEach(input => {
+            if (!input.name) return
+
             let value
-            if (input.type === "checkbox") {
+            if (input.tagName.toLowerCase() === "input-datalist") {
+                value = input.value === "" || input.value === "none"
+                    ? undefined
+                    : input.value
+            } else if (input.type === "checkbox") {
                 value = input.checked
             } else if (input.type === "number") {
                 value = input.value !== "" ? Number(input.value) : null
             } else {
-                value = input.value === "" || input.value === "none" ? undefined : input.value
+                value = input.value === "" || input.value === "none"
+                    ? undefined
+                    : input.value
             }
 
             if (value !== null) {

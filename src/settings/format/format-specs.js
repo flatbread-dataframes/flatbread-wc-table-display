@@ -77,11 +77,17 @@ export const NumberFormatSpec = {
         currencyOptions: {
             sectionLabel: "Currency Format",
             currency: {
-                type: "select",
+                // type: "select",
+                // label: "Currency",
+                // options: ["EUR", "USD", "GBP", "CNY", "JPY", "SEK", "NOK"],
+                // default: "EUR",
+                // summary: value => value,
+                type: "datalist",
                 label: "Currency",
-                options: ["EUR", "USD", "GBP", "CNY", "JPY", "SEK", "NOK"],
+                options: Intl.supportedValuesOf("currency"),
+                commonOptions: ["EUR", "USD", "GBP", "CNY", "JPY", "SEK", "NOK"],
                 default: "EUR",
-                summary: value => value,
+                summary: value => value
             },
             currencyDisplay: {
                 type: "select",

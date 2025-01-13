@@ -1,3 +1,5 @@
+import { InputDatalist } from "../../components/input-datalist.js"
+
 export class FormatBuilder {
     constructor(spec, currentOptions = {}) {
         this.spec = spec
@@ -43,7 +45,8 @@ export class FormatBuilder {
         const builders = {
             select: this.buildSelect.bind(this),
             number: this.buildNumber.bind(this),
-            boolean: this.buildCheckbox.bind(this)
+            boolean: this.buildCheckbox.bind(this),
+            datalist: this.buildDatalist.bind(this),
         }
 
         const builder = builders[config.type]
@@ -99,6 +102,22 @@ export class FormatBuilder {
                     ${checked}
                 >
                 ${config.label}
+            </label>`
+    }
+
+    buildDatalist(key, config) {
+        const current = this.currentOptions[key]
+
+        return `
+            <label>
+                ${config.label}
+                <input-datalist
+                    name="${key}"
+                    common-options="${config.commonOptions.join(";")}"
+                    options="${config.options.join(";")}"
+                    value="${current}"
+                >
+                </select>
             </label>`
     }
 }
