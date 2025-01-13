@@ -49,10 +49,7 @@ export class FormatBuilder {
         const builder = builders[config.type]
         if (!builder) return ""
 
-        return `
-            <div class="form-group">
-                ${builder(key, config)}
-            </div>`
+        return builder(key, config)
     }
 
     buildSelect(key, config) {

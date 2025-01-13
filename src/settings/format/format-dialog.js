@@ -116,9 +116,13 @@ export class FormatDialog extends ModalElement {
             }
 
             label {
-                display: flex;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
                 align-items: center;
                 gap: 0.5rem;
+                &:has([type="checkbox"]) {
+                    display: flex;
+                }
             }
 
             select, input[type="number"] {
