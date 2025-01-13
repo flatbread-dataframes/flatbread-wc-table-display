@@ -8,6 +8,7 @@ export class Data extends EventTarget {
         this.setData(data)
     }
 
+    // MARK: setter
     _setter(prop, value) {
         if (this[prop] !== value) {
             this[prop] = value
@@ -129,5 +130,81 @@ export class Data extends EventTarget {
             // Slice the values
             values: slicedValues
         })
+    }
+
+    // MARK: trim
+    /**
+     * Creates a trimmed view of the data that respects max rows/columns
+     * @param {Object} options Trimming options
+     * @param {number} options.maxRows Maximum number of rows to show
+     * @param {number} options.maxColumns Maximum number of columns to show
+     * @param {number} options.trimSize Number of items to show at head/tail
+     * @param {string} options.separator Value to show in separator cells
+     * @returns {Data} New Data instance with trimmed view
+     */
+    createTrimmedView(options) {
+        const { maxRows, maxColumns, trimSize, separator } = options.truncation
+        let values = this.values
+        let index = this.index.values
+        let columns = this.columns.values
+
+        // Handle rows if needed
+        if (values.length > maxRows) {
+            const head = values.slice(0, trimSize)
+            const tail = values.slice(-trimSize)
+            const sepRow = Array(this.columns.length).fill(separator)
+            values = [...head, sepRow, ...tail]
+
+            // Trim index
+            const headIdx = index.slice(0, trimSize)
+            const tailIdx = index.slice(-trimSize)
+            const sepIdx = Array.isArray(index[0])
+                ? Array(this.index.nlevels).fill(separator)
+                : separator
+            index = [...headIdx, sepIdx, ...tailIdx]
+        }
+
+        // Handle columns if needed
+        if (this.columns.length > maxColumns) {
+            const headCols = columns.slice(0, trimSize)
+            const tailCols = columns.slice(-trimSize)
+            const sepCol = Array.isArray(columns[0])
+                ? Array(this.columns.nlevels).fill(separator)
+                : separator
+            columns = [...headCols, sepCol, ...tailCols]
+
+            // Trim values to match
+            values = values.map(row => {
+                const headVals = row.slice(0, trimSize)
+                const tailVals = row.slice(-trimSize)
+                return [...headVals, separator, ...tailVals]
+            })
+
+            // Handle dtypes and format options
+            const dtypes = this._dtypes && [
+                ...this._dtypes.slice(0, trimSize),
+                "str",
+                ...this._dtypes.slice(-trimSize)
+            ]
+
+            const formatOptions = this._formatOptions && [
+                ...this._formatOptions.slice(0, trimSize),
+                null,
+                ...this._formatOptions.slice(-trimSize)
+            ]
+
+            return new Data({
+                values,
+                columns,
+                index,
+                columnNames: this._columnNames,
+                indexNames: this._indexNames,
+                dtypes,
+                formatOptions
+            })
+        }
+
+        // If no trimming needed, return original
+        return this
     }
 }

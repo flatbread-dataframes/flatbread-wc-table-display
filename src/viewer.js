@@ -11,6 +11,7 @@ export class DataViewer extends HTMLElement {
             "hide-thead-border", "hide-index-border",
             "show-hover", "margin-labels",
             "collapse-columns", "section-levels",
+            "max-rows", "max-columns", "trim-size", "separator",
         ]
     }
 
@@ -22,6 +23,12 @@ export class DataViewer extends HTMLElement {
             marginLabels: [],
             type: "default",
             settingsMenu: true,
+            truncation: {
+                maxRows: 30,
+                maxColumns: 30,
+                trimSize: 5,
+                separator: "...",
+            },
             styling: {
                 sectionLevels: 0,
                 collapseColumns: null,
@@ -114,6 +121,18 @@ export class DataViewer extends HTMLElement {
                 const level = Math.max(0, parseInt(newValue) ?? DataViewer.defaults.styling.sectionLevels)
                 this.options.styling.sectionLevels = level
                 break
+            case "max-rows":
+                this.options.maxRows = parseInt(newValue) ?? DataViewer.defaults.maxRows
+                break
+            case "max-columns":
+                this.options.maxColumns = parseInt(newValue) ?? DataViewer.defaults.maxColumns
+                break
+            case "trim-size":
+                this.options.trimSize = parseInt(newValue) ?? DataViewer.defaults.trimSize
+                break
+            case "separator":
+                this.options.separator = newValue ?? DataViewer.defaults.separator
+                break
         }
         this.update()
     }
@@ -188,7 +207,8 @@ export class DataViewer extends HTMLElement {
     }
 
     update() {
-        this.table.update(this.data, this.options)
+        const viewData = this.data.createTrimmedView(this.options)
+        this.table.update(viewData, this.options)
     }
 
     // MARK: handlers
