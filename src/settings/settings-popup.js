@@ -156,6 +156,17 @@ export class SettingsPopup extends ModalElement {
     }
 
     buildContent() {
+        const sectionLevelControls = this.data.index.isMultiIndex
+            ? `<label for="section-levels">
+                Section levels
+                <slider-input
+                    id="section-levels"
+                    max="${this.data.index.nlevels - 1}"
+                    value="${this.options.styling.sectionLevels}"
+                >
+            </label>`
+            : ""
+
         return `
             ${this.buildHeader("Settings")}
             <nav role="tablist">
@@ -169,14 +180,7 @@ export class SettingsPopup extends ModalElement {
 
             <main>
                 <section role="tabpanel" id="general" selected>
-                    <label for="section-levels">
-                        Section levels
-                        <slider-input
-                            id="section-levels"
-                            max="${this.data.index.nlevels - 1}"
-                            value="${this.options.styling.sectionLevels}"
-                        >
-                    </label>
+                    ${sectionLevelControls}
                     <label for="na-rep">
                         Na rep
                         <input type="text" id="na-rep" value="${this.options.naRep}">
