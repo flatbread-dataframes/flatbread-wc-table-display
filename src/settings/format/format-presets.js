@@ -56,7 +56,7 @@ export function getPresetsForType(dtype) {
         int: NumberPresets,
         datetime: DatePresets
     }
-    return presets[dtype] || {}
+    return presets[dtype] ?? {}
 }
 
 export function isCustomFormat(options, presets) {
@@ -70,5 +70,5 @@ export function matchPreset(options, presets) {
     return Object.entries(presets)
         .find(([, preset]) =>
             JSON.stringify(preset.options) === JSON.stringify(options)
-        )?.[0] || ""
+        )?.[0] ?? ""
 }
