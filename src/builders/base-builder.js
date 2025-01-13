@@ -9,7 +9,8 @@ export class BaseTableBuilder {
             ...options,
             styling: {
                 ...options.styling,
-                sectionLevels: this.getValidSectionLevels(options.styling.sectionLevels)
+                sectionLevels: this.getValidSectionLevels(options.styling.sectionLevels),
+                columnBorders: this.getValidColumnBorders(options.styling.columnBorders),
             }
         }
     }
@@ -17,6 +18,11 @@ export class BaseTableBuilder {
     getValidSectionLevels(requestedLevels) {
         if (!requestedLevels || !this.data.index?.nlevels) return 0
         return Math.min(requestedLevels, this.data.index.nlevels - 1)
+    }
+
+    getValidColumnBorders(explicitSetting) {
+        if (explicitSetting !== null) return explicitSetting
+        return this.data.columns.isMultiIndex
     }
 
     // MARK: build

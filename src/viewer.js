@@ -35,7 +35,7 @@ export class DataViewer extends HTMLElement {
                 hoverEffect: false,
                 theadBorder: true,
                 indexBorder: true,
-                columnBorders: true,
+                columnBorders: null,
                 rowBorders: true,
                 marginBorders: true,
             }
@@ -96,7 +96,12 @@ export class DataViewer extends HTMLElement {
                 this.options.naRep = newValue ?? DataViewer.defaults.naRep
                 break
             case "hide-column-borders":
-                this.options.styling.columnBorders = !this.getBooleanAttribute(newValue)
+                const hideColumns = this.getBooleanAttribute(newValue)
+                if (hideColumns !== null) {
+                    this.options.styling.columnBorders = !hideColumns
+                } else {
+                    this.options.styling.columnBorders = null
+                }
                 break
             case "hide-row-borders":
                 this.options.styling.rowBorders = !this.getBooleanAttribute(newValue)
