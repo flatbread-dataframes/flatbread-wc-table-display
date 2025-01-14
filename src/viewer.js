@@ -200,6 +200,11 @@ export class DataViewer extends HTMLElement {
     render() {
         this.shadowRoot.innerHTML = `
             <style>
+                *,
+                *::before,
+                *::after {
+                    box-sizing: border-box
+                }
                 :host {
                     display: flex;
                     align-items: start;

@@ -86,6 +86,11 @@ export class SliderInput extends HTMLElement {
         const label = this.getAttribute("label")
 
         const styles = `
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box
+            }
             :host {
                 display: grid;
                 grid-template-columns: 1fr auto auto;

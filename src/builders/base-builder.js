@@ -7,6 +7,11 @@ export class BaseTableBuilder {
     // MARK: build
     getBaseStyles() {
         return `
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box
+            }
             table {
                 border-collapse: separate;
                 border-spacing: 0;

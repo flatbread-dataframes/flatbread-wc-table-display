@@ -111,6 +111,11 @@ export class ModalElement extends DraggableMixin(HTMLElement) {
     // MARK: render
     getBaseStyles() {
         return `
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box
+            }
             :host {
                 box-sizing: border-box;
                 display: block;

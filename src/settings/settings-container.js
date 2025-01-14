@@ -75,6 +75,11 @@ export class SettingsContainer extends HTMLElement {
     // MARK: render
     render() {
         const styles = `
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box
+            }
             :host {
                 position: absolute;
                 display: inline-block;

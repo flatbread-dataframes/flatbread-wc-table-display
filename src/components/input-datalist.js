@@ -142,10 +142,13 @@ export class InputDatalist extends HTMLElement {
     // MARK: render
     render() {
         const styles = `
-            :host {
-                display: inline-block
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box
             }
             input {
+                width: 100%;
                 padding: 0.25rem
             }`
 
