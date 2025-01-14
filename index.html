@@ -7,7 +7,7 @@
     <title>wc-simple-table</title>
     <link rel="stylesheet" href="static/stylesheet.css">
     <link rel="stylesheet" href="https://lcvriend.github.io/wc-multi-selector/static/prism.css">
-    <script type="module" src="https://uu-asc.github.io/csa-werkvoorraad/src/darkmode-toggle.js"></script>
+    <script type="module" src="https://lcvriend.github.io/wc-darkmode-toggle/src/darkmode-toggle.js"></script>
 </head>
 <body>
 <section>
@@ -86,77 +86,14 @@
 <section id="specifications">
 <h2>Specifications</h2>
 <h3>Attributes</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Attribute</th>
-            <th>Default</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>src</td>
-            <td>-</td>
-            <td>URL to load JSON data from</td>
-        </tr>
-        <tr>
-            <td>type</td>
-            <td>"default"</td>
-            <td>Table builder type to use for rendering</td>
-        </tr>
-        <tr>
-            <td>locale</td>
-            <td>"default"</td>
-            <td>Locale string for number and date formatting</td>
-        </tr>
-        <tr>
-            <td>na-rep</td>
-            <td>"-"</td>
-            <td>String to display for null/undefined values</td>
-        </tr>
-        <tr>
-            <td>margin-labels</td>
-            <td>[]</td>
-            <td>Semicolon-separated list of labels to treat as margin rows/columns</td>
-        </tr>
-        <tr>
-            <td>section-levels</td>
-            <td>0</td>
-            <td>Number of index levels to convert into section headers</td>
-        </tr>
-        <tr>
-            <td>collapse-columns</td>
-            <td>false</td>
-            <td>Whether to collapse the column headers into the index header row</td>
-        </tr>
-        <tr>
-            <td>show-hover</td>
-            <td>false</td>
-            <td>Enables row hover highlighting effect</td>
-        </tr>
-        <tr>
-            <td>hide-column-borders</td>
-            <td>false</td>
-            <td>Removes vertical borders between data columns</td>
-        </tr>
-        <tr>
-            <td>hide-row-borders</td>
-            <td>false</td>
-            <td>Removes horizontal borders between data rows</td>
-        </tr>
-        <tr>
-            <td>hide-thead-border</td>
-            <td>false</td>
-            <td>Removes border below the header section</td>
-        </tr>
-        <tr>
-            <td>hide-index-border</td>
-            <td>false</td>
-            <td>Removes border between index and data columns</td>
-        </tr>
-    </tbody>
-</table>
+<data-viewer
+    src="data/attributes.json"
+    class="info-table"
+    hide-settings-menu
+    hide-index-border
+    hide-row-borders
+    section-levels="1"
+></data-viewer>
 <h3>CSS Custom Properties</h3>
 <table>
     <thead>

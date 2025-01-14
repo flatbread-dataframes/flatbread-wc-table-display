@@ -13,16 +13,16 @@ body {
     color: var(--text-color);
     margin-bottom: 4rem;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-
-    &.dark-theme {
-        --background-color: hsl(210, 74%, 17%);
-        --hover-color: hsl(210, 54%, 28%);
-        --text-color: hsl(30, 0%, 98%);
-        --link-brightness: 74%;
-        --link-saturation: 1200%;
-        background-color: var(--background-color);
-    }
 }
+body:has(darkmode-toggle[scheme="dark"]) {
+    --background-color: hsl(210, 74%, 17%);
+    --hover-color: hsl(210, 54%, 28%);
+    --text-color: hsl(30, 0%, 98%);
+    --link-brightness: 74%;
+    --link-saturation: 1200%;
+    background-color: var(--background-color);
+}
+
 section {
     display: grid;
     grid-template-columns:
@@ -91,6 +91,10 @@ data-viewer {
 }
 pre {
     white-space: pre-wrap;
+}
+.info-table {
+    --axes-width: 1px;
+    font-family: monospace;
 }
 table {
     border-collapse: collapse;

@@ -1,48 +1,63 @@
 class Demo {
     constructor() {
-        this.dataViewer = document.querySelector("data-viewer")
-        this.eventDisplay = document.getElementById("event-display")
+        this.handleDataSourceChange = this.handleDataSourceChange.bind(this)
+        this.handleCellClick = this.handleCellClick.bind(this)
+        this.handleDataChanged = this.handleDataChanged.bind(this)
+
         this.setupEventListeners()
     }
 
+    // MARK: setup
     setupEventListeners() {
-        // Settings elements
-        document.getElementById("src").addEventListener("change", event => {
-            const wrapper = document.getElementById("data-viewer-wrapper")
+        this.setupControlEvents()
+        this.setupViewerEvents()
+    }
 
-            // Remove existing viewer
-            wrapper.querySelector("data-viewer")?.remove()
-
-            // Create and configure new viewer
-            const viewer = document.createElement("data-viewer")
-            viewer.setAttribute("src", event.target.value)
-            viewer.setAttribute("margin-labels", "Total;Totaal;Subtotal")
-
-            wrapper.appendChild(viewer)
-        })
-
-        // Controls
+    setupControlEvents() {
+        document.getElementById("src").addEventListener("change", this.handleDataSourceChange)
         document.getElementById("n").addEventListener("change", event => {
             this.updateTable(event.target.value)
         })
+    }
 
-        // Data viewer events
-        this.dataViewer.addEventListener("cell-click", event => {
-            this.eventDisplay.querySelector("code").innerText = JSON.stringify(event.detail)
-        })
+    setupViewerEvents() {
+        if (!this.dataViewer) return
 
-        this.dataViewer.addEventListener("data-changed", event => {
-            const JSONString = JSON.stringify(event.detail._rawData)
-            const truncatedContent = this.truncateJSONString(JSONString)
-            this.eventDisplay.querySelector("code").innerText = truncatedContent
-        })
+        this.dataViewer.addEventListener("cell-click", this.handleCellClick)
+        this.dataViewer.addEventListener("data-changed", this.handleDataChanged)
+    }
 
-        // Color scheme
-        document.addEventListener("color-scheme-change", event => {
-            event.detail.scheme === "dark"
-                ? document.body.classList.add("dark-theme")
-                : document.body.classList.remove("dark-theme")
-        })
+    // MARK: get/set
+    get wrapper() { return document.getElementById("data-viewer-wrapper") }
+    get dataViewer() { return this.wrapper.querySelector("data-viewer") }
+    get eventDisplay() { return document.getElementById("event-display") }
+
+    // MARK: handlers
+    handleDataSourceChange() {
+        this.dataViewer?.remove()
+
+        const viewer = document.createElement("data-viewer")
+        viewer.setAttribute("src", event.target.value)
+        viewer.setAttribute("margin-labels", "Total;Totaal;Subtotal")
+
+        this.wrapper.appendChild(viewer)
+        this.addDataViewerEventListeners()
+    }
+
+    handleCellClick(event) {
+        this.eventDisplay.querySelector("code").innerText = JSON.stringify(event.detail)
+    }
+
+    handleDataChanged(event) {
+        const JSONString = JSON.stringify(event.detail._rawData)
+        const truncatedContent = this.truncateJSONString(JSONString)
+        this.eventDisplay.querySelector("code").innerText = truncatedContent
+    }
+
+    // MARK: helpers
+    addDataViewerEventListeners() {
+        this.dataViewer.addEventListener("cell-click", this.handleCellClick)
+        this.dataViewer.addEventListener("data-changed", this.handleDataChanged)
     }
 
     truncateJSONString(JSONString, maxLength = 1500) {
@@ -79,5 +94,4 @@ class Demo {
     }
 }
 
-// Initialize when DOM is ready
 document.addEventListener("DOMContentLoaded", () => new Demo())
