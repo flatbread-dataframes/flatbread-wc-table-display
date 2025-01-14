@@ -1,7 +1,8 @@
 import { ModalElement } from "../components/modal-element.js"
 import { FormatTable } from "./format/format-table.js"
-import { MEDIA_QUERIES } from "../config.js"
+import { MEDIA_QUERIES, PREFERRED_LOCALES, COMMON_LOCALES } from "../config.js"
 import { SliderInput } from "../components/input-slider.js"
+import { InputDatalist } from "../components/input-datalist.js"
 
 export class SettingsPopup extends ModalElement {
     constructor(data, options, state) {
@@ -38,12 +39,20 @@ export class SettingsPopup extends ModalElement {
     // MARK: handlers
     handleInputChange(event) {
         const input = event.target
+        if (input.id === "locale") {
+            const localeDisplay = this.shadowRoot.getElementById("locale-info")
+            if (localeDisplay) {
+                localeDisplay.textContent = `${COMMON_LOCALES[input.value] ?? input.value}`
+            }
+        }
+
         const valueMap = {
             number: input => input.value,
             text: input => input.value,
             checkbox: input => input.checked,
             range: input => input.value,
-            "slider-input": input => input.value
+            "slider-input": input => input.value,
+            "input-datalist": input => input.value,
         }
 
         const getValue = valueMap[input.type] || valueMap[input.tagName.toLowerCase()]
@@ -101,7 +110,7 @@ export class SettingsPopup extends ModalElement {
             :host {
                 display: grid;
                 grid-template-rows: auto auto 1fr;  /* header, nav, main */
-                max-height: 47vh;
+                max-height: 60vh;
                 overflow: hidden;
             }
             nav {
@@ -126,13 +135,13 @@ export class SettingsPopup extends ModalElement {
                 margin-bottom: -1px;
                 overflow-y: auto;
             }
-
             [role="tab"][aria-selected="true"] {
                 border-bottom-color: currentColor;
             }
-
             [role="tabpanel"] {
                 visibility: hidden;
+                display: grid;
+                gap: .5em;
                 grid-column: 1;
                 grid-row: 1;
                 overflow-x: auto;
@@ -143,29 +152,37 @@ export class SettingsPopup extends ModalElement {
                 visibility: visible;
             }
 
-            label {
+            #general {
+                fieldset {
+                    display: grid;
+                    grid-template-columns: auto 1fr;
+                    gap: 0.5rem;
+                    align-items: center;
+                }
+                #truncation-max {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+            }
+            #styling label {
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
                 margin-bottom: 0.5rem;
             }
             input[type="number"] {
-                width: 3rem;
+                width: 4rem;
+                padding: 0.25rem;
+            }
+            input[type="text"] {
+                width: 100%;
+                padding: 0.25rem;
             }
         `
     }
 
     buildContent() {
-        const sectionLevelControls = this.data.index.isMultiIndex
-            ? `<label for="section-levels">
-                Section levels
-                <slider-input
-                    id="section-levels"
-                    max="${this.data.index.nlevels - 1}"
-                    value="${this.options.styling.sectionLevels}"
-                >
-            </label>`
-            : ""
         return `
             ${this.buildHeader("Settings")}
             <nav role="tablist">
@@ -174,44 +191,97 @@ export class SettingsPopup extends ModalElement {
                     aria-controls="general">General</button>
                 <button role="tab"
                     aria-selected="false"
+                    aria-controls="styling">Styling</button>
+                <button role="tab"
+                    aria-selected="false"
                     aria-controls="format">Format</button>
             </nav>
 
             <main>
                 <section role="tabpanel" id="general" selected>
-                    ${sectionLevelControls}
-                    <label for="na-rep">
-                        Na rep
-                        <input type="text" id="na-rep" value="${this.options.naRep}">
-                    </label>
-                    <label for="hide-column-borders">
-                        <input type="checkbox" id="hide-column-borders" ${!this.options.styling.columnBorders ? "checked" : ""}>
-                        Hide column borders
-                    </label>
-                    <label for="hide-row-borders">
-                        <input type="checkbox" id="hide-row-borders" ${!this.options.styling.rowBorders ? "checked" : ""}>
-                        Hide row borders
-                    </label>
-                    <label for="hide-index-border">
-                        <input type="checkbox" id="hide-index-border" ${!this.options.styling.indexBorder ? "checked" : ""}>
-                        Hide index border
-                    </label>
-                    <label for="hide-thead-border">
-                        <input type="checkbox" id="hide-thead-border" ${!this.options.styling.theadBorder ? "checked" : ""}>
-                        Hide thead border
-                    </label>
-                    <label for="show-hover">
-                        <input type="checkbox" id="show-hover" ${this.options.styling.showHover ? "checked" : ""}>
-                        Show hover effect
-                    </label>
-                    <label for="collapse-columns">
-                        <input type="checkbox" id="collapse-columns" ${this.options.styling.collapseColumns ? "checked" : ""}>
-                        Collapse columns
-                    </label>
+                    ${this.buildGeneralPanel()}
+                </section>
+
+                <section role="tabpanel" id="styling">
+                    ${this.buildStylingPanel()}
                 </section>
 
                 <section role="tabpanel" id="format"></section>
             </main>
+        `
+    }
+
+    buildGeneralPanel() {
+        const sectionLevelControls = this.data.index.isMultiIndex
+            ? `<label>Section levels</label>
+                <slider-input
+                    id="section-levels"
+                    max="${this.data.index.nlevels - 1}"
+                    value="${this.options.styling.sectionLevels}"
+                ></slider-input>`
+            : ""
+
+        return `
+            <fieldset>
+                ${sectionLevelControls}
+                <label>Locale</label>
+                <div>
+                    <input-datalist
+                        id="locale"
+                        common-options="${PREFERRED_LOCALES.join(";")}"
+                        options="${Object.keys(COMMON_LOCALES).join(";")}"
+                        value="${this.options.locale}"
+                    ></input-datalist>
+                    <div id="locale-info">${COMMON_LOCALES[this.options.locale] ?? this.options.locale}</div>
+                </div>
+                <label>Na rep</label>
+                <input type="text" id="na-rep" value="${this.options.naRep}">
+            </fieldset>
+            <fieldset>
+                <legend>Truncation</legend>
+                <label>Max</label>
+                <div id="truncation-max">
+                    <input type="number" id="max-rows" value="${this.options.truncation.maxRows}">
+                    <label>rows</label>
+                    <input type="number" id="max-columns" value="${this.options.truncation.maxColumns}">
+                    <label>columns</label>
+                </div>
+                <label>Trim size</label>
+                <input type="number" id="trim-size" value="${this.options.truncation.trimSize}">
+                <label>Separator</label>
+                <input type="text" id="separator" value="${this.options.truncation.separator}">
+            </fieldset>
+        `
+    }
+
+    buildStylingPanel() {
+        return `
+            <fieldset>
+                <label for="hide-column-borders">
+                    <input type="checkbox" id="hide-column-borders" ${!this.options.styling.columnBorders ? "checked" : ""}>
+                    Hide column borders
+                </label>
+                <label for="hide-row-borders">
+                    <input type="checkbox" id="hide-row-borders" ${!this.options.styling.rowBorders ? "checked" : ""}>
+                    Hide row borders
+                </label>
+                <label for="hide-index-border">
+                    <input type="checkbox" id="hide-index-border" ${!this.options.styling.indexBorder ? "checked" : ""}>
+                    Hide index border
+                </label>
+                <label for="hide-thead-border">
+                    <input type="checkbox" id="hide-thead-border" ${!this.options.styling.theadBorder ? "checked" : ""}>
+                    Hide thead border
+                </label>
+                <label for="show-hover">
+                    <input type="checkbox" id="show-hover" ${this.options.styling.showHover ? "checked" : ""}>
+                    Show hover effect
+                </label>
+                <label for="collapse-columns">
+                    <input type="checkbox" id="collapse-columns" ${this.options.styling.collapseColumns ? "checked" : ""}>
+                    Collapse columns
+                </label>
+            </fieldset>
         `
     }
 

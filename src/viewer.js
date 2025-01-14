@@ -122,16 +122,16 @@ export class DataViewer extends HTMLElement {
                 this.options.styling.sectionLevels = level
                 break
             case "max-rows":
-                this.options.maxRows = parseInt(newValue) ?? DataViewer.defaults.maxRows
+                this.options.truncation.maxRows = parseInt(newValue) ?? DataViewer.defaults.maxRows
                 break
             case "max-columns":
-                this.options.maxColumns = parseInt(newValue) ?? DataViewer.defaults.maxColumns
+                this.options.truncation.maxColumns = parseInt(newValue) ?? DataViewer.defaults.maxColumns
                 break
             case "trim-size":
-                this.options.trimSize = parseInt(newValue) ?? DataViewer.defaults.trimSize
+                this.options.truncation.trimSize = parseInt(newValue) ?? DataViewer.defaults.trimSize
                 break
             case "separator":
-                this.options.separator = newValue ?? DataViewer.defaults.separator
+                this.options.truncation.separator = newValue ?? DataViewer.defaults.separator
                 break
         }
         this.update()
