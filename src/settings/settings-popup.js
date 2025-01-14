@@ -3,6 +3,7 @@ import { FormatTable } from "./format/format-table.js"
 import { MEDIA_QUERIES, PREFERRED_LOCALES, COMMON_LOCALES } from "../config.js"
 import { SliderInput } from "../components/input-slider.js"
 import { InputDatalist } from "../components/input-datalist.js"
+import { LocaleSelector } from "../components/locale-selector.js"
 
 export class SettingsPopup extends ModalElement {
     constructor(data, options, state) {
@@ -39,12 +40,6 @@ export class SettingsPopup extends ModalElement {
     // MARK: handlers
     handleInputChange(event) {
         const input = event.target
-        if (input.id === "locale") {
-            const localeDisplay = this.shadowRoot.getElementById("locale-info")
-            if (localeDisplay) {
-                localeDisplay.textContent = `${COMMON_LOCALES[input.value] ?? input.value}`
-            }
-        }
 
         const valueMap = {
             number: input => input.value,
@@ -225,15 +220,10 @@ export class SettingsPopup extends ModalElement {
             <fieldset>
                 ${sectionLevelControls}
                 <label>Locale</label>
-                <div>
-                    <input-datalist
-                        id="locale"
-                        common-options="${PREFERRED_LOCALES.join(";")}"
-                        options="${Object.keys(COMMON_LOCALES).join(";")}"
-                        value="${this.options.locale}"
-                    ></input-datalist>
-                    <div id="locale-info">${COMMON_LOCALES[this.options.locale] ?? this.options.locale}</div>
-                </div>
+                <locale-selector
+                    id="locale"
+                    value="${this.options.locale}"
+                ></locale-selector>
                 <label>Na rep</label>
                 <input type="text" id="na-rep" value="${this.options.naRep}">
             </fieldset>
