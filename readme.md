@@ -29,10 +29,10 @@ A lightweight vanilla JavaScript web component for displaying structured table d
 ## Example Output
 
 ### Simple table
-<img src="examples/simple-table-with-margins.png" width="auto" />
+<img src="examples/simple-table-with-margins.png" width="517px" />
 
 ### Multi-level headers
-<img src="examples/multi-level-table.png" width="auto" />
+<img src="examples/multi-level-table.png" width="1273px" />
 
 ### Section headers
-<img src="examples/table-with-section-headers.png" width="auto" />
+<img src="examples/table-with-section-headers.png" width="648px" />
