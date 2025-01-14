@@ -64,12 +64,16 @@ header {
 }
 form {
     display: grid;
-    grid-template-columns: repeat(3, max-content);
+    grid-template-columns: repeat(2, max-content);
     grid-auto-rows: min-content;
     grid-auto-flow: dense;
 
     fieldset {
         min-width: 0;
+        div {
+            display: flex;
+            gap: 0.5rem;
+        }
     }
     label:has(select) {
         display: grid;
