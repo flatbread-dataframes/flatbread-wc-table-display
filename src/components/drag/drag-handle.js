@@ -12,6 +12,11 @@ export class DragHandle extends HTMLElement {
 
     render() {
         const styles = `
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box
+            }
             :host {
                 display: inline-grid;
                 place-items: center;
