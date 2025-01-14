@@ -16,17 +16,9 @@ class Demo {
             // Create and configure new viewer
             const viewer = document.createElement("data-viewer")
             viewer.setAttribute("src", event.target.value)
-            viewer.setAttribute("locale", this.getLocale())
             viewer.setAttribute("margin-labels", "Total;Totaal;Subtotal")
 
             wrapper.appendChild(viewer)
-        })
-
-        document.querySelectorAll('input[name="locale"]').forEach(radio => {
-            radio.addEventListener("change", () => {
-                const locale = this.getLocale()
-                this.dataViewer.setAttribute("locale", locale)
-            })
         })
 
         // Controls
@@ -51,10 +43,6 @@ class Demo {
                 ? document.body.classList.add("dark-theme")
                 : document.body.classList.remove("dark-theme")
         })
-    }
-
-    getLocale() {
-        return document.querySelector('input[type="radio"]:checked')?.value
     }
 
     truncateJSONString(JSONString, maxLength = 1500) {
