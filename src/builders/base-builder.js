@@ -21,6 +21,7 @@ export class BaseTableBuilder {
             td { text-align: right }
             th, td { padding: .25em .5em }
             .columnLabel { text-align: right }
+            [data-dtype="str"] { text-align: left }
         `
     }
 
