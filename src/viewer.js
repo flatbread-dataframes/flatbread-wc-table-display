@@ -236,7 +236,7 @@ export class DataViewer extends HTMLElement {
             </style>
             <data-table></data-table>
         `
-        const settingsContainer = new SettingsContainer(this.data, this.options)
+        const settingsContainer = new SettingsContainer(this.options)
         this.shadowRoot.appendChild(settingsContainer)
     }
 
@@ -246,6 +246,7 @@ export class DataViewer extends HTMLElement {
         }
         const viewData = this.data.createTrimmedView(this.options)
         this.table.update(viewData, this.options)
+        this.settingsContainer.data = viewData
     }
 
     // MARK: handlers

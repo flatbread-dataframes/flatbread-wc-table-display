@@ -3,11 +3,11 @@ import { SettingsPopup } from "./settings-popup.js"
 import { BREAKPOINTS } from "../config.js"
 
 export class SettingsContainer extends HTMLElement {
-    constructor(data, options) {
+    constructor(options) {
         super()
         this.attachShadow({ mode: "open" })
-        this.data = data
         this.options = options
+        this.data = null
         this.state = {
             selectedTab: null,
         }
