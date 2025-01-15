@@ -5,6 +5,10 @@ export class Axis {
         this.edges = this.getEdges()
     }
 
+    get isEmpty() {
+        return !this.values?.length
+    }
+
     get values() { return this._values }
     set values(arr) {
         this._values = arr.map(item => Array.isArray(item) ? item : [item])

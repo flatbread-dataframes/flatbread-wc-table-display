@@ -61,6 +61,14 @@ export class Data extends EventTarget {
         this.dispatchEvent(new Event("data-changed"))
     }
 
+    get isEmpty() {
+        return (
+            this.index.isEmpty &&
+            this.columns.isEmpty &&
+            (!this.values?.length || !this.values.some(row => row.length))
+        )
+    }
+
     // MARK: columns
     get columns() { return this._columns }
     set columns(value) {
