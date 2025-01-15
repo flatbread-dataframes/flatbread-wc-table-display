@@ -4,6 +4,7 @@ import { MEDIA_QUERIES, PREFERRED_LOCALES, COMMON_LOCALES } from "../config.js"
 import { SliderInput } from "../components/input-slider.js"
 import { InputDatalist } from "../components/input-datalist.js"
 import { LocaleSelector } from "../components/locale-selector.js"
+import { TagInput } from "../components/tag-input.js"
 
 export class SettingsPopup extends ModalElement {
     constructor(data, options, state) {
@@ -48,6 +49,7 @@ export class SettingsPopup extends ModalElement {
             range: input => input.value,
             "slider-input": input => input.value,
             "input-datalist": input => input.value,
+            "tag-input": input => input.value.join(";"),
         }
 
         const getValue = valueMap[input.type] || valueMap[input.tagName.toLowerCase()]
@@ -105,7 +107,9 @@ export class SettingsPopup extends ModalElement {
             :host {
                 display: grid;
                 grid-template-rows: auto auto 1fr;  /* header, nav, main */
-                max-height: 60vh;
+                max-height: 67vh;
+                min-width: 26rem;
+                max-width: 26rem;
                 overflow: hidden;
             }
             nav {
@@ -139,35 +143,38 @@ export class SettingsPopup extends ModalElement {
                 gap: .5em;
                 grid-column: 1;
                 grid-row: 1;
-                overflow-x: auto;
-                overflow-y: auto;
+                align-content: start;
                 min-height: 0;
+                overflow: auto;
+
+                &#general {
+                    fieldset:not(:last-of-type) {
+                        display: grid;
+                        grid-template-columns: auto 1fr;
+                        gap: 0.5rem;
+                        align-items: center;
+                    }
+                    #truncation-max {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+
+                        label { font-size: 0.8em; }
+                    }
+                }
+                &#styling label {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    margin-bottom: 0.5rem;
+                }
             }
             [role="tabpanel"][selected] {
                 visibility: visible;
             }
 
-            #general {
-                fieldset {
-                    display: grid;
-                    grid-template-columns: auto 1fr;
-                    gap: 0.5rem;
-                    align-items: center;
-                }
-                #truncation-max {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
-            }
-            #styling label {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                margin-bottom: 0.5rem;
-            }
             input[type="number"] {
-                width: 4rem;
+                width: 3.5rem;
                 padding: 0.25rem;
             }
             input[type="text"] {
@@ -240,6 +247,13 @@ export class SettingsPopup extends ModalElement {
                 <input type="number" id="trim-size" value="${this.options.truncation.trimSize}">
                 <label>Separator</label>
                 <input type="text" id="separator" value="${this.options.truncation.separator}">
+            </fieldset>
+            <fieldset>
+                <legend>Margin labels</legend>
+                <tag-input
+                    id="margin-labels"
+                    value="${this.options.marginLabels.join(";")}"
+                ></tag-input>
             </fieldset>
         `
     }
