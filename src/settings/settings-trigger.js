@@ -28,7 +28,7 @@ export class SettingsTrigger extends HTMLElement {
                 height: 1.75rem;
                 border: 1px solid var(--border-color, currentColor);
                 border-radius: 50%;
-                background-color: var(--background-color, var(==surface-color));
+                background-color: var(--background-color, var(--surface-color));
                 cursor: pointer;
                 font-size: .925rem;
                 line-height: 1;
