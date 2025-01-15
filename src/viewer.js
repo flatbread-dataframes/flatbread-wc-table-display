@@ -210,8 +210,23 @@ export class DataViewer extends HTMLElement {
         return value.toLowerCase() === "true"
     }
 
+    invertCurrentColor() {
+        // Get the computed currentColor value
+        const temp = document.createElement("div")
+        temp.style.color = "currentColor"
+        document.body.appendChild(temp)
+        const currentColor = window.getComputedStyle(temp).color
+        document.body.removeChild(temp)
+
+        // Get RGB values
+        const [r, g, b] = currentColor.match(/\d+/g).map(Number)
+
+        return `rgb(${255 - r}, ${255 - g}, ${255 - b})`
+    }
+
     // MARK: render
     render() {
+        console.log(this.invertCurrentColor())
         this.shadowRoot.innerHTML = `
             <style>
                 *,
@@ -224,11 +239,12 @@ export class DataViewer extends HTMLElement {
                     align-items: start;
                     gap: 8px;
                     position: relative;
+                    --surface-color: ${this.invertCurrentColor()};
                 }
                 settings-container {
                     position: static;
                     opacity: 0;
-                    transition: opacity 0.2s ease
+                    transition: opacity 0.2s ease;
                 }
                 :host(:hover) settings-container {
                     opacity: .5;

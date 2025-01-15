@@ -120,7 +120,7 @@ export class ModalElement extends DraggableMixin(HTMLElement) {
                 box-sizing: border-box;
                 display: block;
                 position: fixed;
-                background: var(--background-color, white);
+                background-color: var(--background-color, var(--surface-color));
                 border: 1px solid var(--border-color, currentColor);
                 border-radius: 4px;
                 padding: 1rem;
