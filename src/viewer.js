@@ -226,7 +226,6 @@ export class DataViewer extends HTMLElement {
 
     // MARK: render
     render() {
-        console.log(this.invertCurrentColor())
         this.shadowRoot.innerHTML = `
             <style>
                 *,
