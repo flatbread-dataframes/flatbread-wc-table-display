@@ -51,7 +51,8 @@ export class DataViewer extends HTMLElement {
         this.handleTableClick = this.handleTableClick.bind(this)
         this.handleSettingChange = this.handleSettingChange.bind(this)
 
-        this.data = new Data()
+        this._data = new Data()
+        this._isConnected = false
         this.render()
     }
 
@@ -59,6 +60,7 @@ export class DataViewer extends HTMLElement {
     connectedCallback() {
         this.data.addEventListener("data-changed", this.handleDataChange)
         this.addEventListeners()
+        this._isConnected = true
     }
 
     disconnectedCallback() {
@@ -150,6 +152,18 @@ export class DataViewer extends HTMLElement {
     }
 
     // MARK: get/set
+    get data() { return this._data }
+    set data(value) {
+        if (this.hasAttribute("src")) {
+            this.removeAttribute("src")
+        }
+        this._data.setData(value)
+        // Only call update explicitly if we haven't connected yet
+        if (!this.isConnected) {
+            this.update()
+        }
+    }
+
     get table() {
         return this.shadowRoot.querySelector("data-table")
     }
@@ -241,9 +255,12 @@ export class DataViewer extends HTMLElement {
     }
 
     update() {
-        if (this.data?.values?.length) {
-            this.updateCalculatedOptions()
+        if (this.data.isEmpty) {
+            this.table.update(null, this.options)
+            return
         }
+
+        this.updateCalculatedOptions()
         const viewData = this.data.createTrimmedView(this.options)
         this.table.update(viewData, this.options)
         this.settingsContainer.data = viewData
