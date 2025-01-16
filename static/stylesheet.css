@@ -92,9 +92,18 @@ data-viewer {
 pre {
     white-space: pre-wrap;
 }
-.info-table {
+data-viewer.info-table {
+    --cursor: auto;
     --axes-width: 1px;
     font-family: monospace;
+
+    &::part(column-header) { text-align: left; }
+    &::part(index-name) { text-align: left; }
+    &::part(section-header) {
+        font-variant: small-caps;
+        font-size: 1.3em;
+        text-decoration: underline;
+    }
 }
 table {
     border-collapse: collapse;
