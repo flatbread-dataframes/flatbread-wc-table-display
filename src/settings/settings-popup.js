@@ -1,6 +1,6 @@
 import { ModalElement } from "../components/modal-element.js"
 import { FormatTable } from "./format/format-table.js"
-import { MEDIA_QUERIES, PREFERRED_LOCALES, COMMON_LOCALES } from "../config.js"
+import { MEDIA_QUERIES, BREAKPOINTS, PREFERRED_LOCALES, COMMON_LOCALES } from "../config.js"
 import { SliderInput } from "../components/input-slider.js"
 import { InputDatalist } from "../components/input-datalist.js"
 import { LocaleSelector } from "../components/locale-selector.js"
@@ -107,10 +107,13 @@ export class SettingsPopup extends ModalElement {
             :host {
                 display: grid;
                 grid-template-rows: auto auto 1fr;  /* header, nav, main */
+                grid-template-columns: minmax(0, 1fr);
                 max-height: 67vh;
-                min-width: 26rem;
-                max-width: 26rem;
                 overflow: hidden;
+
+                @media (max-width: ${BREAKPOINTS.POPUP_MOBILE}) {
+                    min-width: 0;
+                }
             }
             nav {
                 display: flex;
@@ -145,28 +148,37 @@ export class SettingsPopup extends ModalElement {
                 grid-row: 1;
                 align-content: start;
                 min-height: 0;
-                overflow: auto;
+
+                fieldset {
+                    display: grid;
+                    min-width: 0;
+                }
 
                 &#general {
                     fieldset:not(:last-of-type) {
-                        display: grid;
-                        grid-template-columns: auto 1fr;
+                        grid-template-columns: auto minmax(0, 1fr);
                         gap: 0.5rem;
                         align-items: center;
                     }
                     #truncation-max {
                         display: flex;
+                        flex-wrap: wrap;
                         align-items: center;
                         gap: 0.5rem;
 
                         label { font-size: 0.8em; }
                     }
                 }
-                &#styling label {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    margin-bottom: 0.5rem;
+                &#styling {
+                    label {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        margin-bottom: 0.5rem;
+                    }
+                }
+                &#format {
+                    overflow: auto;
                 }
             }
             [role="tabpanel"][selected] {
@@ -178,7 +190,7 @@ export class SettingsPopup extends ModalElement {
                 padding: 0.25rem;
             }
             input[type="text"] {
-                width: 100%;
+                min-width: 0;
                 padding: 0.25rem;
             }
         `
@@ -238,10 +250,14 @@ export class SettingsPopup extends ModalElement {
                 <legend>Truncation</legend>
                 <label>Max</label>
                 <div id="truncation-max">
-                    <input type="number" id="max-rows" value="${this.options.truncation.maxRows}">
-                    <label>rows</label>
-                    <input type="number" id="max-columns" value="${this.options.truncation.maxColumns}">
-                    <label>columns</label>
+                    <div>
+                        <input type="number" id="max-rows" value="${this.options.truncation.maxRows}">
+                        <label>rows</label>
+                    </div>
+                    <div>
+                        <input type="number" id="max-columns" value="${this.options.truncation.maxColumns}">
+                        <label>columns</label>
+                    </div>
                 </div>
                 <label>Trim size</label>
                 <input type="number" id="trim-size" value="${this.options.truncation.trimSize}">

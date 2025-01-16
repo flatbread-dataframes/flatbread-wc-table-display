@@ -93,12 +93,12 @@ export class SliderInput extends HTMLElement {
             }
             :host {
                 display: grid;
-                grid-template-columns: 1fr auto auto;
+                grid-template-columns: minmax(0, 1fr) auto auto;
                 align-items: center;
                 gap: 0.5rem;
             }
             output {
-                min-width: 2.5em;
+                min-width: 1.25em;
                 text-align: right;
             }
         `
