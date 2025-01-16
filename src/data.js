@@ -191,7 +191,7 @@ export class Data extends EventTarget {
             // Handle dtypes and format options
             const dtypes = this._dtypes && [
                 ...this._dtypes.slice(0, trimSize),
-                "str",
+                "[sep]",
                 ...this._dtypes.slice(-trimSize)
             ]
 

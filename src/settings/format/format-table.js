@@ -187,6 +187,7 @@ export class FormatTable extends HTMLElement {
 
     buildRow(col, idx) {
         const attrs = this.data.columns.attrs[idx]
+        if (attrs.dtype === "[sep]") return ""
         const presets = getPresetsForType(attrs.dtype)
         const isCustom = isCustomFormat(attrs.formatOptions, presets)
         const currentPreset = matchPreset(attrs.formatOptions, presets)
