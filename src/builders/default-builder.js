@@ -228,7 +228,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
         const remainingLabels = allLabels.slice(sectionLevels)
 
         return remainingLabels
-            .map(name => `<th class="indexLabel">${name ?? ""}</th>`)
+            .map(name => `<th class="indexLabel" part="index-name">${name ?? ""}</th>`)
             .join("")
     }
 
@@ -250,7 +250,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "margin-edge-col": this.testMarginEdge(value)
         }
 
-        return `<th ${this.buildAttributeString(attributes)}>${selectedValue}</th>`
+        return `<th ${this.buildAttributeString(attributes)} part="column-header">${selectedValue}</th>`
     }
 
     /**
@@ -272,7 +272,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
         const sectionLevels = this.options.styling.sectionLevels
         const columnSpan = this.data.index.nlevels - sectionLevels
 
-        const columnLabelElement = `<th colspan="${columnSpan}" class="columnLabel">${columnLabel}</th>`
+        const columnLabelElement = `<th colspan="${columnSpan}" class="columnLabel" part="column-label">${columnLabel}</th>`
         const groupHeaders = this.data.columns.spans[level]
             .map((span, iloc) => this.buildColumnGroupLabel(span, iloc, level))
             .join("")
@@ -299,7 +299,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "margin-edge-col": this.testMarginEdge(span.value)
         }
 
-        return `<th ${this.buildAttributeString(attributes)}>${span.value[level]}</th>`
+        return `<th ${this.buildAttributeString(attributes)} part="column-group-header">${span.value[level]}</th>`
     }
 
     // MARK: Body
@@ -361,7 +361,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
         }
 
         const label = group.label ?? this.options.naRep
-        const headerCell = `<th ${this.buildAttributeString(attributes)}>${label}</th>`
+        const headerCell = `<th ${this.buildAttributeString(attributes)} part="section-header">${label}</th>`
 
         // Create cells for data columns with proper attributes
         const dataCells = Array(this.data.columns.length)
@@ -370,7 +370,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             .join("")
 
         return `
-            <tbody section-group>
+            <tbody section-group part="section-group">
                 <tr>${headerCell}${dataCells}</tr>
             </tbody>
         `
@@ -445,7 +445,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "margin-edge-idx": this.testMarginEdge(value)
         }
 
-        return `<th ${this.buildAttributeString(attributes)}>${selectedValue}</th>`
+        return `<th ${this.buildAttributeString(attributes)} part="index-cell">${selectedValue}</th>`
     }
 
     /**

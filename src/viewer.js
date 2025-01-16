@@ -263,7 +263,7 @@ export class DataViewer extends HTMLElement {
                     }
                 }
             </style>
-            <data-table></data-table>
+            <data-table exportparts="table, column-header, data-cell, margin-cell, separator-cell, index-cell, section-header, column-group-header, column-label, index-name"></data-table>
         `
         const settingsContainer = new SettingsContainer(this.options)
         this.shadowRoot.appendChild(settingsContainer)

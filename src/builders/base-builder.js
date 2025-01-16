@@ -27,7 +27,7 @@ export class BaseTableBuilder {
 
     buildTable() {
         return `
-            <table>
+            <table part="table">
                 <thead>${this.buildThead()}</thead>
                 <tbody>${this.buildBody()}</tbody>
             </table>
@@ -46,8 +46,9 @@ export class BaseTableBuilder {
     buildCell(value, irow, icol) {
         const formattedValue = this.getFormattedValue(value, icol)
         const attributes = this.getCellAttributes(irow, icol)
+        const part = this.getCellPart(irow, icol)
 
-        return `<td ${attributes}>${formattedValue}</td>`
+        return `<td ${attributes} part="${part}">${formattedValue}</td>`
     }
 
     getFormattedValue(value, icol) {
@@ -92,6 +93,20 @@ export class BaseTableBuilder {
         }
 
         return `${key}="${value}"`
+    }
+
+    getCellPart(irow, icol) {
+        const attrs = this.data.columns.attrs[icol]
+        const parts = ["data-cell"]
+
+        if (this.testMarginEdge(this.data.values[irow][icol])) {
+            parts.push("margin-cell")
+        }
+        if (attrs.dtype === "[sep]") {
+            parts.push("separator-cell")
+        }
+
+        return parts.join(" ")
     }
 
     // MARK: formatting
