@@ -187,7 +187,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      * @returns {string} HTML string for the row
      */
     buildColumnsRow() {
-        return this.buildHeaderRow(value => value)
+        return this.buildHeaderRow(value => value ?? "")
     }
 
     /**
@@ -299,7 +299,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "margin-edge-col": this.testMarginEdge(span.value)
         }
 
-        return `<th ${this.buildAttributeString(attributes)} part="column-group-header">${span.value[level]}</th>`
+        return `<th ${this.buildAttributeString(attributes)} part="column-group-header">${span.value[level] ?? ""}</th>`
     }
 
     // MARK: Body
@@ -445,7 +445,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "margin-edge-idx": this.testMarginEdge(value)
         }
 
-        return `<th ${this.buildAttributeString(attributes)} part="index-cell">${selectedValue}</th>`
+        return `<th ${this.buildAttributeString(attributes)} part="index-cell">${selectedValue ?? ""}</th>`
     }
 
     /**
