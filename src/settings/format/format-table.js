@@ -51,12 +51,12 @@ export class FormatTable extends HTMLElement {
 
     // MARK: handlers
     handleEditClick(event) {
-        const editButton = event.target.closest("button[data-action='edit']")
-        if (!editButton || this.hasOpenDialog) return
+        const button = event.target
+        if (!button.matches("button[data-action|='edit']") || this.hasOpenDialog) return
 
         event.stopPropagation()
 
-        const row = editButton.closest("tr")
+        const row = button.closest("tr")
         const columnIndex = parseInt(row.dataset.columnIndex)
         this.openDialog(columnIndex)
     }
@@ -156,6 +156,9 @@ export class FormatTable extends HTMLElement {
             button {
                 padding: 0.25rem 0.5rem;
                 cursor: pointer;
+                * {
+                    pointer-events: none;
+                }
             }
         `
 
