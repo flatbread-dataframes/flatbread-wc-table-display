@@ -1,4 +1,5 @@
 import { Axis } from "./axis.js"
+import { getPresetsForType } from "../settings/format/format-presets.js"
 
 export class Columns extends Axis {
     constructor(values, dtypes, formatOptions) {
@@ -18,7 +19,14 @@ export class Columns extends Axis {
 
     get formatOptions() { return this._formatOptions }
     set formatOptions(value) {
-        this._formatOptions = value
+        this._formatOptions = value?.map((opt, idx) => {
+            if (typeof opt === "string") {
+                const dtype = this.dtypes?.[idx]
+                const presets = getPresetsForType(dtype)
+                return presets[opt]?.options
+            }
+            return opt
+        })
         this.attrs = this.getAttrs()
     }
 
