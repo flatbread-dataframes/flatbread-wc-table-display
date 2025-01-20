@@ -7,7 +7,7 @@ export class FormatDialog extends ModalElement {
         super()
         const { dtype, columnName, formatOptions, columnIndex } = state
 
-        this.dataType = dtype ?? null
+        this.dtype = dtype ?? null
         this.columnName = columnName ?? ""
         this.currentOptions = formatOptions ?? {}
         this.columnIndex = columnIndex ?? null
@@ -37,7 +37,7 @@ export class FormatDialog extends ModalElement {
 
     // MARK: get/set
     get spec() {
-        return getFormatSpec(this.dataType)
+        return getFormatSpec(this.dtype)
     }
 
     get form() {
@@ -61,7 +61,8 @@ export class FormatDialog extends ModalElement {
             composed: true,
             detail: {
                 formatOptions: formData,
-                columnIndex: this.columnIndex
+                columnIndex: this.columnIndex,
+                dtype: this.dtype,
             }
         }))
         this.handleClose()
@@ -163,7 +164,7 @@ export class FormatDialog extends ModalElement {
     }
 
     buildContent() {
-        const formContent = !this.dataType || !this.spec
+        const formContent = !this.dtype || !this.spec
             ? "No format options available for this type"
             : new FormatBuilder(this.spec, this.currentOptions).buildFormControls()
 
