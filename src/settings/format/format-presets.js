@@ -9,7 +9,8 @@ export const NumberPresets = {
             style: "currency",
             currency: "EUR",
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            maximumFractionDigits: 2,
+            useGrouping: true,
         }
     },
     percentage: {
@@ -27,7 +28,14 @@ export const NumberPresets = {
             minimumFractionDigits: 1,
             maximumFractionDigits: 1
         }
-    }
+    },
+    diffs: {
+        label: "Difference",
+        options: {
+            signDisplay: "always",
+            useGrouping: true,
+        }
+    },
 }
 
 export const DatePresets = {
