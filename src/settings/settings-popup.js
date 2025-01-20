@@ -148,6 +148,7 @@ export class SettingsPopup extends ModalElement {
                 grid-row: 1;
                 align-content: start;
                 min-height: 0;
+                overflow: auto;
 
                 fieldset {
                     display: grid;
@@ -176,9 +177,6 @@ export class SettingsPopup extends ModalElement {
                         gap: 0.5rem;
                         margin-bottom: 0.5rem;
                     }
-                }
-                &#format {
-                    overflow: auto;
                 }
             }
             [role="tabpanel"][selected] {
