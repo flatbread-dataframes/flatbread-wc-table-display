@@ -106,7 +106,7 @@ export class FormatBuilder {
     }
 
     buildDatalist(key, config) {
-        const current = this.currentOptions[key]
+        const current = this.currentOptions[key] ?? config.default
 
         return `
             <label>
