@@ -32,14 +32,12 @@ section {
     [content-end] minmax(0, auto)
     [breakout-end] minmax(1rem, 1fr);
 
-    overflow-x: hidden;
-
     & > * {
         grid-column: content;
     }
     & > .breakout {
         grid-column: breakout;
-        overflow-x: scroll;
+        overflow-x: auto;
     }
 }
 header {
