@@ -120,8 +120,10 @@ export class DataViewer extends HTMLElement {
                 this.options.marginLabels = labels
                 break
             case "section-levels":
-                const level = Math.max(0, parseInt(newValue) ?? DataViewer.defaults.styling.sectionLevels)
-                this.options.styling.sectionLevels = level
+                const level = parseInt(newValue)
+                this.options.styling.sectionLevels = Number.isNaN(level)
+                    ? DataViewer.defaults.styling.sectionLevels
+                    : Math.max(0, level)
                 break
             case "max-rows":
                 this.options.truncation.maxRows = parseInt(newValue) ?? DataViewer.defaults.maxRows
