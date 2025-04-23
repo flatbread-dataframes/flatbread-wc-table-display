@@ -275,6 +275,15 @@ export class SettingsPopup extends ModalElement {
     buildStylingPanel() {
         return `
             <fieldset>
+                <label for="column-border-levels">
+                    Column border levels
+                    <slider-input
+                        id="column-border-levels"
+                        min="-1"
+                        max="${this.data.columns.nlevels || 0}"
+                        value="${this.options.styling.columnBorderLevels}"
+                    ></slider-input>
+                </label>
                 <label for="hide-column-borders">
                     <input type="checkbox" id="hide-column-borders" ${!this.options.styling.columnBorders ? "checked" : ""}>
                     Hide column borders
