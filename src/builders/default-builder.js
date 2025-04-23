@@ -61,6 +61,28 @@ export class DefaultTableBuilder extends BaseTableBuilder {
         return `<style>${this.getBaseStyles()}\n${composedStyles}</style>`
     }
 
+    filterColumnEdgesByLevel() {
+        const level = this.options.styling.columnBorderLevels
+        const lastLevel = this.data.columns.nlevels - level
+
+        // Return empty array when level is -1 (no borders)
+        if (level === -1) return []
+
+        const spans = this.data.columns.spans
+        const relevantSpans = level > 0 ? spans.slice(0, lastLevel) : spans
+
+        // Collect edges from the relevant spans
+        const edges = []
+        relevantSpans.forEach(levelSpans => {
+            levelSpans.forEach(span => {
+                if (span.iloc > 0 && !edges.includes(span.iloc)) {
+                    edges.push(span.iloc)
+                }
+            })
+        })
+        return edges
+    }
+
     /**
      * Generates CSS rules for section header font sizing based on hierarchy level
      * Creates a visual hierarchy for section headers with appropriate scaling
@@ -129,6 +151,19 @@ export class DefaultTableBuilder extends BaseTableBuilder {
         `
 
         return `${sectionRules}\n${indexRule}`
+    }
+
+    // MARK: Table
+    buildTable() {
+        // Filter edges based on level setting
+        this.filteredColumnEdges = this.filterColumnEdgesByLevel()
+
+        return `
+            <table part="table">
+                <thead>${this.buildThead()}</thead>
+                <tbody>${this.buildBody()}</tbody>
+            </table>
+        `
     }
 
     // MARK: Thead
@@ -246,7 +281,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "data-col": iloc,
             "data-groups": attrs.groups.join(" "),
             "index-edge": iloc === 0,
-            "column-edge": this.data.columns.edges.slice(1).includes(iloc),
+            "column-edge": this.filteredColumnEdges.includes(iloc),
             "margin-edge-col": this.testMarginEdge(value)
         }
 
@@ -295,7 +330,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "data-level": level,
             "data-group": iloc,
             "index-edge": iloc === 0,
-            "column-edge": iloc > 0,
+            "column-edge": this.filteredColumnEdges.includes(span.iloc),
             "margin-edge-col": this.testMarginEdge(span.value)
         }
 
@@ -502,5 +537,25 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             if (currentPath[i] !== lastPath[i]) return true
         }
         return false
+    }
+
+    // MARK: cell
+    getCellAttributes(irow, icol) {
+        const attrs = this.data.columns.attrs[icol]
+
+        const dataAttributes = {
+            "data-col": icol,
+            "data-groups": attrs.groups.join(" "),
+            "data-dtype": attrs.dtype
+        }
+
+        const edgeAttributes = {
+            "index-edge": icol === 0,
+            "column-edge": this.filteredColumnEdges.includes(icol),
+            "margin-edge-idx": this.testMarginEdge(this.data.index.values[irow]),
+            "margin-edge-col": this.testMarginEdge(this.data.columns.values[icol])
+        }
+
+        return this.buildAttributeString({ ...dataAttributes, ...edgeAttributes })
     }
 }

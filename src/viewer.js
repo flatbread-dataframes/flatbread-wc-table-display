@@ -10,7 +10,7 @@ export class DataViewer extends HTMLElement {
             "hide-column-borders", "hide-row-borders",
             "hide-thead-border", "hide-index-border",
             "show-hover", "margin-labels",
-            "collapse-columns", "section-levels",
+            "collapse-columns", "column-border-levels", "section-levels",
             "max-rows", "max-columns", "trim-size", "separator",
         ]
     }
@@ -36,6 +36,7 @@ export class DataViewer extends HTMLElement {
                 theadBorder: true,
                 indexBorder: true,
                 columnBorders: null,
+                columnBorderLevels: 1,
                 rowBorders: true,
                 marginBorders: true,
             }
@@ -115,16 +116,24 @@ export class DataViewer extends HTMLElement {
             case "collapse-columns":
                 this.options.styling.collapseColumns = this.getBooleanAttribute(newValue)
                 break
+            case "column-border-levels": {
+                const level = parseInt(newValue)
+                this.options.styling.columnBorderLevels = Number.isNaN(level)
+                    ? DataViewer.defaults.styling.columnBorderLevels
+                    : level
+                break
+            }
             case "margin-labels":
                 const labels = newValue.split(";")
                 this.options.marginLabels = labels
                 break
-            case "section-levels":
+            case "section-levels": {
                 const level = parseInt(newValue)
                 this.options.styling.sectionLevels = Number.isNaN(level)
                     ? DataViewer.defaults.styling.sectionLevels
                     : Math.max(0, level)
                 break
+            }
             case "max-rows":
                 this.options.truncation.maxRows = parseInt(newValue) ?? DataViewer.defaults.maxRows
                 break
