@@ -41,6 +41,14 @@ export class DatasetSelector extends HTMLElement {
         }
     }
 
+    set data(spec) {
+        this.initializeFromSpec(spec)
+    }
+
+    get data() {
+        return this.spec
+    }
+
     // Load spec and initialize
     async loadSpecFromSrc(src) {
         try {
@@ -131,6 +139,9 @@ export class DatasetSelector extends HTMLElement {
             )
         }
 
+        // Extract global options if provided
+        this.globalOptions = spec.options ?? {}
+
         this.render()
         this.updateViewer()
     }
@@ -197,6 +208,13 @@ export class DatasetSelector extends HTMLElement {
         }
 
         this.dataViewer.data = dataset.data
+
+        // Apply global options first
+        if (this.globalOptions) {
+            for (const [key, value] of Object.entries(this.globalOptions)) {
+                this.dataViewer.setAttribute(key, value)
+            }
+        }
 
         // Apply options if specified
         if (dataset.options) {
