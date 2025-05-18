@@ -14,9 +14,10 @@ export class DatasetSelector extends HTMLElement {
         this.handleFilterChange = this.handleFilterChange.bind(this)
 
         this.options = { ...DatasetSelector.defaults }
-        this.datasets = []      // All available datasets
-        this.filters = {}       // Current filter configuration
-        this.filterOptions = {} // Available options for each filter
+        this.datasets = []          // All available datasets
+        this.filters = {}           // Current filter configuration
+        this.filterOptions = {}     // Available options for each filter
+        this.dataCache = new Map()  // Cache for fetched datasets
     }
 
     static get observedAttributes() {
@@ -198,13 +199,33 @@ export class DatasetSelector extends HTMLElement {
     }
 
     // Update the data-viewer with the currently selected dataset
-    updateViewer() {
+    async updateViewer() {
         const dataset = this.findMatchingDataset()
 
         if (!dataset) {
-            // No matching dataset - could show a message
             this.dataViewer.data = { values: [], columns: [], index: [] }
             return
+        }
+
+        // Handle data from URL if specified
+        if (dataset.dataUrl && !dataset.data) {
+            // Check cache first
+            if (this.dataCache.has(dataset.dataUrl)) {
+                dataset.data = this.dataCache.get(dataset.dataUrl)
+            } else {
+                try {
+                    // Show loading state if desired
+                    const response = await fetch(dataset.dataUrl)
+                    if (!response.ok) throw new Error(`HTTP error: ${response.status}`)
+                    dataset.data = await response.json()
+                    // Cache the result
+                    this.dataCache.set(dataset.dataUrl, dataset.data)
+                } catch (error) {
+                    console.error(`Failed to fetch dataset from ${dataset.dataUrl}:`, error)
+                    // Show error state or fallback data
+                    dataset.data = { values: [], columns: [], index: [] }
+                }
+            }
         }
 
         this.dataViewer.data = dataset.data
