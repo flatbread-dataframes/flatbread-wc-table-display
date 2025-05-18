@@ -20,6 +20,7 @@ export class DatasetSelector extends HTMLElement {
         this.dataCache = new Map()  // Cache for fetched datasets
     }
 
+    // MARK: setup
     static get observedAttributes() {
         return ["src"]
     }
@@ -40,14 +41,6 @@ export class DatasetSelector extends HTMLElement {
         if (this.dataViewer) {
             this.dataViewer.remove()
         }
-    }
-
-    set data(spec) {
-        this.initializeFromSpec(spec)
-    }
-
-    get data() {
-        return this.spec
     }
 
     // Load spec and initialize
@@ -169,6 +162,39 @@ export class DatasetSelector extends HTMLElement {
         })
     }
 
+    // MARK: get/set
+    set data(spec) {
+        this.initializeFromSpec(spec)
+    }
+
+    get data() {
+        return this.spec
+    }
+
+    // Access to the underlying DataViewer
+    getViewer() {
+        return this.dataViewer
+    }
+
+    // Access to the underlying data
+    getViewerData() {
+        return this.dataViewer ? this.dataViewer.data : null
+    }
+
+    setViewerData(data) {
+        if (this.dataViewer) {
+            this.dataViewer.data = data
+        }
+    }
+
+    // Update specific parts of the data
+    updateViewerValues(newValues) {
+        if (this.dataViewer && this.dataViewer.data) {
+            this.dataViewer.data.values = newValues
+        }
+    }
+
+    // MARK: handlers
     // Handle when user changes a filter
     handleFilterChange(event) {
         const { name, value } = event.target
@@ -198,6 +224,7 @@ export class DatasetSelector extends HTMLElement {
         )
     }
 
+    // MARK: render
     // Update the data-viewer with the currently selected dataset
     async updateViewer() {
         const dataset = this.findMatchingDataset()
