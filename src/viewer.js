@@ -295,7 +295,11 @@ export class DataViewer extends HTMLElement {
     // MARK: handlers
     handleDataChange() {
         this.update()
-        this.dispatchEvent(new CustomEvent("data-changed", { detail: this.data }))
+        this.dispatchEvent(new CustomEvent("data-changed", {
+            detail: this.data,
+            bubbles: true,
+            composed: true,
+        }))
     }
 
     handleSettingChange(event) {
