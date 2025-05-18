@@ -1,3 +1,6 @@
+import { DataViewer } from "../viewer.js"
+
+
 export class DatasetSelector extends HTMLElement {
     static get defaults() {
         return {
@@ -22,7 +25,9 @@ export class DatasetSelector extends HTMLElement {
 
     // MARK: setup
     static get observedAttributes() {
-        return ["src"]
+        // Combine our attributes with DataViewer's
+        const ownAttributes = ["src"]
+        return [...ownAttributes, ...DataViewer.observedAttributes]
     }
 
     connectedCallback() {
@@ -34,6 +39,13 @@ export class DatasetSelector extends HTMLElement {
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === "src" && oldValue !== newValue) {
             this.loadSpecFromSrc(newValue)
+        } else if (this.dataViewer && DataViewer.observedAttributes.includes(name)) {
+            // Forward DataViewer attributes
+            if (newValue !== null) {
+                this.dataViewer.setAttribute(name, newValue)
+            } else {
+                this.dataViewer.removeAttribute(name)
+            }
         }
     }
 
@@ -41,6 +53,17 @@ export class DatasetSelector extends HTMLElement {
         if (this.dataViewer) {
             this.dataViewer.remove()
         }
+    }
+
+    forwardInitialAttributes() {
+        if (!this.dataViewer) return
+
+        DataViewer.observedAttributes.forEach(attr => {
+            if (attr === 'src') return
+            if (this.hasAttribute(attr)) {
+                this.dataViewer.setAttribute(attr, this.getAttribute(attr))
+            }
+        })
     }
 
     // Load spec and initialize
@@ -436,6 +459,7 @@ export class DatasetSelector extends HTMLElement {
         const viewer = document.createElement("data-viewer")
         this.shadowRoot.querySelector(".viewer-container").appendChild(viewer)
         this.dataViewer = viewer
+        this.forwardInitialAttributes()
     }
 }
 
