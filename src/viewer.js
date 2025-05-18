@@ -346,7 +346,6 @@ export class DataViewer extends HTMLElement {
 
     showErrorMessage(message) {
         this.shadowRoot.innerHTML = `
-            ${this.getStyleSheet()}
             <p style="color: red;">${message}</p>
         `
     }
