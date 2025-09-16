@@ -1,0 +1,35 @@
+{
+    "datasets": [
+        {
+            "filters": {
+                "source": "default"
+            },
+            "dataUrl": "data/bedragen_2025.json"
+        },
+        {
+            "filters": {
+                "source": "multiindex df"
+            },
+            "dataUrl": "data/multiindex_df.json"
+        },
+        {
+            "filters": {
+                "source": "simple df"
+            },
+            "options": {"margin-labels": "Totaal;Subtotaal", "locale": "nl-NL"},
+            "dataUrl": "data/simple_df.json"
+        },
+        {
+            "filters": {
+                "source": "dates"
+            },
+            "dataUrl": "data/dates.json"
+        },
+        {
+            "filters": {
+                "source": "truncated"
+            },
+            "dataUrl": "data/big_boy.json"
+        }
+    ]
+}
