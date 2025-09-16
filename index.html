@@ -18,7 +18,7 @@
 </section>
 <section id="info">
     <h2>Web component</h2>
-    <p><code>&lt;data-viewer&gt;</code> is a web component for displaying structured table data with these key features:</p>
+    <p><code>&lt;flatbread-table&gt;</code> is a web component for displaying structured table data with these key features:</p>
     <ul>
         <li>Vanilla JavaScript with no external dependencies</li>
         <li>Loads JSON data from URLs</li>
@@ -30,23 +30,9 @@
     </ul>
     <p>Below you'll find examples demonstrating the component's features and usage.</p>
 </section>
-<section id="controls">
+<section id="controls" style="display: none;">
     <h2>Controls</h2>
     <form>
-        <fieldset>
-            <legend>Data</legend>
-            <div>
-                <label for="src">Source
-                    <select name="src" id="src" autocomplete="off">
-                        <option value="data/bedragen_2025.json" selected>default</option>
-                        <option value="data/multiindex_df.json">multiindex df</option>
-                        <option value="data/simple_df.json">simple df</option>
-                        <option value="data/dates.json">dates</option>
-                        <option value="data/big_boy.json">truncated</option>
-                    </select>
-                </label>
-            </div>
-        </fieldset>
         <fieldset>
             <legend>Calculate</legend>
             <div>
@@ -67,13 +53,13 @@
 </section>
 <section id="output">
 <h2>Output</h2>
-<div id="data-viewer-wrapper" class="breakout">
-    <data-viewer
-        src="data/bedragen_2025.json"
+<div id="flatbread-table-wrapper" class="breakout">
+    <dataset-selector
+        src="data/test.dataset.json"
         locale="nl-NL"
         margin-labels="Total;Totaal;Subtotal"
     >
-    </data-viewer>
+    </dataset-selector>
 </div>
 <h3>Event</h3>
 <div id="event-display"><pre><code></code></pre></div>
@@ -81,28 +67,28 @@
 <section id="html">
 <h2>HTML</h2>
 <pre><code class="language-html">&lt;!-- html --&gt;
-&lt;data-viewer src="data/example.json" locale="nl-NL"&gt;&lt;/data-viewer&gt;</code></pre>
+&lt;flatbread-table src="data/example.json" locale="nl-NL"&gt;&lt;/flatbread-table&gt;</code></pre>
 </section>
 <section id="specifications">
 <h2>Specifications</h2>
 <h3>Attributes</h3>
-<data-viewer
+<flatbread-table
     src="data/attributes.json"
     class="info-table"
     hide-settings-menu
     hide-index-border
     hide-row-borders
     section-levels="1"
-></data-viewer>
+></flatbread-table>
 <h3>CSS hooks</h3>
-<data-viewer
+<flatbread-table
     src="data/css_hooks.json"
     class="info-table"
     hide-settings-menu
     hide-index-border
     hide-row-borders
     section-levels="1"
-></data-viewer>
+></flatbread-table>
 <h3>Events</h3>
 <table>
     <thead>
@@ -208,6 +194,7 @@
 }</code></pre>
 </section>
 <script src="src/viewer.js" type="module"></script>
+<script src="src/components/dataset-selector.js" type="module"></script>
 <script src="static/js/demo.js" type="module"></script>
 </body>
 </html>

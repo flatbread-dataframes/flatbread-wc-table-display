@@ -1,6 +1,6 @@
 class Demo {
     constructor() {
-        this.handleDataSourceChange = this.handleDataSourceChange.bind(this)
+        // Remove handleDataSourceChange since DatasetSelector handles this
         this.handleCellClick = this.handleCellClick.bind(this)
         this.handleDataChanged = this.handleDataChanged.bind(this)
 
@@ -9,41 +9,28 @@ class Demo {
 
     // MARK: setup
     setupEventListeners() {
-        this.setupControlEvents()
-        this.setupViewerEvents()
-    }
-
-    setupControlEvents() {
-        document.getElementById("src").addEventListener("change", this.handleDataSourceChange)
+        // Don't need to set up source change event anymore
         document.getElementById("n").addEventListener("change", event => {
             this.updateTable(event.target.value)
         })
+
+        // Set up event listeners for the DataViewer events
+        this.setupViewerEvents()
     }
 
     setupViewerEvents() {
-        if (!this.dataViewer) return
+        if (!this.datasetSelector) return
 
-        this.dataViewer.addEventListener("cell-click", this.handleCellClick)
-        this.dataViewer.addEventListener("data-changed", this.handleDataChanged)
+        this.datasetSelector.addEventListener("cell-click", this.handleCellClick)
+        this.datasetSelector.addEventListener("data-changed", this.handleDataChanged)
     }
 
     // MARK: get/set
-    get wrapper() { return document.getElementById("data-viewer-wrapper") }
-    get dataViewer() { return this.wrapper.querySelector("data-viewer") }
+    get wrapper() { return document.getElementById("flatbread-table-wrapper") }
+    get datasetSelector() { return this.wrapper.querySelector("dataset-selector") }
     get eventDisplay() { return document.getElementById("event-display") }
 
     // MARK: handlers
-    handleDataSourceChange() {
-        this.dataViewer?.remove()
-
-        const viewer = document.createElement("data-viewer")
-        viewer.setAttribute("src", event.target.value)
-        viewer.setAttribute("margin-labels", "Total;Totaal;Subtotal")
-
-        this.wrapper.appendChild(viewer)
-        this.addDataViewerEventListeners()
-    }
-
     handleCellClick(event) {
         this.eventDisplay.querySelector("code").innerText = JSON.stringify(event.detail)
     }
@@ -55,11 +42,6 @@ class Demo {
     }
 
     // MARK: helpers
-    addDataViewerEventListeners() {
-        this.dataViewer.addEventListener("cell-click", this.handleCellClick)
-        this.dataViewer.addEventListener("data-changed", this.handleDataChanged)
-    }
-
     truncateJSONString(JSONString, maxLength = 1500) {
         if (JSONString.length <= maxLength) return JSONString
         return JSONString.slice(0, maxLength) + "[...]"
@@ -79,18 +61,12 @@ class Demo {
 
     updateTable(n) {
         const op = this.getCalculation(n)
-        const newValues = this.dataViewer.data.values.map(row => row.map(op))
-        this.dataViewer.data.values = newValues
-    }
+        const viewer = this.datasetSelector.getViewer()
 
-    resetAttributes(element, attributesToKeep) {
-        const attributes = [...element.attributes]
-        attributes.forEach(attr => {
-            if (!attributesToKeep.includes(attr.name)) {
-                element.removeAttribute(attr.name)
-            }
-        })
-        return element
+        if (viewer && viewer.data && viewer.data.values) {
+            const newValues = viewer.data.values.map(row => row.map(op))
+            viewer.data.values = newValues
+        }
     }
 }
 

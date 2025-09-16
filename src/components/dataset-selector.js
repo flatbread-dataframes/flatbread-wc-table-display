@@ -456,7 +456,7 @@ export class DatasetSelector extends HTMLElement {
         this.addFilterEventListeners()
 
         // Create and append the data-viewer
-        const viewer = document.createElement("data-viewer")
+        const viewer = document.createElement("flatbread-table")
         this.shadowRoot.querySelector(".viewer-container").appendChild(viewer)
         this.dataViewer = viewer
         this.forwardInitialAttributes()

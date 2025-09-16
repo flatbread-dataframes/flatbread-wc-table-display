@@ -1,6 +1,6 @@
 import { Data } from "./data.js"
 import { SettingsContainer } from "./settings/settings-container.js"
-import { DataTable } from "./table.js"
+import "./table.js"
 
 export class DataViewer extends HTMLElement {
     static get observedAttributes() {
@@ -351,4 +351,4 @@ export class DataViewer extends HTMLElement {
     }
 }
 
-window.customElements.define('data-viewer', DataViewer)
+window.customElements.define('flatbread-table', DataViewer)

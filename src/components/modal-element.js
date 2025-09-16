@@ -20,7 +20,7 @@ export class ModalElement extends DraggableMixin(HTMLElement) {
         // Find and store data-viewer reference first
         let node = this
         while (node) {
-            if (node instanceof HTMLElement && node.tagName.toLowerCase() === "data-viewer") {
+            if (node instanceof HTMLElement && node.tagName.toLowerCase() === "flatbread-table") {
                 this.dataViewer = node
                 break
             }

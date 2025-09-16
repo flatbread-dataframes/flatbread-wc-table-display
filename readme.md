@@ -23,7 +23,7 @@ A lightweight vanilla JavaScript web component for displaying structured table d
 ## Basic Usage
 
 ```html
-<data-viewer src="data.json"></data-viewer>
+<flatbread-table src="data.json"></flatbread-table>
 ```
 
 ## Example Output
