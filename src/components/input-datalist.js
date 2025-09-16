@@ -163,4 +163,4 @@ export class InputDatalist extends HTMLElement {
     }
 }
 
-customElements.define("input-datalist", InputDatalist)
+customElements.define("flatbread-table-input-datalist", InputDatalist)

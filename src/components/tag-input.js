@@ -248,4 +248,4 @@ export class TagInput extends HTMLElement {
     }
 }
 
-customElements.define("tag-input", TagInput)
+customElements.define("flatbread-table-tag-input", TagInput)

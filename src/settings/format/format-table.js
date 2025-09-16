@@ -347,4 +347,4 @@ export class FormatTable extends HTMLElement {
     }
 }
 
-customElements.define("format-table", FormatTable)
+customElements.define("flatbread-table-format-table", FormatTable)

@@ -88,14 +88,14 @@ export class FormatDialog extends ModalElement {
         const formData = {}
         const selector = `
             fieldset:where(:not([data-dependent]),
-            [data-dependent].active) :where(input, select, input-datalist)
+            [data-dependent].active) :where(input, select, flatbread-table-input-datalist)
         `
 
         this.shadowRoot.querySelectorAll(selector).forEach(input => {
             if (!input.name) return
 
             let value
-            if (input.tagName.toLowerCase() === "input-datalist") {
+            if (input.tagName.toLowerCase() === "flatbread-table-input-datalist") {
                 value = input.value === "" || input.value === "none"
                     ? undefined
                     : input.value
@@ -189,4 +189,4 @@ export class FormatDialog extends ModalElement {
     }
 }
 
-customElements.define("format-dialog", FormatDialog)
+customElements.define("flatbread-table-format-dialog", FormatDialog)

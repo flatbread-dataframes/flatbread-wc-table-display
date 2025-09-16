@@ -9,21 +9,18 @@ export const DraggableMixin = (superClass) => class extends superClass {
     }
 
     initializeDragHandle() {
-        const handle = this.shadowRoot.querySelector("drag-handle")
-        if (!handle) return
+        if (!this.handle) return
 
-        handle.addEventListener("mousedown", this.handleDragStart)
-        handle.addEventListener("touchstart", this.handleDragStart)
-        return handle
+        this.handle.addEventListener("mousedown", this.handleDragStart)
+        this.handle.addEventListener("touchstart", this.handleDragStart)
     }
 
     disconnectedCallback() {
         super.disconnectedCallback?.()
 
-        const handle = this.shadowRoot.querySelector("drag-handle")
-        if (handle) {
-            handle.removeEventListener("mousedown", this.handleDragStart)
-            handle.removeEventListener("touchstart", this.handleDragStart)
+        if (this.handle) {
+            this.handle.removeEventListener("mousedown", this.handleDragStart)
+            this.handle.removeEventListener("touchstart", this.handleDragStart)
         }
         document.removeEventListener("mousemove", this.handleDrag)
         document.removeEventListener("mouseup", this.handleDragEnd)
@@ -32,7 +29,7 @@ export const DraggableMixin = (superClass) => class extends superClass {
     }
 
     get handle() {
-        return this.shadowRoot.querySelector("drag-handle")
+        return this.shadowRoot.querySelector("flatbread-table-drag-handle")
     }
 
     handleDragStart(event) {

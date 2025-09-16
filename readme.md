@@ -1,8 +1,8 @@
-# data-viewer
+# flatbread-table
 
 A lightweight vanilla JavaScript web component for displaying structured table data with support for multi-level headers, sections, and formatters.
 
-[Live Demo](https://lcvriend.github.io/wc-simple-table/)
+[Live Demo](https://flatbread-dataframes.github.io/flatbread-wc-table-display/)
 
 ## Features
 

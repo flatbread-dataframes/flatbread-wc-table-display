@@ -1,4 +1,4 @@
-import { InputDatalist } from "./input-datalist.js"
+import "./input-datalist.js"
 import { COMMON_LOCALES, PREFERRED_LOCALES } from "../config.js"
 
 export class LocaleSelector extends HTMLElement {
@@ -44,7 +44,7 @@ export class LocaleSelector extends HTMLElement {
 
     // MARK: get/set
     get input() {
-        return this.shadowRoot.querySelector("input-datalist")
+        return this.shadowRoot.querySelector("flatbread-table-input-datalist")
     }
 
     get display() {
@@ -96,16 +96,16 @@ export class LocaleSelector extends HTMLElement {
 
         this.shadowRoot.innerHTML = `
             <style>${styles}</style>
-            <input-datalist
+            <flatbread-table-input-datalist
                 name="${this.getAttribute("name") ?? ""}"
                 value="${this.getAttribute("value") ?? ""}"
                 common-options="${PREFERRED_LOCALES.join(";")}"
                 options="${Object.keys(COMMON_LOCALES).join(";")}"
-            ></input-datalist>
+            ></flatbread-table-input-datalist>
             <div class="locale-display"></div>
         `
         this.updateLocaleDisplay()
     }
 }
 
-customElements.define("locale-selector", LocaleSelector)
+customElements.define("flatbread-table-locale-selector", LocaleSelector)

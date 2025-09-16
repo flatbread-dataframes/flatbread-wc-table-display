@@ -1,4 +1,4 @@
-import { SettingsTrigger } from "./settings-trigger.js"
+import "./settings-trigger.js"
 import { SettingsPopup } from "./settings-popup.js"
 import { BREAKPOINTS } from "../config.js"
 
@@ -40,11 +40,11 @@ export class SettingsContainer extends HTMLElement {
 
     // MARK: get/set
     get trigger() {
-        return this.shadowRoot.querySelector("settings-trigger")
+        return this.shadowRoot.querySelector("flatbread-table-settings-trigger")
     }
 
     get popup() {
-        return this.shadowRoot.querySelector("settings-popup")
+        return this.shadowRoot.querySelector("flatbread-table-settings-popup")
     }
 
     // MARK: handlers
@@ -86,7 +86,7 @@ export class SettingsContainer extends HTMLElement {
                 z-index: 1000;
             }
 
-            settings-popup {
+            flatbread-table-settings-popup {
                 position: fixed;
                 width: max-content;
                 margin-right: 0.5rem;
@@ -102,7 +102,7 @@ export class SettingsContainer extends HTMLElement {
                 }
             }
 
-            :host([open]) settings-popup {
+            :host([open]) flatbread-table-settings-popup {
                 opacity: 1;
                 visibility: visible;
                 pointer-events: auto;
@@ -110,9 +110,9 @@ export class SettingsContainer extends HTMLElement {
         `
         this.shadowRoot.innerHTML = `
             <style>${styles}</style>
-            <settings-trigger></settings-trigger>
+            <flatbread-table-settings-trigger></flatbread-table-settings-trigger>
         `
     }
 }
 
-customElements.define("settings-container", SettingsContainer)
+customElements.define("flatbread-table-settings-container", SettingsContainer)

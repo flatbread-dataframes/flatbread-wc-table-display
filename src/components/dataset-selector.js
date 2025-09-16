@@ -463,4 +463,4 @@ export class DatasetSelector extends HTMLElement {
     }
 }
 
-customElements.define("dataset-selector", DatasetSelector)
+customElements.define("flatbread-table-dataset-selector", DatasetSelector)

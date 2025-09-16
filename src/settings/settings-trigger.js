@@ -43,4 +43,4 @@ export class SettingsTrigger extends HTMLElement {
     }
 }
 
-customElements.define("settings-trigger", SettingsTrigger)
+customElements.define("flatbread-table-settings-trigger", SettingsTrigger)

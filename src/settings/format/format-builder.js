@@ -1,4 +1,4 @@
-import { InputDatalist } from "../../components/input-datalist.js"
+import "../../components/input-datalist.js"
 
 export class FormatBuilder {
     constructor(spec, currentOptions = {}) {
@@ -111,13 +111,13 @@ export class FormatBuilder {
         return `
             <label>
                 ${config.label}
-                <input-datalist
+                <flatbread-table-input-datalist
                     name="${key}"
                     common-options="${config.commonOptions.join(";")}"
                     options="${config.options.join(";")}"
                     value="${current}"
                 >
-                </select>
+                </flatbread-table-input-datalist>
             </label>`
     }
 }

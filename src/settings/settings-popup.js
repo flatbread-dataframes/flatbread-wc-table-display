@@ -1,10 +1,10 @@
 import { ModalElement } from "../components/modal-element.js"
 import { FormatTable } from "./format/format-table.js"
 import { MEDIA_QUERIES, BREAKPOINTS, PREFERRED_LOCALES, COMMON_LOCALES } from "../config.js"
-import { SliderInput } from "../components/input-slider.js"
-import { InputDatalist } from "../components/input-datalist.js"
-import { LocaleSelector } from "../components/locale-selector.js"
-import { TagInput } from "../components/tag-input.js"
+import "../components/input-slider.js"
+import "../components/input-datalist.js"
+import "../components/locale-selector.js"
+import "../components/tag-input.js"
 
 export class SettingsPopup extends ModalElement {
     constructor(data, options, state) {
@@ -47,9 +47,10 @@ export class SettingsPopup extends ModalElement {
             text: input => input.value,
             checkbox: input => input.checked,
             range: input => input.value,
-            "slider-input": input => input.value,
-            "input-datalist": input => input.value,
-            "tag-input": input => input.value.join(";"),
+            "flatbread-table-slider-input": input => input.value,
+            "flatbread-table-input-datalist": input => input.value,
+            "flatbread-table-tag-input": input => input.value.join(";"),
+            "flatbread-table-locale-selector": input => input.value,
         }
 
         const getValue = valueMap[input.type] || valueMap[input.tagName.toLowerCase()]
@@ -226,21 +227,21 @@ export class SettingsPopup extends ModalElement {
     buildGeneralPanel() {
         const sectionLevelControls = this.data.index.isMultiIndex
             ? `<label>Section levels</label>
-                <slider-input
+                <flatbread-table-slider-input
                     id="section-levels"
                     max="${this.data.index.nlevels - 1}"
                     value="${this.options.styling.sectionLevels}"
-                ></slider-input>`
+                ></flatbread-table-slider-input>`
             : ""
 
         return `
             <fieldset>
                 ${sectionLevelControls}
                 <label>Locale</label>
-                <locale-selector
+                <flatbread-table-locale-selector
                     id="locale"
                     value="${this.options.locale}"
-                ></locale-selector>
+                ></flatbread-table-locale-selector>
                 <label>Na rep</label>
                 <input type="text" id="na-rep" value="${this.options.naRep}">
             </fieldset>
@@ -264,10 +265,10 @@ export class SettingsPopup extends ModalElement {
             </fieldset>
             <fieldset>
                 <legend>Margin labels</legend>
-                <tag-input
+                <flatbread-table-tag-input
                     id="margin-labels"
                     value="${this.options.marginLabels.join(";")}"
-                ></tag-input>
+                ></flatbread-table-tag-input>
             </fieldset>
         `
     }
@@ -277,12 +278,12 @@ export class SettingsPopup extends ModalElement {
             <fieldset>
                 <label for="column-border-levels">
                     Column border levels
-                    <slider-input
+                    <flatbread-table-slider-input
                         id="column-border-levels"
                         min="-1"
                         max="${this.data.columns.nlevels || 0}"
                         value="${this.options.styling.columnBorderLevels}"
-                    ></slider-input>
+                    ></flatbread-table-slider-input>
                 </label>
                 <label for="hide-column-borders">
                     <input type="checkbox" id="hide-column-borders" ${!this.options.styling.columnBorders ? "checked" : ""}>
@@ -323,4 +324,4 @@ export class SettingsPopup extends ModalElement {
     }
 }
 
-customElements.define("settings-popup", SettingsPopup)
+customElements.define("flatbread-table-settings-popup", SettingsPopup)

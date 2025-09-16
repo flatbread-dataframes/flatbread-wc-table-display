@@ -126,4 +126,4 @@ export class SliderInput extends HTMLElement {
     }
 }
 
-customElements.define("slider-input", SliderInput)
+customElements.define("flatbread-table-slider-input", SliderInput)

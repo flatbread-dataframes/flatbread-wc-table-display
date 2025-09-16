@@ -62,4 +62,4 @@ export class DragHandle extends HTMLElement {
     }
 }
 
-customElements.define("drag-handle", DragHandle)
+customElements.define("flatbread-table-drag-handle", DragHandle)

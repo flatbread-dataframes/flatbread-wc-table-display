@@ -1,5 +1,5 @@
 import { DraggableMixin } from "./drag/draggable-mixin.js"
-import { DragHandle } from "./drag/drag-handle.js"
+import "./drag/drag-handle.js"
 import { MEDIA_QUERIES, BREAKPOINTS } from "../config.js"
 
 export class ModalElement extends DraggableMixin(HTMLElement) {
@@ -155,7 +155,7 @@ export class ModalElement extends DraggableMixin(HTMLElement) {
         return `
             <header>
                 <h3>${title}</h3>
-                <drag-handle></drag-handle>
+                <flatbread-table-drag-handle></flatbread-table-drag-handle>
             </header>
         `
     }

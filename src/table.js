@@ -21,4 +21,4 @@ export class DataTable extends HTMLElement {
     }
 }
 
-customElements.define("data-table", DataTable)
+customElements.define("flatbread-table-content", DataTable)

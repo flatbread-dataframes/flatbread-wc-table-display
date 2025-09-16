@@ -70,12 +70,12 @@ export class DataViewer extends HTMLElement {
     }
 
     addEventListeners() {
-        this.table.shadowRoot.addEventListener("click", this.handleTableClick)
+        this.table.addEventListener("click", this.handleTableClick)
         this.shadowRoot.addEventListener("setting-change", this.handleSettingChange)
     }
 
     removeEventListeners() {
-        this.table.shadowRoot.removeEventListener("click", this.handleTableClick)
+        this.table.removeEventListener("click", this.handleTableClick)
         this.shadowRoot.removeEventListener("setting-change", this.handleSettingChange)
     }
 
@@ -176,11 +176,11 @@ export class DataViewer extends HTMLElement {
     }
 
     get table() {
-        return this.shadowRoot.querySelector("data-table")
+        return this.shadowRoot.querySelector("flatbread-table-content")
     }
 
     get settingsContainer() {
-        return this.shadowRoot.querySelector("settings-container")
+        return this.shadowRoot.querySelector("flatbread-table-settings-container")
     }
 
     updateCalculatedOptions() {
@@ -251,30 +251,30 @@ export class DataViewer extends HTMLElement {
                     position: relative;
                     --surface-color: ${this.invertCurrentColor()};
                 }
-                settings-container {
+                flatbread-table-settings-container {
                     position: static;
                     opacity: 0;
                     transition: opacity 0.2s ease;
                 }
-                :host(:hover) settings-container {
+                :host(:hover) flatbread-table-settings-container {
                     opacity: .5;
                 }
-                :host(:hover) settings-container:hover {
+                :host(:hover) flatbread-table-settings-container:hover {
                     opacity: 1;
                 }
-                :host settings-container[open] {
+                :host flatbread-table-settings-container[open] {
                     opacity: 1;
                 }
-                :host([hide-settings-menu]) settings-container {
+                :host([hide-settings-menu]) flatbread-table-settings-container {
                     display: none;
                 }
                 @media (hover: none) {
-                    :host settings-container {
+                    :host flatbread-table-settings-container {
                         opacity: 1;
                     }
                 }
             </style>
-            <data-table exportparts="table, column-header, data-cell, margin-cell, separator-cell, index-cell, section-header, column-group-header, column-label, index-name"></data-table>
+            <flatbread-table-content exportparts="table, column-header, data-cell, margin-cell, separator-cell, index-cell, section-header, column-group-header, column-label, index-name"></flatbread-table-content>
         `
         const settingsContainer = new SettingsContainer(this.options)
         this.shadowRoot.appendChild(settingsContainer)
