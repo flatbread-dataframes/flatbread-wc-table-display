@@ -137,23 +137,19 @@ export class DatasetSelector extends HTMLElement {
         // Extract all filter options
         this.extractFilterOptions()
 
-        // Set default filters if provided
+        // Always initialize all filters to first option
+        this.filters = Object.fromEntries(
+            Object.keys(this.filterOptions).map(key => [
+                key,
+                this.filterOptions[key][0]?.value
+            ])
+        )
+
+        // Then override with any specified defaults
         if (spec.defaultFilters) {
-            // Map the filter values, extracting 'value' property if it's an object with that property
-            this.filters = Object.fromEntries(
-                Object.entries(spec.defaultFilters).map(([key, value]) => [
-                    key,
-                    value?.value !== undefined ? value.value : value
-                ])
-            )
-        } else {
-            // Otherwise set first option for each filter
-            this.filters = Object.fromEntries(
-                Object.keys(this.filterOptions).map(key => [
-                    key,
-                    this.filterOptions[key][0]?.value
-                ])
-            )
+            Object.entries(spec.defaultFilters).forEach(([key, value]) => {
+                this.filters[key] = value?.value !== undefined ? value.value : value
+            })
         }
 
         // Extract global options if provided
