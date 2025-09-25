@@ -19,10 +19,8 @@ class Demo {
     }
 
     setupViewerEvents() {
-        if (!this.datasetSelector) return
-
-        this.datasetSelector.addEventListener("cell-click", this.handleCellClick)
-        this.datasetSelector.addEventListener("data-changed", this.handleDataChanged)
+        document.addEventListener("cell-click", this.handleCellClick)
+        document.addEventListener("data-changed", this.handleDataChanged)
     }
 
     // MARK: get/set
