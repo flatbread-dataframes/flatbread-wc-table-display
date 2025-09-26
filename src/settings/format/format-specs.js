@@ -112,7 +112,7 @@ export const NumberFormatSpec = {
     }
 }
 
-export const DateFormatSpec = {
+export const DatetimeFormatSpec = {
     options: {
         format: {
             formatType: {
@@ -210,10 +210,25 @@ export const DateFormatSpec = {
     }
 }
 
+export const DateFormatSpec = {
+    options: {
+        format: {
+            dateStyle: {
+                type: "select",
+                label: "Date style",
+                options: ["full", "long", "medium", "short"],
+                default: "short",
+                summary: value => value.charAt(0),
+            }
+        }
+    }
+}
+
 export const FORMAT_SPECS = {
     float: NumberFormatSpec,
     int: NumberFormatSpec,
-    datetime: DateFormatSpec
+    datetime: DatetimeFormatSpec,
+    date: DateFormatSpec,
     // Add other specs here
 }
 

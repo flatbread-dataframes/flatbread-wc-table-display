@@ -119,7 +119,8 @@ export class BaseTableBuilder {
         const formatters = {
             int: this.formatNumber.bind(this),
             float: this.formatNumber.bind(this),
-            datetime: this.formatDate.bind(this),
+            datetime: this.formatDatetime.bind(this),
+            date: this.formatDate.bind(this),
             default: value => value.toString()
         }
 
@@ -130,8 +131,22 @@ export class BaseTableBuilder {
         return value.toLocaleString(this.options.locale, options)
     }
 
-    formatDate(value, options) {
+    formatDatetime(value, options) {
         return new Date(value).toLocaleString(this.options.locale, options)
+    }
+
+    formatDate(value, options) {
+        // Don't add dateStyle if individual components are specified
+        const hasIndividualComponents = options && (
+            'year' in options || 'month' in options || 'day' in options ||
+            'hour' in options || 'minute' in options || 'second' in options
+        )
+
+        const dateOptions = hasIndividualComponents
+            ? options
+            : { dateStyle: "short", ...options }
+
+        return new Date(value).toLocaleDateString(this.options.locale, dateOptions)
     }
 
     // MARK: tests

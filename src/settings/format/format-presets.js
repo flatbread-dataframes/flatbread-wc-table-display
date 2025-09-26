@@ -38,7 +38,7 @@ export const NumberPresets = {
     },
 }
 
-export const DatePresets = {
+export const DatetimePresets = {
     default: {
         label: "Standard",
         options: {}
@@ -58,11 +58,23 @@ export const DatePresets = {
     }
 }
 
+export const DatePresets = {
+    default: {
+        label: "Standard",
+        options: { dateStyle: "short" }
+    },
+    long: {
+        label: "Long format",
+        options: { dateStyle: "long" }
+    }
+}
+
 export function getPresetsForType(dtype) {
     const presets = {
         float: NumberPresets,
         int: NumberPresets,
-        datetime: DatePresets
+        datetime: DatetimePresets,
+        date: DatePresets,
     }
     return presets[dtype] ?? {}
 }
