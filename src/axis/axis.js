@@ -2,7 +2,7 @@ export class Axis {
     constructor(values) {
         this.values = values
         this.spans = this.getSpans()
-        this.groupingSpans = this.getGroupingSpans()
+        this.groupingLevels = this.getGroupingLevels()
         this.edges = this.getEdges()
     }
 
@@ -81,12 +81,10 @@ export class Axis {
         return levels
     }
 
-    getGroupingSpans() {
-        return this.spans.map((levelSpans) => {
-            // Skip levels where every span has count=1 (no grouping)
-            if (levelSpans.every(span => span.count === 1)) return []
-            return levelSpans
-        })
+    getGroupingLevels() {
+        return this.spans.map(levelSpans =>
+            levelSpans.some(span => span.count > 1)
+        )
     }
 
     /**

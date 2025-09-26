@@ -456,7 +456,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      */
     addIndexSpans(level, indexRows, data) {
         const spans = data.index.spans[level]  // Always use full spans for structure
-        const hasGrouping = data.index.groupingSpans[level].length > 0
+        const hasGrouping = data.index.groupingLevels[level]
 
         for (const span of spans) {
             const attributes = {
