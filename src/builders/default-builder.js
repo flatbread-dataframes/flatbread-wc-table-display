@@ -68,7 +68,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
         // Return empty array when level is -1 (no borders)
         if (level === -1) return []
 
-        const spans = this.data.columns.groupingSpans
+        const spans = this.data.columns.spans
         const relevantSpans = level > 0 ? spans.slice(0, lastLevel) : spans
 
         // Collect edges from the relevant spans
@@ -455,19 +455,19 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      * @param {Data} data - Data object containing the spans
      */
     addIndexSpans(level, indexRows, data) {
-        // For section headers, always use full spans to maintain structure
-        // For regular table rows, use grouping spans to avoid unnecessary borders
-        const isWithinSectionLevels = level < (this.options.styling.sectionLevels ?? 0)
-        const spans = isWithinSectionLevels
-            ? data.index.spans[level]
-            : data.index.groupingSpans[level]
+        const spans = data.index.spans[level]  // Always use full spans for structure
+        const hasGrouping = data.index.groupingSpans[level].length > 0
 
         for (const span of spans) {
             const attributes = {
-                rowspan: span.count,
                 "data-level": level,
                 "data-group": span.group,
                 "margin-edge-idx": this.testMarginEdge(span.value)
+            }
+
+            // Only add rowspan if this level has meaningful grouping
+            if (hasGrouping) {
+                attributes.rowspan = span.count
             }
 
             const cell = `<th ${this.buildAttributeString(attributes)}>${span.value[level]}</th>`
