@@ -26,6 +26,7 @@ export class BaseTableBuilder {
     }
 
     buildTable() {
+        this.marginEdgeCols = this.getMarginEdgeCols()
         return `
             <table part="table">
                 <thead>${this.buildThead()}</thead>
@@ -70,7 +71,7 @@ export class BaseTableBuilder {
             "index-edge": icol === 0,
             "column-edge": this.data.columns.edges.slice(1).includes(icol),
             "margin-edge-idx": this.testMarginEdge(this.data.index.values[irow]),
-            "margin-edge-col": this.testMarginEdge(this.data.columns.values[icol])
+            "margin-edge-col": this.marginEdgeCols.includes(icol),
         }
 
         return this.buildAttributeString({ ...dataAttributes, ...edgeAttributes })
@@ -154,5 +155,23 @@ export class BaseTableBuilder {
         return Array.isArray(value)
             ? value.some(v => this.options.marginLabels.includes(v))
             : this.options.marginLabels.includes(value)
+    }
+
+    getMarginEdgeCols() {
+        const cols = []
+        this.data.columns.values.forEach((value, icol) => {
+            if (!Array.isArray(value)) {
+                if (this.options.marginLabels.includes(value)) cols.push(icol)
+                return
+            }
+            for (let level = 0; level < value.length; level++) {
+                if (!this.options.marginLabels.includes(value[level])) continue
+                if (this.data.columns.spans[level].some(s => s.iloc === icol)) {
+                    cols.push(icol)
+                    break
+                }
+            }
+        })
+        return cols
     }
 }

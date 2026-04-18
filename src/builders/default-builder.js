@@ -157,6 +157,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
     buildTable() {
         // Filter edges based on level setting
         this.filteredColumnEdges = this.filterColumnEdgesByLevel()
+        this.marginEdgeCols = this.getMarginEdgeCols()
 
         return `
             <table part="table">
@@ -200,8 +201,8 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             .join("")
 
         return this.options.styling.collapseColumns
-        ? `${groupRows}${this.buildColumnsRow()}`
-        : `${groupRows}${this.buildIndexNamesRow()}`
+            ? `${groupRows}${this.buildColumnsRow()}`
+            : `${groupRows}${this.buildIndexNamesRow()}`
     }
 
     /**
@@ -282,7 +283,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "data-groups": attrs.groups.join(" "),
             "index-edge": iloc === 0,
             "column-edge": this.filteredColumnEdges.includes(iloc),
-            "margin-edge-col": this.testMarginEdge(value)
+            "margin-edge-col": this.marginEdgeCols.includes(iloc),
         }
 
         return `<th ${this.buildAttributeString(attributes)} part="column-header">${selectedValue}</th>`
@@ -331,7 +332,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "data-group": iloc,
             "index-edge": iloc === 0,
             "column-edge": this.filteredColumnEdges.includes(span.iloc),
-            "margin-edge-col": this.testMarginEdge(span.value)
+            "margin-edge-col": this.marginEdgeCols.includes(span.iloc),
         }
 
         return `<th ${this.buildAttributeString(attributes)} part="column-group-header">${span.value[level] ?? ""}</th>`
@@ -560,7 +561,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "index-edge": icol === 0,
             "column-edge": this.filteredColumnEdges.includes(icol),
             "margin-edge-idx": this.testMarginEdge(this.data.index.values[irow]),
-            "margin-edge-col": this.testMarginEdge(this.data.columns.values[icol])
+            "margin-edge-col": this.marginEdgeCols.includes(icol),
         }
 
         return this.buildAttributeString({ ...dataAttributes, ...edgeAttributes })
