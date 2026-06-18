@@ -129,68 +129,86 @@
             <td>Table data content arranged in rows and columns</td>
         </tr>
         <tr>
-            <td rowspan="2">columns</td>
-            <td rowspan="2">Yes</td>
-            <td>Array</td>
-            <td>Column labels (single-level): ["A", "B"]</td>
+            <td colspan="4"><strong>columns</strong> (Object)</td>
         </tr>
         <tr>
-            <td>Array[]</td>
-            <td>Column labels (multi-level): [["A1", "B1"], ["A2", "B2"]]</td>
+            <td>columns.values</td>
+            <td>Yes</td>
+            <td>Array | Array[]</td>
+            <td>Column labels. Single-level: ["A", "B"]. Multi-level: [["A1", "B1"], ["A2", "B2"]]</td>
         </tr>
         <tr>
-            <td rowspan="2">index</td>
-            <td rowspan="2">Yes</td>
-            <td>Array</td>
-            <td>Row labels (single-level): ["Row1", "Row2"]</td>
-        </tr>
-        <tr>
-            <td>Array[]</td>
-            <td>Row labels (multi-level): [["Group1", "Item1"], ["Group1", "Item2"]]</td>
-        </tr>
-        <tr>
-            <td>columnNames</td>
+            <td>columns.names</td>
             <td>No</td>
             <td>Array</td>
             <td>Names for each column level in hierarchical order</td>
         </tr>
         <tr>
-            <td>indexNames</td>
-            <td>No</td>
-            <td>Array</td>
-            <td>Names for each index level in hierarchical order</td>
-        </tr>
-        <tr>
-            <td>dtypes</td>
+            <td>columns.dtypes</td>
             <td>No</td>
             <td>Array</td>
             <td>Data type per column ("str", "int", "float", "bool", "datetime", "category")</td>
         </tr>
         <tr>
-            <td>formatOptions</td>
+            <td>columns.formatOptions</td>
             <td>No</td>
             <td>Object[]</td>
             <td>Locale formatting options per column (currency, notation, grouping, etc)</td>
+        </tr>
+        <tr>
+            <td colspan="4"><strong>index</strong> (Object)</td>
+        </tr>
+        <tr>
+            <td>index.values</td>
+            <td>Yes</td>
+            <td>Array | Array[]</td>
+            <td>Row labels. Single-level: ["Row1", "Row2"]. Multi-level: [["Group1", "Item1"], ["Group1", "Item2"]]</td>
+        </tr>
+        <tr>
+            <td>index.names</td>
+            <td>No</td>
+            <td>Array</td>
+            <td>Names for each index level in hierarchical order</td>
+        </tr>
+        <tr>
+            <td>index.dtypes</td>
+            <td>No</td>
+            <td>Array</td>
+            <td>Data type per index level</td>
+        </tr>
+        <tr>
+            <td>index.formatOptions</td>
+            <td>No</td>
+            <td>Object[]</td>
+            <td>Locale formatting options per index level</td>
         </tr>
     </tbody>
 </table>
 <h4>Example Single-Level Structure</h4>
 <pre><code>{
     "values": [[1, 2], [3, 4]],
-    "columns": ["A", "B"],
-    "index": ["Row1", "Row2"],
-    "columnNames": ["Products"],
-    "indexNames": ["Items"],
-    "dtypes": ["int", "int"]
+    "columns": {
+        "values": ["A", "B"],
+        "names": ["Products"],
+        "dtypes": ["int", "int"]
+    },
+    "index": {
+        "values": ["Row1", "Row2"],
+        "names": ["Items"]
+    }
 }</code></pre>
 <h4>Example Multi-Level Structure</h4>
 <pre><code>{
     "values": [[1, 2], [3, 4]],
-    "columns": [["2023", "Q1"], ["2023", "Q2"]],
-    "index": [["Region1", "City1"], ["Region1", "City2"]],
-    "columnNames": ["Year", "Quarter"],
-    "indexNames": ["Region", "City"],
-    "dtypes": ["int", "int"]
+    "columns": {
+        "values": [["2023", "Q1"], ["2023", "Q2"]],
+        "names": ["Year", "Quarter"],
+        "dtypes": ["int", "int"]
+    },
+    "index": {
+        "values": [["Region1", "City1"], ["Region1", "City2"]],
+        "names": ["Region", "City"]
+    }
 }</code></pre>
 </section>
 <script src="src/viewer.js" type="module"></script>
