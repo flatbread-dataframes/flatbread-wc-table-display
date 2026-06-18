@@ -1,0 +1,36 @@
+{
+    "values": [
+        [6.8, 142, 28.3],
+        [7.1,  98, 15.7],
+        [7.4,  67,  8.2],
+        [6.5, 156, 31.1],
+        [6.9, 112, 19.4],
+        [7.2,  73, 10.8]
+    ],
+    "columns": {
+        "values": ["pH", "Ca (mg/kg)", "Fe (mg/kg)"],
+        "names": ["Analyte"],
+        "dtypes": ["float", "float", "float"],
+        "formatOptions": [
+            {"minimumFractionDigits": 1, "maximumFractionDigits": 1},
+            {"maximumFractionDigits": 0},
+            {"minimumFractionDigits": 1, "maximumFractionDigits": 1}
+        ]
+    },
+    "index": {
+        "values": [
+            ["2024-03-15", 0.53225],
+            ["2024-03-15", 1.253],
+            ["2024-03-15", 1.9986],
+            ["2024-06-20", 0.54],
+            ["2024-06-20", 1.003],
+            ["2024-06-20", 2.0]
+        ],
+        "names": ["Collection Date", "Depth (m)"],
+        "dtypes": ["date", "float"],
+        "formatOptions": [
+            {"dateStyle": "medium"},
+            {"minimumFractionDigits": 1, "maximumFractionDigits": 1}
+        ]
+    }
+}

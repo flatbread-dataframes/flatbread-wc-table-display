@@ -396,7 +396,10 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             "section-header": true
         }
 
-        const label = group.label ?? this.options.naRep
+        const attrs = this.data.index.attrs[group.level]
+        const label = group.label != null
+            ? this.formatValue(group.label, attrs.dtype, attrs.formatOptions ?? this.options)
+            : this.options.naRep
         const headerCell = `<th ${this.buildAttributeString(attributes)} part="section-header">${label}</th>`
 
         // Create cells for data columns with proper attributes
@@ -435,6 +438,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
             .join("")
     }
 
+    // MARK: Index
     /**
      * Builds index columns for table rows
      * @param {Data} data - Data object to build index from
@@ -456,8 +460,9 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      * @param {Data} data - Data object containing the spans
      */
     addIndexSpans(level, indexRows, data) {
-        const spans = data.index.spans[level]  // Always use full spans for structure
+        const spans = data.index.spans[level]
         const hasGrouping = data.index.groupingLevels[level]
+        const attrs = data.index.attrs[level]
 
         for (const span of spans) {
             const attributes = {
@@ -471,7 +476,8 @@ export class DefaultTableBuilder extends BaseTableBuilder {
                 attributes.rowspan = span.count
             }
 
-            const cell = `<th ${this.buildAttributeString(attributes)}>${span.value[level]}</th>`
+            const formattedValue = this.formatValue(span.value[level], attrs.dtype, attrs.formatOptions ?? this.options)
+            const cell = `<th ${this.buildAttributeString(attributes)}>${formattedValue}</th>`
             indexRows[span.iloc].unshift(cell)
         }
     }
@@ -483,12 +489,15 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      */
     buildIndex(value) {
         const selectedValue = Array.isArray(value) ? value.at(-1) : value
+        const level = this.data.index.nlevels - 1
+        const attrs = this.data.index.attrs[level]
+        const formattedValue = this.formatValue(selectedValue, attrs.dtype, attrs.formatOptions ?? this.options)
 
         const attributes = {
             "margin-edge-idx": this.testMarginEdge(value)
         }
 
-        return `<th ${this.buildAttributeString(attributes)} part="index-cell">${selectedValue ?? ""}</th>`
+        return `<th ${this.buildAttributeString(attributes)} part="index-cell">${formattedValue}</th>`
     }
 
     /**

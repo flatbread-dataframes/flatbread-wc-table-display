@@ -30,6 +30,15 @@
                 "source": "truncated"
             },
             "dataUrl": "data/big_boy.json"
+        },
+        {
+            "filters": {
+                "source": "soil cores"
+            },
+            "dataUrl": "data/soil_cores.json",
+            "options": {
+                "section-levels": "1"
+            }
         }
     ]
 }
