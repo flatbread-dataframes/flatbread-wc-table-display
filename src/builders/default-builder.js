@@ -50,7 +50,10 @@ export class DefaultTableBuilder extends BaseTableBuilder {
                 [margin-edge-col] {
                     border-left: 1px solid var(--border-color, currentColor);
                 }
-            `
+            `,
+            noWrap: `
+                td, th { white-space: nowrap; }
+            `,
         }
 
         const composedStyles = Object.entries(styleBlocks)

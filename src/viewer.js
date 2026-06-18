@@ -12,6 +12,7 @@ export class DataViewer extends HTMLElement {
             "show-hover", "margin-labels",
             "collapse-columns", "column-border-levels", "section-levels",
             "max-rows", "max-columns", "trim-size", "separator",
+            "no-wrap",
         ]
     }
 
@@ -39,6 +40,7 @@ export class DataViewer extends HTMLElement {
                 columnBorderLevels: 1,
                 rowBorders: true,
                 marginBorders: true,
+                noWrap: false,
             }
         }
     }
@@ -115,6 +117,9 @@ export class DataViewer extends HTMLElement {
                 break
             case "collapse-columns":
                 this.options.styling.collapseColumns = this.getBooleanAttribute(newValue)
+                break
+            case "no-wrap":
+                this.options.styling.noWrap = this.getBooleanAttribute(newValue)
                 break
             case "column-border-levels": {
                 const level = parseInt(newValue)

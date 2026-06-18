@@ -309,6 +309,10 @@ export class SettingsPopup extends ModalElement {
                     <input type="checkbox" id="collapse-columns" ${this.options.styling.collapseColumns ? "checked" : ""}>
                     Collapse columns
                 </label>
+                <label for="no-wrap">
+                    <input type="checkbox" id="no-wrap" ${this.options.styling.noWrap ? "checked" : ""}>
+                    No wrapping
+                </label>
             </fieldset>
         `
     }
