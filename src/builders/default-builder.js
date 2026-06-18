@@ -278,7 +278,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      * @returns {string} HTML string for the th element
      */
     buildColumnLabel(value, mappedValue, iloc) {
-        const selectedValue = Array.isArray(mappedValue) ? mappedValue.at(-1) : mappedValue
+        const selectedValue = mappedValue.at(-1)
         const attrs = this.data.columns.attrs[iloc]
 
         const attributes = {
@@ -491,7 +491,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      * @returns {string} HTML string for the index cell
      */
     buildIndex(value) {
-        const selectedValue = Array.isArray(value) ? value.at(-1) : value
+        const selectedValue = value.at(-1)
         const level = this.data.index.nlevels - 1
         const attrs = this.data.index.attrs[level]
         const formattedValue = this.formatValue(selectedValue, attrs.dtype, attrs.formatOptions ?? this.options)

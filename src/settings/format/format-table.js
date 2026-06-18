@@ -322,7 +322,7 @@ export class FormatTable extends HTMLElement {
 
         return `
             <tr data-column-index="${idx}">
-                <td>${Array.isArray(col) ? col.at(-1) : col}</td>
+                <td>${col.at(-1)}</td>
                 <td>${attrs.dtype ?? "-"}</td>
                 <td>${this.getFormatSummary(attrs.formatOptions, attrs.dtype)}</td>
                 <td>

@@ -160,10 +160,6 @@ export class BaseTableBuilder {
     getMarginEdgeCols() {
         const cols = []
         this.data.columns.values.forEach((value, icol) => {
-            if (!Array.isArray(value)) {
-                if (this.options.marginLabels.includes(value)) cols.push(icol)
-                return
-            }
             for (let level = 0; level < value.length; level++) {
                 if (!this.options.marginLabels.includes(value[level])) continue
                 if (this.data.columns.spans[level].some(s => s.iloc === icol)) {

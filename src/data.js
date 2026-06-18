@@ -111,11 +111,7 @@ export class Data extends EventTarget {
 
         const indexValues = this.index.values
             .slice(startRow, endRow)
-            .map(value =>
-                Array.isArray(value)
-                    ? value.slice(dropLevels)
-                    : value
-            )
+            .map(value => value.slice(dropLevels))
 
         return new Data({
             values: slicedValues,
@@ -156,9 +152,7 @@ export class Data extends EventTarget {
 
             const headIdx = indexValues.slice(0, trimSize)
             const tailIdx = indexValues.slice(-trimSize)
-            const sepIdx = Array.isArray(indexValues[0])
-                ? Array(this.index.nlevels).fill(separator)
-                : separator
+            const sepIdx = Array(this.index.nlevels).fill(separator)
             indexValues = [...headIdx, sepIdx, ...tailIdx]
         }
 
@@ -166,9 +160,7 @@ export class Data extends EventTarget {
         if (this.columns.length > maxColumns) {
             const headCols = columnValues.slice(0, trimSize)
             const tailCols = columnValues.slice(-trimSize)
-            const sepCol = Array.isArray(columnValues[0])
-                ? Array(this.columns.nlevels).fill(separator)
-                : separator
+            const sepCol = Array(this.columns.nlevels).fill(separator)
             columnValues = [...headCols, sepCol, ...tailCols]
 
             values = values.map(row => {
