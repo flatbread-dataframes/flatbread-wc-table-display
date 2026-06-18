@@ -198,9 +198,9 @@ export class DataViewer extends HTMLElement {
     updateColumnCollapse() {
         if (this.options.styling.collapseColumns !== null) return
 
-        const hasColumnNames = this.data.columnNames?.length
+        const hasColumnNames = this.data.columns.names?.length
         const lastNameIsNull = this.data.columns.isMultiIndex &&
-            this.data.columnNames?.at(-1) === null
+            this.data.columns.names?.at(-1) === null
 
         this.options.styling.collapseColumns = !hasColumnNames || lastNameIsNull || !this.data.columns.isMultiIndex
     }

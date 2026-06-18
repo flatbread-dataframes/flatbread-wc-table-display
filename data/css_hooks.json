@@ -1,27 +1,31 @@
 {
-    "columns": ["Default", "Description"],
-    "columnNames": null,
-    "dtypes": ["str", "str"],
-    "indexNames": ["Type", "Property"],
-    "index": [
-        ["part",              "table"],
-        ["part",              "column-header"],
-        ["part",              "column-group-header"],
-        ["part",              "column-label"],
-        ["part",              "index-name"],
-        ["part",              "index-cell"],
-        ["part",              "data-cell"],
-        ["part",              "margin-cell"],
-        ["part",              "separator-cell"],
-        ["part",              "section-header"],
-        ["part",              "section-group"],
-        ["custom-properties", "--hover-color"],
-        ["custom-properties", "--cursor"],
-        ["custom-properties", "--border-color"],
-        ["custom-properties", "--axes-width"],
-        ["custom-properties", "--section-spacing-top"],
-        ["custom-properties", "--section-indent"]
-    ],
+    "columns": {
+        "values": ["Default", "Description"],
+        "names": null,
+        "dtypes": ["str", "str"]
+    },
+    "index": {
+        "values": [
+            ["part",              "table"],
+            ["part",              "column-header"],
+            ["part",              "column-group-header"],
+            ["part",              "column-label"],
+            ["part",              "index-name"],
+            ["part",              "index-cell"],
+            ["part",              "data-cell"],
+            ["part",              "margin-cell"],
+            ["part",              "separator-cell"],
+            ["part",              "section-header"],
+            ["part",              "section-group"],
+            ["custom-properties", "--hover-color"],
+            ["custom-properties", "--cursor"],
+            ["custom-properties", "--border-color"],
+            ["custom-properties", "--axes-width"],
+            ["custom-properties", "--section-spacing-top"],
+            ["custom-properties", "--section-indent"]
+        ],
+        "names": ["Type", "Property"]
+    },
     "values": [
         [null,           "Table element"],
         [null,           "Regular column headers in the table header"],

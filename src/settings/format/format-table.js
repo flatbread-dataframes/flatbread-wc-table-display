@@ -120,7 +120,7 @@ export class FormatTable extends HTMLElement {
 
     handleDialogFormatApply(event) {
         const { formatOptions, columnIndex, dtype } = event.detail
-        const currentFormatOptions = [...(this.data.formatOptions ?? [])]
+        const currentFormatOptions = [...(this.data.columns.formatOptions ?? [])]
 
         if (dtype) {
             this.data.columns.attrs.forEach((attr, idx) => {
@@ -132,7 +132,7 @@ export class FormatTable extends HTMLElement {
             currentFormatOptions[columnIndex] = formatOptions
         }
 
-        this.data.formatOptions = currentFormatOptions
+        this.data.update({ columns: { formatOptions: currentFormatOptions } })
         this.update()
     }
 
@@ -165,9 +165,9 @@ export class FormatTable extends HTMLElement {
         const preset = presets[presetKey]
 
         if (preset) {
-            const currentFormatOptions = [...(this.data.formatOptions ?? [])]
+            const currentFormatOptions = [...(this.data.columns.formatOptions ?? [])]
             currentFormatOptions[columnIndex] = preset.options
-            this.data.formatOptions = currentFormatOptions
+            this.data.update({ columns: { formatOptions: currentFormatOptions } })
             this.update()
         }
     }
@@ -177,13 +177,13 @@ export class FormatTable extends HTMLElement {
         const preset = presets[presetKey]
 
         if (preset) {
-            const currentFormatOptions = [...(this.data.formatOptions ?? [])]
+            const currentFormatOptions = [...(this.data.columns.formatOptions ?? [])]
             this.data.columns.attrs.forEach((attr, idx) => {
                 if (attr.dtype === dtype) {
                     currentFormatOptions[idx] = preset.options
                 }
             })
-            this.data.formatOptions = currentFormatOptions
+            this.data.update({ columns: { formatOptions: currentFormatOptions } })
             this.update()
         }
     }

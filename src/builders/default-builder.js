@@ -255,8 +255,8 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      */
     buildIndexLabels() {
         // Get base index names (or create array of nulls if none exist)
-        const allLabels = this.data.indexNames
-            ? this.data.indexNames
+        const allLabels = this.data.index.names
+            ? this.data.index.names
             : Array(this.data.index.nlevels).fill(null)
 
         // Remove the number of levels that are being shown as sections
@@ -302,7 +302,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      * // If level=1, creates the "Car Boat | Web Mobile" row
      */
     buildColumnGroupsRow(level) {
-        const columnLabel = this.data.columnNames?.[level] ?? ""
+        const columnLabel = this.data.columns.names?.[level] ?? ""
 
         // Adjust colspan to account for section levels
         const sectionLevels = this.options.styling.sectionLevels
