@@ -2,7 +2,7 @@ import { Data } from "./data.js"
 import { SettingsContainer } from "./settings/settings-container.js"
 import "./table.js"
 
-export class DataViewer extends HTMLElement {
+export class FlatbreadTable extends HTMLElement {
     static get observedAttributes() {
         return [
             "src", "type", "hide-settings-menu",
@@ -48,7 +48,7 @@ export class DataViewer extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: "open" })
-        this.options = { ...DataViewer.defaults }
+        this.options = { ...FlatbreadTable.defaults }
 
         this.handleDataChange = this.handleDataChange.bind(this)
         this.handleTableClick = this.handleTableClick.bind(this)
@@ -88,17 +88,17 @@ export class DataViewer extends HTMLElement {
                 this.loadDataFromSrc(newValue)
                 return
             case "type":
-                this.options.type = newValue ?? DataViewer.defaults.type
+                this.options.type = newValue ?? FlatbreadTable.defaults.type
                 break
             case "hide-settings-menu":
                 // currently handled only with css (see styles)
-                this.options.settingsMenu = !this.getBooleanAttribute(newValue) ?? DataViewer.defaults.settingsMenu
+                this.options.settingsMenu = !this.getBooleanAttribute(newValue) ?? FlatbreadTable.defaults.settingsMenu
                 break
             case "locale":
-                this.options.locale = newValue ?? DataViewer.defaults.locale
+                this.options.locale = newValue ?? FlatbreadTable.defaults.locale
                 break
             case "na-rep":
-                this.options.naRep = newValue ?? DataViewer.defaults.naRep
+                this.options.naRep = newValue ?? FlatbreadTable.defaults.naRep
                 break
             case "hide-column-borders":
                 this.options.styling.columnBorders = !this.getBooleanAttribute(newValue)
@@ -124,7 +124,7 @@ export class DataViewer extends HTMLElement {
             case "column-border-levels": {
                 const level = parseInt(newValue)
                 this.options.styling.columnBorderLevels = Number.isNaN(level)
-                    ? DataViewer.defaults.styling.columnBorderLevels
+                    ? FlatbreadTable.defaults.styling.columnBorderLevels
                     : level
                 break
             }
@@ -135,21 +135,21 @@ export class DataViewer extends HTMLElement {
             case "section-levels": {
                 const level = parseInt(newValue)
                 this.options.styling.sectionLevels = Number.isNaN(level)
-                    ? DataViewer.defaults.styling.sectionLevels
+                    ? FlatbreadTable.defaults.styling.sectionLevels
                     : Math.max(0, level)
                 break
             }
             case "max-rows":
-                this.options.truncation.maxRows = parseInt(newValue) ?? DataViewer.defaults.maxRows
+                this.options.truncation.maxRows = parseInt(newValue) ?? FlatbreadTable.defaults.maxRows
                 break
             case "max-columns":
-                this.options.truncation.maxColumns = parseInt(newValue) ?? DataViewer.defaults.maxColumns
+                this.options.truncation.maxColumns = parseInt(newValue) ?? FlatbreadTable.defaults.maxColumns
                 break
             case "trim-size":
-                this.options.truncation.trimSize = parseInt(newValue) ?? DataViewer.defaults.trimSize
+                this.options.truncation.trimSize = parseInt(newValue) ?? FlatbreadTable.defaults.trimSize
                 break
             case "separator":
-                this.options.truncation.separator = newValue ?? DataViewer.defaults.separator
+                this.options.truncation.separator = newValue ?? FlatbreadTable.defaults.separator
                 break
         }
         this.update()
@@ -356,4 +356,4 @@ export class DataViewer extends HTMLElement {
     }
 }
 
-window.customElements.define('flatbread-table', DataViewer)
+window.customElements.define('flatbread-table', FlatbreadTable)
