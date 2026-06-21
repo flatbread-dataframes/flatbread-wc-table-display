@@ -235,7 +235,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      * @returns {string} HTML string for the row
      */
     buildIndexNamesRow() {
-        return this.buildHeaderRow(() => "")
+        return this.buildHeaderRow(() => [])
     }
 
     /**
@@ -278,7 +278,7 @@ export class DefaultTableBuilder extends BaseTableBuilder {
      * @returns {string} HTML string for the th element
      */
     buildColumnLabel(value, mappedValue, iloc) {
-        const selectedValue = mappedValue.at(-1)
+        const selectedValue = mappedValue.at(-1) ?? ""
         const attrs = this.data.columns.attrs[iloc]
 
         const attributes = {
