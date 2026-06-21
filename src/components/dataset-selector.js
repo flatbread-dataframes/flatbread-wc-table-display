@@ -1,4 +1,4 @@
-import { DataViewer } from "../viewer.js"
+import { FlatbreadTable } from "../viewer.js"
 
 
 export class DatasetSelector extends HTMLElement {
@@ -27,7 +27,7 @@ export class DatasetSelector extends HTMLElement {
     static get observedAttributes() {
         // Combine our attributes with DataViewer's
         const ownAttributes = ["src"]
-        return [...ownAttributes, ...DataViewer.observedAttributes]
+        return [...ownAttributes, ...FlatbreadTable.observedAttributes]
     }
 
     connectedCallback() {
@@ -39,29 +39,29 @@ export class DatasetSelector extends HTMLElement {
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === "src" && oldValue !== newValue) {
             this.loadSpecFromSrc(newValue)
-        } else if (this.dataViewer && DataViewer.observedAttributes.includes(name)) {
+        } else if (this.flatbreadTable && FlatbreadTable.observedAttributes.includes(name)) {
             // Forward DataViewer attributes
             if (newValue !== null) {
-                this.dataViewer.setAttribute(name, newValue)
+                this.flatbreadTable.setAttribute(name, newValue)
             } else {
-                this.dataViewer.removeAttribute(name)
+                this.flatbreadTable.removeAttribute(name)
             }
         }
     }
 
     disconnectedCallback() {
-        if (this.dataViewer) {
-            this.dataViewer.remove()
+        if (this.flatbreadTable) {
+            this.flatbreadTable.remove()
         }
     }
 
     forwardInitialAttributes() {
-        if (!this.dataViewer) return
+        if (!this.flatbreadTable) return
 
-        DataViewer.observedAttributes.forEach(attr => {
+        FlatbreadTable.observedAttributes.forEach(attr => {
             if (attr === 'src') return
             if (this.hasAttribute(attr)) {
-                this.dataViewer.setAttribute(attr, this.getAttribute(attr))
+                this.flatbreadTable.setAttribute(attr, this.getAttribute(attr))
             }
         })
     }
@@ -192,24 +192,24 @@ export class DatasetSelector extends HTMLElement {
 
     // Access to the underlying DataViewer
     getViewer() {
-        return this.dataViewer
+        return this.flatbreadTable
     }
 
     // Access to the underlying data
     getViewerData() {
-        return this.dataViewer ? this.dataViewer.data : null
+        return this.flatbreadTable ? this.flatbreadTable.data : null
     }
 
     setViewerData(data) {
-        if (this.dataViewer) {
-            this.dataViewer.data = data
+        if (this.flatbreadTable) {
+            this.flatbreadTable.data = data
         }
     }
 
     // Update specific parts of the data
     updateViewerValues(newValues) {
-        if (this.dataViewer && this.dataViewer.data) {
-            this.dataViewer.data.values = newValues
+        if (this.flatbreadTable && this.flatbreadTable.data) {
+            this.flatbreadTable.data.values = newValues
         }
     }
 
@@ -249,7 +249,7 @@ export class DatasetSelector extends HTMLElement {
         const dataset = this.findMatchingDataset()
 
         if (!dataset) {
-            this.dataViewer.data = { values: [], columns: [], index: [] }
+            this.flatbreadTable.data = { values: [], columns: [], index: [] }
             return
         }
 
@@ -274,19 +274,19 @@ export class DatasetSelector extends HTMLElement {
             }
         }
 
-        this.dataViewer.data = dataset.data
+        this.flatbreadTable.data = dataset.data
 
         // Apply global options first
         if (this.globalOptions) {
             for (const [key, value] of Object.entries(this.globalOptions)) {
-                this.dataViewer.setAttribute(key, value)
+                this.flatbreadTable.setAttribute(key, value)
             }
         }
 
         // Apply options if specified
         if (dataset.options) {
             for (const [key, value] of Object.entries(dataset.options)) {
-                this.dataViewer.setAttribute(key, value)
+                this.flatbreadTable.setAttribute(key, value)
             }
         }
     }
@@ -454,7 +454,7 @@ export class DatasetSelector extends HTMLElement {
         // Create and append the data-viewer
         const viewer = document.createElement("flatbread-table")
         this.shadowRoot.querySelector(".viewer-container").appendChild(viewer)
-        this.dataViewer = viewer
+        this.flatbreadTable = viewer
         this.forwardInitialAttributes()
     }
 }
